@@ -43,6 +43,6 @@ Every hard rule this workflow depends on has exactly one canonical home. Each ph
 
 | Rule | Canonical home |
 |---|---|
-| Delegation Model; Known Failure Modes; AskUserQuestion rules 1–7; Approval Gates hard rule; Deliverable Presentation hard rule | `references/interaction-rules.md` |
+| Delegation Model; Known Failure Modes; Presentation Environment (client detection); AskUserQuestion rules 1–7 (incl. rule 6 environment-aware Comparison Format); Approval Gates hard rule; Deliverable Presentation hard rule | `references/interaction-rules.md` |
 | Context & Constraints (solo-founder budget; manual-payments full lifecycle; target-market segment + scope & baseline assumptions; mobile-first PWA; i18n; pricing; organic-social distribution; free-tier LLM; session boundary); CTA Contact Block (single source of truth); Owner Task Ledger | `references/shared-context.md` |
 | Apps & Tech Stack default + NON-NEGOTIABLE UI STACK; Design Bar; Build constraint; Video tooling constraint | `references/tech-design-video.md` |

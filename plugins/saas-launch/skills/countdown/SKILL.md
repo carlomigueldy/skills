@@ -15,7 +15,7 @@ Before doing any Phase 3.5 work, read all three shared reference files (paths re
 
 - `../saas-launch-blueprint/references/tech-design-video.md` — the Build constraint (the two-tier completion gates and MUST-SHIP/DEFER cut order that the handoff's closing text restates; the requirement to enumerate every surface in the locked distribution set BY NAME; the LOCKED-IN stack) and the Video tooling constraint (governs the promo video, and any pitch clip deferred or failed in Phase 3, listed among the handoff's deliverables).
 - `../saas-launch-blueprint/references/shared-context.md` — the Owner Task Ledger (this handoff instructs the build session to convert OWNER-TASKS.md into GitHub issues once the repo exists), the CTA Contact Block, and the session boundary (this session never builds; Phase 4 is a separate, manually-started session).
-- `../saas-launch-blueprint/references/interaction-rules.md` — the Deliverable Presentation hard rule (present the handoff prompt and BUILD-HANDOFF.md before considering this phase done) and the AskUserQuestion rules.
+- `../saas-launch-blueprint/references/interaction-rules.md` — the Deliverable Presentation hard rule (present the handoff prompt and BUILD-HANDOFF.md before considering this phase done), the Presentation Environment section (cards + inline render in Cowork vs. copyable absolute paths + browser-open in Claude Code / the TUI), and the AskUserQuestion rules.
 
 ## Steps
 

@@ -14,7 +14,7 @@ Loading the `/frontend-design` skill is a HARD REQUIREMENT for every agent produ
 Before doing any Phase 3 work, read:
 
 - `../saas-launch-blueprint/references/tech-design-video.md` — the Design Bar (the prototype must feel like $50k of design and implement the PRD's design-system tokens), the Apps & Tech Stack note on the SANCTIONED Tailwind-v4-CDN / no-shadcn prototype exception, and the Video tooling constraint (governs STEP 3's pitch clip: rendered MP4 only, Hyperframes local, two-attempt bound + failure path, ElevenLabs key discovery/graceful-skip).
-- `../saas-launch-blueprint/references/interaction-rules.md` — the AskUserQuestion rules, the Deliverable Presentation hard rule (present all prototype files + any clip BEFORE Gate 3), Known Failure Modes #2 (deliverables never shown) and #3 (HTML instead of video), and the Approval Gates rule.
+- `../saas-launch-blueprint/references/interaction-rules.md` — the AskUserQuestion rules, the Deliverable Presentation hard rule (present all prototype files + any clip BEFORE Gate 3), the Presentation Environment section (client detection → widget in Cowork vs. markdown scorecard / copyable-paths block in the TUI), Known Failure Modes #2 (deliverables never shown) and #3 (HTML instead of video), and the Approval Gates rule.
 - `../saas-launch-blueprint/references/shared-context.md` — the CTA Contact Block (the pitch clip ends with it).
 
 ## STEP 0 — Prototype format
@@ -41,7 +41,7 @@ A failed attempt follows the Video tooling failure path and does not block Gate 
 
 ## GATE 3
 
-BEFORE asking, present all deliverables per the DELIVERABLE PRESENTATION rule (cards for every file; inline rendering for a representative subset when the set is large; the clip if one exists). Then AskUserQuestion:
+BEFORE asking, present all deliverables per the DELIVERABLE PRESENTATION rule and the Presentation Environment section (`../saas-launch-blueprint/references/interaction-rules.md`) — in Cowork: cards for every file plus inline rendering of a representative subset when the set is large; in Claude Code / the TUI: every file's absolute path in one copyable block with an open command, the HTML prototype opening in the browser (no inline render); the clip if one exists. Then AskUserQuestion:
 - "Approve — prepare build handoff"
 - "Validate first" — before any build spend, produce a PROSPECT PITCH KIT: a shareable version of the prototype, a short pitch script that includes the ACTUAL price, and a response tracker for 5 prospects; pause here while the founder pitches, then reconvene at this gate with real reactions (which may revise pricing or scope via "Go back")
 - "Request changes" / "Go back — revisit an earlier decision"
