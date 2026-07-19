@@ -14,6 +14,28 @@ claude plugin marketplace add carlomigueldy/skills
 claude plugin install saas-launch@carlomigueldy
 ```
 
+### Manual upload (Claude Cowork / Claude Desktop)
+
+The desktop apps install a plugin from an uploaded zip rather than from the
+marketplace. Build one with:
+
+```bash
+scripts/package-plugin.py                 # -> dist/saas-launch-<version>-cowork.zip
+scripts/package-plugin.py --list          # preview contents and path rewrites
+```
+
+The zip is flat (`.claude-plugin/plugin.json` at the root, no wrapper
+directory) because that is what the uploader expects. The uploader also
+rejects paths containing ``<>:"|?*\[]`` or non-ASCII characters, so the
+script rewrites those segments — `app/[locale]/` ships as `app/__locale__/`
+— and bundles a `RESTORE-PATHS.md` and `restore-paths.sh` to reverse it.
+
+**If a zip contains rewritten paths, run `bash restore-paths.sh` after
+copying the template out.** Next.js matches dynamic routes on the literal
+`[segment]` directory name; left as `__segment__`, every route 404s. This
+only affects the manual-upload path — a marketplace install ships the
+correct names.
+
 ## Plugins
 
 | Plugin | Description | Skills |
@@ -36,6 +58,8 @@ skills/
 │       │   └── saas-scaffold/
 │       │       └── SKILL.md
 │       └── README.md
+├── scripts/
+│   └── package-plugin.py         # zip a plugin for manual Cowork upload
 ├── docs/
 │   └── VERSIONING.md
 └── README.md
