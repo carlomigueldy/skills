@@ -1,5 +1,5 @@
 ---
-name: blueprint-phase-3-prototype
+name: wind-tunnel
 description: Phase 3 (Prototype) of the SaaS Launch Blueprint: choosing storyboard vs clickable format, selecting device targets, building the high-fidelity Tailwind-CDN HTML prototype, the optional Hyperframes pitch clip, and Gate 3 (including the 'Validate first' prospect-pitch-kit path), ending before the build. Invoked by the saas-launch-blueprint orchestrator after Gate 2 approval, or when the user explicitly asks to run/resume 'Phase 3', rebuild the prototype, or attempt the pitch clip for an active Launch Blueprint run. Do NOT trigger on generic 'make me a prototype/mockup' requests outside an active Launch Blueprint — the saas-launch-blueprint orchestrator is the entry point, and this session never starts the build.
 ---
 
@@ -50,4 +50,4 @@ DO NOT START THE BUILD. This session never builds.
 
 ## Closing / handback
 
-On "Approve — prepare build handoff" (or a "Validate first" reconvene that then approves), return control to the `saas-launch-blueprint` orchestrator so it invokes `saas-launch:blueprint-phase-3-5-handoff` — do not start the handoff inline. On "Request changes", iterate Phase 3 in place and re-present Gate 3. On "Go back", return control to the orchestrator so it re-invokes the named earlier phase's skill; downstream deliverables must be revised or regenerated. Never build here — the workflow continues via the orchestrator until Phase 3.5's STOP.
+On "Approve — prepare build handoff" (or a "Validate first" reconvene that then approves), return control to the `saas-launch-blueprint` orchestrator so it invokes `saas-launch:countdown` — do not start the handoff inline. On "Request changes", iterate Phase 3 in place and re-present Gate 3. On "Go back", return control to the orchestrator so it re-invokes the named earlier phase's skill; downstream deliverables must be revised or regenerated. Never build here — the workflow continues via the orchestrator until Phase 3.5's STOP.

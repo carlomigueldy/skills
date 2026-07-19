@@ -1,5 +1,5 @@
 ---
-name: blueprint-phase-1-ideation
+name: ignition
 description: Phase 1 (Target Market + Ideation) of the SaaS Launch Blueprint: customer-segment selection, geographic-scope selection, and scored product ideation, ending at Gate 1. Invoked by the saas-launch-blueprint orchestrator as the first step of that workflow, or when the user explicitly asks to run or resume 'Phase 1', reopen target-market/scope selection, or regenerate the scored idea list for an active Launch Blueprint run. Do NOT trigger on generic 'give me SaaS ideas' or app-brainstorm questions outside an active Launch Blueprint — the saas-launch-blueprint orchestrator is the entry point for those.
 ---
 
@@ -46,7 +46,7 @@ AskUserQuestion: "Approve — proceed to PRD" / "Request changes" / "Go back —
 
 ## Handback
 
-- **"Approve — proceed to PRD"**: do NOT start the PRD inline. Return control to the `saas-launch-blueprint` orchestrator so it invokes `saas-launch:blueprint-phase-2-prd`.
+- **"Approve — proceed to PRD"**: do NOT start the PRD inline. Return control to the `saas-launch-blueprint` orchestrator so it invokes `saas-launch:flight-plan`.
 - **"Request changes"**: iterate Phase 1 in place (revise the segment write-up, scope write-up, or scored analysis as needed) and re-present Gate 1. Do not return to the orchestrator yet.
 - **"Go back — change segment or scope"**: reopen segment (STEP 1) or scope (STEP 2) selection here, then re-run the affected downstream steps and re-present Gate 1.
 

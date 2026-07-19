@@ -1,5 +1,5 @@
 ---
-name: blueprint-phase-2-prd
+name: flight-plan
 description: Phase 2 (PRD) of the SaaS Launch Blueprint: interview-mode selection, the themed interview rounds, and authoring the complete end-to-end business PRD.md plus OWNER-TASKS.md via the doc-coauthoring skill, ending at Gate 2. Invoked by the saas-launch-blueprint orchestrator after Gate 1 approval, or when the user explicitly asks to run/resume 'Phase 2', write or revise the PRD, or redo the tech-stack/design/branding interview for an active Launch Blueprint run. Do NOT trigger on generic 'write me a PRD' or product-spec requests outside an active Launch Blueprint — the saas-launch-blueprint orchestrator is the entry point.
 ---
 
@@ -67,7 +67,7 @@ Present the PRD file and OWNER-TASKS.md per the Deliverable Presentation rule (`
 
 The deliverables of this phase are PRD.md and OWNER-TASKS.md as standalone files, presented before Gate 2 is asked.
 
-- On **"Approve PRD — proceed to prototype"**: do NOT start the prototype inline. Return control to the `saas-launch-blueprint` orchestrator so it invokes `saas-launch:blueprint-phase-3-prototype`.
+- On **"Approve PRD — proceed to prototype"**: do NOT start the prototype inline. Return control to the `saas-launch-blueprint` orchestrator so it invokes `saas-launch:wind-tunnel`.
 - On **"Request changes"**: iterate Phase 2 in place (revise the interview answers, the PRD, or both) and re-present Gate 2. Do not hand control back to the orchestrator yet.
 - On **"Go back — revisit the idea, segment, or scope"**: return control to the orchestrator, which re-invokes the named earlier phase's skill; re-approving that earlier gate invalidates this PRD, which must be revised or regenerated once the earlier decision is re-confirmed.
 

@@ -1,5 +1,5 @@
 ---
-name: blueprint-phase-3-5-handoff
+name: countdown
 description: Phase 3.5 (Build Handoff) of the SaaS Launch Blueprint: after Gate 3 approval, list the exact files the founder must attach and produce the ready-to-copy `ultracode:` build prompt (saved as BUILD-HANDOFF.md) for a SEPARATE Claude Code build session, then STOP. Invoked by the saas-launch-blueprint orchestrator once Gate 3 is approved, or when the user explicitly asks to run/resume 'Phase 3.5', generate/redo the build handoff prompt, or assemble the ultracode master prompt for an active Launch Blueprint run. Do NOT trigger on generic 'write me a build prompt' requests outside an active Launch Blueprint, and never start the build in this session.
 ---
 

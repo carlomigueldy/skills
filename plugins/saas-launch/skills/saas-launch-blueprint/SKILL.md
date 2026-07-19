@@ -27,10 +27,10 @@ CRITICAL: a phase skill returning control does **not** end the workflow. Each ph
 
 The sequence:
 
-- **Begin**: invoke `saas-launch:blueprint-phase-1-ideation` (runs Phase 1 through Gate 1).
-- On Gate 1 **"Approve — proceed to PRD"**: invoke `saas-launch:blueprint-phase-2-prd` (Phase 2 through Gate 2).
-- On Gate 2 **"Approve PRD — proceed to prototype"**: invoke `saas-launch:blueprint-phase-3-prototype` (Phase 3 through Gate 3, including the optional "Validate first" pause/reconvene).
-- On Gate 3 **"Approve — prepare build handoff"** (or after a "Validate first" reconvene that then approves): invoke `saas-launch:blueprint-phase-3-5-handoff` (Phase 3.5 handoff), then STOP — nothing further this session.
+- **Begin**: invoke `saas-launch:ignition` (runs Phase 1 through Gate 1).
+- On Gate 1 **"Approve — proceed to PRD"**: invoke `saas-launch:flight-plan` (Phase 2 through Gate 2).
+- On Gate 2 **"Approve PRD — proceed to prototype"**: invoke `saas-launch:wind-tunnel` (Phase 3 through Gate 3, including the optional "Validate first" pause/reconvene).
+- On Gate 3 **"Approve — prepare build handoff"** (or after a "Validate first" reconvene that then approves): invoke `saas-launch:countdown` (Phase 3.5 handoff), then STOP — nothing further this session.
 - On any gate's **"Request changes"**: the phase skill iterates in place and re-presents its own gate; the orchestrator does not advance, and does not re-invoke anything — control simply stays with the current phase skill.
 - On any gate's **"Go back — revisit an earlier decision"**: re-invoke the named earlier phase's skill; re-approving an earlier gate invalidates all downstream deliverables (they must be revised or regenerated). Full mechanics live in the Approval Gates hard rule (`references/interaction-rules.md`).
 - Reiterate the session boundary: this session NEVER starts the build. The build is a separate Claude Code session using the Phase 3.5 handoff prompt.
