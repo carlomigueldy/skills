@@ -19,13 +19,13 @@ Before doing any Phase 3 work, read:
 
 ## STEP 0 — Prototype format
 
-Write-up first, then AskUserQuestion: explain both formats with their cost/benefit for THIS product, recommend one, then let the founder choose:
-- **Storyboard View** — a gallery of static high-fidelity screens covering the product's flows breadth-first. Cheaper per screen; capped at 12 screens total — if the core flows genuinely need more, ask with a scoping AskUserQuestion before exceeding it. Past ~10 screens its total cost catches up to a clickable prototype; say so.
+Write-up first, then AskUserQuestion — each option's per-option `description` populated per AskUserQuestion rule 4 (`../saas-launch-blueprint/references/interaction-rules.md`) with what the format is and its standout cost/benefit for THIS product (recommended one saying why), never a bare label. Explain both formats with their cost/benefit for THIS product, recommend one, then let the founder choose:
+- **Storyboard View** — a gallery of static high-fidelity screens covering the product's flows breadth-first. Cheaper per screen; capped at 12 screens total — if the core flows genuinely need more, ask with a scoping AskUserQuestion before exceeding it (a short write-up of the options first, and every option's per-option `description` populated per AskUserQuestion rule 4, `../saas-launch-blueprint/references/interaction-rules.md`, never a bare label). Past ~10 screens its total cost catches up to a clickable prototype; say so.
 - **Clickable Prototype** — max 3 DISTINCT pages, each rendered for every selected device (so up to 3 × N frames), with working navigation, states, and interactions. More token-intensive per screen; best for FEELING the product.
 
 ## STEP 1 — Device targets
 
-Write-up first, then AskUserQuestion as a MULTI-SELECT checklist: let the founder tick every device the prototype must present — Mobile PWA, Tablet, Desktop web, plus any surfaces from the PRD's locked distribution set (desktop app shell, native mobile frame). Recommend a default (typically Mobile PWA + Desktop web). Every selected device gets its own genuinely designed layout — never a naive shrink.
+Write-up first, then AskUserQuestion as a MULTI-SELECT checklist — each device option's per-option `description` populated per AskUserQuestion rule 4 (`../saas-launch-blueprint/references/interaction-rules.md`) with what designing for that device adds and its standout trade-off, never a bare label. Let the founder tick every device the prototype must present — Mobile PWA, Tablet, Desktop web, plus any surfaces from the PRD's locked distribution set (desktop app shell, native mobile frame). Recommend a default (typically Mobile PWA + Desktop web). Every selected device gets its own genuinely designed layout — never a naive shrink.
 
 ## STEP 2 — Build
 
@@ -33,7 +33,7 @@ High-fidelity HTML-only prototype in the chosen format for every selected device
 
 ## STEP 3 — Pitch clip (OPTIONAL — always ASK first)
 
-Hyperframes rendering frequently fails, so never attempt it silently. Post a short write-up of the trade-off (great investor material vs. tokens burned on a failure-prone render), then AskUserQuestion:
+Hyperframes rendering frequently fails, so never attempt it silently. Post a short write-up of the trade-off (great investor material vs. tokens burned on a failure-prone render), then AskUserQuestion — each option's per-option `description` populated per AskUserQuestion rule 4 (`../saas-launch-blueprint/references/interaction-rules.md`) with what choosing it does and its standout trade-off, never a bare label:
 - **"Attempt pitch clip now"** — render per the Video tooling constraint (two attempts max), showcasing the selected devices, ALWAYS ending on the CTA CONTACT BLOCK as its final clip per the Video tooling constraint. Only a rendered .mp4 satisfies an opted-in attempt.
 - **"Skip — defer to the build session"** — the clip moves to Phase 4's deliverables; Phase 3.5 MUST include it in the handoff prompt.
 
@@ -41,10 +41,10 @@ A failed attempt follows the Video tooling failure path and does not block Gate 
 
 ## GATE 3
 
-BEFORE asking, present all deliverables per the DELIVERABLE PRESENTATION rule and the Presentation Environment section (`../saas-launch-blueprint/references/interaction-rules.md`) — in Cowork: cards for every file plus inline rendering of a representative subset when the set is large; in Claude Code / the TUI: every file's absolute path in one copyable block with an open command, the HTML prototype opening in the browser (no inline render); the clip if one exists. Then AskUserQuestion:
-- "Approve — prepare build handoff"
+BEFORE asking, present all deliverables per the DELIVERABLE PRESENTATION rule and the Presentation Environment section (`../saas-launch-blueprint/references/interaction-rules.md`) — in Cowork: cards for every file plus inline rendering of a representative subset when the set is large; in Claude Code / the TUI: every file's absolute path in one copyable block with an open command, the HTML prototype opening in the browser (no inline render); the clip if one exists. Then AskUserQuestion — EVERY option's per-option `description` populated per AskUserQuestion rule 4 and the Approval Gates rule (`../saas-launch-blueprint/references/interaction-rules.md`) with what selecting it does, never a bare label:
+- "Approve — prepare build handoff" (moves to Phase 3.5 and assembles the build handoff)
 - "Validate first" — before any build spend, produce a PROSPECT PITCH KIT: a shareable version of the prototype, a short pitch script that includes the ACTUAL price, and a response tracker for 5 prospects; pause here while the founder pitches, then reconvene at this gate with real reactions (which may revise pricing or scope via "Go back")
-- "Request changes" / "Go back — revisit an earlier decision"
+- "Request changes" (iterate the prototype in place — the phase does not advance) / "Go back — revisit an earlier decision" (reopens the named earlier phase; downstream deliverables are invalidated)
 
 DO NOT START THE BUILD. This session never builds.
 

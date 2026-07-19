@@ -16,7 +16,7 @@ Before doing any Phase 1 work, read:
 
 ## STEP 1 — Customer segment
 
-Post a standalone write-up describing each segment (who they are, what they'd pay for, what selling to them looks like), plus a segment comparison scorecard per the Comparison Format rule (`../saas-launch-blueprint/references/interaction-rules.md`, Presentation Environment section + AskUserQuestion rule 6) — segments as rows; who-they-are, willingness-to-pay, sell-motion, and risk as columns — rendered as the inline widget in Cowork and as a rich markdown table inline in this write-up in Claude Code / the TUI. THEN prompt via AskUserQuestion (option-cap rule 7 applies):
+Post a standalone write-up describing each segment (who they are, what they'd pay for, what selling to them looks like), plus a segment comparison scorecard per the Comparison Format rule (`../saas-launch-blueprint/references/interaction-rules.md`, Presentation Environment section + AskUserQuestion rule 6) — segments as rows; who-they-are, willingness-to-pay, sell-motion, and risk as columns — rendered as the inline widget in Cowork and as a rich markdown table inline in this write-up in Claude Code / the TUI. THEN prompt via AskUserQuestion (option-cap rule 7 applies). Every segment option MUST populate its per-option `description` field with 1–2 concrete sentences — who the segment is and what selling to them looks like, plus its standout trade-off (per AskUserQuestion rule 4, `../saas-launch-blueprint/references/interaction-rules.md`); never a bare segment label:
 
 Local PH SMEs · Gen-Z Teens · PH Content Creators · PH Vloggers · Web3 users & communities (traders, builders, DAO/NFT/DeFi) · Individuals (everyday people, daily challenges)
 
@@ -24,7 +24,7 @@ If the founder picks "Other" or any non-PH-centric segment, re-confirm the basel
 
 ## STEP 2 — Geographic scope
 
-Standalone write-up explaining trade-offs per scope for the chosen segment (payment rails, pricing power, competition, support hours, legal exposure), plus a scope comparison scorecard per the Comparison Format rule (AskUserQuestion rule 6) — scopes as rows, those trade-off dimensions as columns, THEN AskUserQuestion:
+Standalone write-up explaining trade-offs per scope for the chosen segment (payment rails, pricing power, competition, support hours, legal exposure), plus a scope comparison scorecard per the Comparison Format rule (AskUserQuestion rule 6) — scopes as rows, those trade-off dimensions as columns, THEN AskUserQuestion. Every scope option MUST populate its per-option `description` field with 1–2 concrete sentences — what choosing that scope means for payment rails, pricing power, and legal exposure, plus its standout trade-off (per AskUserQuestion rule 4, `../saas-launch-blueprint/references/interaction-rules.md`); the recommended scope's description says why. Never a bare scope label:
 
 Philippines only · Worldwide · PH-first then global
 
@@ -34,7 +34,7 @@ Wait for the founder's selection. All downstream work (currency, rails, locale p
 
 (a) Post the complete scored analysis as its own standalone write-up: one titled section PER IDEA — name, what it does (2–3 plain-language sentences), who pays and why, pricing potential, scores against: willingness to pay, organic-social sellability, one-session buildability, LLM leverage on free tiers, manual-payment-gating fit, low solo-owner support burden. Mark ONE recommendation with justification. 4–6 ideas tailored to segment AND scope. Also present the idea scorecard per the Comparison Format rule (`../saas-launch-blueprint/references/interaction-rules.md`, AskUserQuestion rule 6) — ideas as rows, the six scoring criteria above as columns, and a Verdict row marking the recommendation: the inline widget in Cowork, a rich markdown scorecard table inline in this write-up in Claude Code / the TUI. A reader seeing ONLY the text must fully understand every idea. (Delegate market/competitor research to parallel subagents per the Delegation Model; the scoring judgments stay yours.)
 
-(b) ONLY THEN AskUserQuestion — same names, each option with a 1–2 sentence description, recommendation first labeled "(Recommended)", cap rule 7 for 5–6 ideas. If the analysis didn't visibly render, re-deliver before asking.
+(b) ONLY THEN AskUserQuestion — same names as the write-up, and EVERY option's per-option `description` field populated with 1–2 concrete sentences (what the idea is and who pays, plus its standout trade-off; per AskUserQuestion rule 4) — never a bare idea name. Recommendation first, labeled "(Recommended)", its description stating WHY it is recommended. Cap rule 7 for 5–6 ideas. If the analysis didn't visibly render, re-deliver before asking.
 
 Exclude: booking/queue system for service SMEs, Kolekta (lending), Sweldo, Suki (digital loyalty), Benta (Messenger/FB/TikTok order tracker), Labada (laundry tracker).
 
@@ -42,7 +42,9 @@ Do NOT implement anything.
 
 ## GATE 1
 
-AskUserQuestion: "Approve — proceed to PRD" / "Request changes" / "Go back — change segment or scope".
+AskUserQuestion — each option's per-option `description` populated per AskUserQuestion rule 4 and the Approval Gates rule (`../saas-launch-blueprint/references/interaction-rules.md`): "Approve — proceed to PRD" (moves to Phase 2 and begins the PRD interview), "Request changes" (revise the segment, scope, or scored ideas in place — the phase does not advance), "Go back — change segment or scope" (reopens STEP 1 / STEP 2; changing them invalidates the scored ideas, which are regenerated).
+
+The parenthetical after each option label above is not gloss for a human reader — it IS the literal text (verbatim or lightly adapted to the run's specifics) to place in that option's `description` field passed to AskUserQuestion. Do not leave the field empty because the explanation already appears in this write-up.
 
 ## Handback
 
