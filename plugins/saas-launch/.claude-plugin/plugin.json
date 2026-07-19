@@ -1,6 +1,6 @@
 {
   "name": "saas-launch",
-  "description": "End-to-end SaaS launch toolkit: the saas-launch-blueprint skill (gated ideation, PRD, prototype, build handoff for a solo bootstrapped founder) and the saas-scaffold skill with a bundled deterministic pnpm + Turborepo monorepo template (Next.js landing, offline-first Vite PWA, Mission Control admin, Supabase multi-tenant backend). Includes a four-tier deterministic agent-harness template (L1–L4 cumulative tiers instantiated per the PRD's chosen tier): AGENTS.md as the canonical agent-agnostic rulebook with Definition of Done; L2+ guard hooks for migrations and feature tracking; L3 specialized subagents (surface-builder, backend-engineer, qa-verifier, code-reviewer, research-scout) with crew workflows; L4 autonomous-loop gates and clean-state enforcement.",
+  "description": "End-to-end SaaS launch toolkit for a solo bootstrapped founder: the saas-launch-blueprint skill (gated ideation, PRD, prototype, build handoff) and saas-scaffold, which instantiates a deterministic pnpm + Turborepo monorepo (Next.js landing, offline-first Vite PWA, Mission Control admin, Supabase multi-tenant backend) plus a four-tier agent harness (L1-L4) with an AGENTS.md rulebook, migration and feature-tracking guard hooks, specialized subagents, and autonomous-loop gates.",
   "version": "0.3.0",
   "author": {
     "name": "Carlo Miguel Dy",
