@@ -15,11 +15,13 @@ Canonical home for the "what the product is and what the business rules are" sur
 
 ## CTA Contact Block (single source of truth)
 
-All videos and dossiers reference this block; never restate it elsewhere:
+All videos and dossiers reference this block; never restate it elsewhere. It is populated during Phase 2's always-asked STEP 2 by an explicit contact-collection step that ASKS me, channel by channel, for the ways prospects can reach me — email, Facebook, Instagram, Telegram, WhatsApp — and carries the confirmed values into a CTA Contact Block section of the PRD.
 
-> +63 916 776 4350 · carlomigueldy@gmail.com · Facebook/Instagram @carlomigueldy
+Prefill these as per-channel suggestions I confirm, override, or decline (recommend a product-branded email/page over personal handles for public distribution):
 
-Confirm or override it once during the Phase 2 branding interview (recommend a product-branded email/page over personal handles for public distribution).
+> Email: carlomigueldy@gmail.com · Facebook/Instagram: @carlomigueldy · WhatsApp: +63 916 776 4350
+
+Telegram has no default — I supply it if I want it. Not every channel is mandatory, but capture email PLUS at least one social/messaging channel. This is founder-only information you cannot invent, so — exactly like the Phase 2 harness-tier question — this step is ALWAYS run, even in "You decide everything" mode.
 
 ## Session Boundary
 
