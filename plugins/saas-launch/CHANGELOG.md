@@ -9,6 +9,19 @@ point forward — entries below the `0.1.0` heading are generated
 automatically from Conventional Commits on future releases; do not hand-edit
 past this initial entry.
 
+## [0.4.0](https://github.com/carlomigueldy/skills/compare/saas-launch--v0.3.0...saas-launch--v0.4.0) (2026-07-19)
+
+
+### Features
+
+* **saas-launch:** always-asked CTA contact collection, video CTA ending, and app footer attribution ([#6](https://github.com/carlomigueldy/skills/issues/6)) ([e49438d](https://github.com/carlomigueldy/skills/commit/e49438df92af0d6b27e9a4274a2bfce2f3e96b0e))
+* **saas-launch:** require PWA install prompt in PRD guidance and quality bar ([#8](https://github.com/carlomigueldy/skills/issues/8)) ([8aa2758](https://github.com/carlomigueldy/skills/commit/8aa2758633dd18c1e46f320c1e8625ed789ce979))
+
+
+### Bug Fixes
+
+* **saas-launch:** shorten plugin description to meet 500-char limit ([#9](https://github.com/carlomigueldy/skills/issues/9)) ([219301d](https://github.com/carlomigueldy/skills/commit/219301d9e39dfa3d308218119183a800f20a9d90))
+
 ## [0.3.0](https://github.com/carlomigueldy/skills/compare/saas-launch--v0.2.0...saas-launch--v0.3.0) (2026-07-19)
 
 
