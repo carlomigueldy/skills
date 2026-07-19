@@ -9,6 +9,14 @@ point forward — entries below the `0.1.0` heading are generated
 automatically from Conventional Commits on future releases; do not hand-edit
 past this initial entry.
 
+## [0.3.0](https://github.com/carlomigueldy/skills/compare/saas-launch--v0.2.0...saas-launch--v0.3.0) (2026-07-19)
+
+
+### Features
+
+* **saas-launch:** four-tier deterministic agent-harness template + Phase 2 harness interview ([#5](https://github.com/carlomigueldy/skills/issues/5)) ([8b088d9](https://github.com/carlomigueldy/skills/commit/8b088d9f2873ce7b88623ed313849420dcfbe5c2))
+* **saas-launch:** vendor shadcn/ui into template and bundle shadcn agent skill ([8fdf761](https://github.com/carlomigueldy/skills/commit/8fdf7611b4908b6cc05de7934e32ce4cc6772056))
+
 ## [0.2.0](https://github.com/carlomigueldy/skills/compare/saas-launch--v0.1.0...saas-launch--v0.2.0) (2026-07-19)
 
 
