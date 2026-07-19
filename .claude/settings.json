@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(plugins/**/CHANGELOG.md)",
+      "Edit(plugins/**/version.txt)",
+      "Edit(.release-please-manifest.json)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r '.tool_input.file_path // .tool_response.filePath // empty'); [ -n \"$f\" ] && [ -f \"$f\" ] || exit 0; case \"$f\" in *.json) ;; *) exit 0 ;; esac; err=$(jq empty \"$f\" 2>&1) || { printf 'Invalid JSON in %s:\\n%s\\n' \"$f\" \"$err\" >&2; exit 2; }; case \"$f\" in */.claude-plugin/marketplace.json|*/.claude-plugin/plugin.json) out=$(claude plugin validate . 2>&1 && claude plugin validate ./plugins/saas-launch 2>&1) || { printf 'Plugin manifest validation failed:\\n%s\\n' \"$out\" >&2; exit 2; } ;; esac",
+            "timeout": 120,
+            "statusMessage": "Validating JSON / plugin manifests"
+          }
+        ]
+      }
+    ]
+  }
+}
