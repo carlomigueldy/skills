@@ -45,4 +45,4 @@ Every hard rule this workflow depends on has exactly one canonical home. Each ph
 |---|---|
 | Delegation Model; Known Failure Modes; Presentation Environment (client detection); AskUserQuestion rules 1–7 (incl. rule 6 environment-aware Comparison Format); Approval Gates hard rule; Deliverable Presentation hard rule | `references/interaction-rules.md` |
 | Context & Constraints (solo-founder budget; manual-payments full lifecycle; target-market segment + scope & baseline assumptions; mobile-first PWA; i18n; pricing; organic-social distribution; free-tier LLM; session boundary); CTA Contact Block (single source of truth); Owner Task Ledger | `references/shared-context.md` |
-| Apps & Tech Stack default + NON-NEGOTIABLE UI STACK; Design Bar; Build constraint; Video tooling constraint | `references/tech-design-video.md` |
+| Apps & Tech Stack default + NON-NEGOTIABLE UI STACK; Design Bar; Build constraint; Video tooling constraint; Agent Harness tiers (canonical tier definitions + deterministic overlay instantiation) | `references/tech-design-video.md` |

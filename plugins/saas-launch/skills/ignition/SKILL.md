@@ -1,6 +1,6 @@
 ---
 name: ignition
-description: Phase 1 (Target Market + Ideation) of the SaaS Launch Blueprint: customer-segment selection, geographic-scope selection, and scored product ideation, ending at Gate 1. Invoked by the saas-launch-blueprint orchestrator as the first step of that workflow, or when the user explicitly asks to run or resume 'Phase 1', reopen target-market/scope selection, or regenerate the scored idea list for an active Launch Blueprint run. Do NOT trigger on generic 'give me SaaS ideas' or app-brainstorm questions outside an active Launch Blueprint — the saas-launch-blueprint orchestrator is the entry point for those.
+description: "Phase 1 (Target Market + Ideation) of the SaaS Launch Blueprint: customer-segment selection, geographic-scope selection, and scored product ideation, ending at Gate 1. Invoked by the saas-launch-blueprint orchestrator as the first step of that workflow, or when the user explicitly asks to run or resume 'Phase 1', reopen target-market/scope selection, or regenerate the scored idea list for an active Launch Blueprint run. Do NOT trigger on generic 'give me SaaS ideas' or app-brainstorm questions outside an active Launch Blueprint — the saas-launch-blueprint orchestrator is the entry point for those."
 ---
 
 # Phase 1 — Target Market + Ideation

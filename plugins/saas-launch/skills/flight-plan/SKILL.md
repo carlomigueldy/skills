@@ -1,6 +1,6 @@
 ---
 name: flight-plan
-description: Phase 2 (PRD) of the SaaS Launch Blueprint: interview-mode selection, the themed interview rounds, and authoring the complete end-to-end business PRD.md plus OWNER-TASKS.md via the doc-coauthoring skill, ending at Gate 2. Invoked by the saas-launch-blueprint orchestrator after Gate 1 approval, or when the user explicitly asks to run/resume 'Phase 2', write or revise the PRD, or redo the tech-stack/design/branding interview for an active Launch Blueprint run. Do NOT trigger on generic 'write me a PRD' or product-spec requests outside an active Launch Blueprint — the saas-launch-blueprint orchestrator is the entry point.
+description: "Phase 2 (PRD) of the SaaS Launch Blueprint: interview-mode selection, the themed interview rounds, and authoring the complete end-to-end business PRD.md plus OWNER-TASKS.md via the doc-coauthoring skill, ending at Gate 2. Invoked by the saas-launch-blueprint orchestrator after Gate 1 approval, or when the user explicitly asks to run/resume 'Phase 2', write or revise the PRD, or redo the tech-stack/design/branding interview for an active Launch Blueprint run. Do NOT trigger on generic 'write me a PRD' or product-spec requests outside an active Launch Blueprint — the saas-launch-blueprint orchestrator is the entry point."
 ---
 
 # Phase 2 — PRD
@@ -14,7 +14,7 @@ Use the doc-coauthoring skill for the PRD.
 Phase 2 draws on essentially every cross-phase rule and constraint this workflow has — read all three reference files in the orchestrator's directory before doing any Phase 2 work:
 
 - **`../saas-launch-blueprint/references/shared-context.md`** — the FULL manual-payments lifecycle (feeds the PRD's payment-lifecycle section), the target market / pricing / i18n / distribution / free-tier-LLM constraints, the CTA Contact Block (confirm or override it during the branding interview), the Owner Task Ledger (accumulate owner actions into OWNER-TASKS.md), and the session boundary.
-- **`../saas-launch-blueprint/references/tech-design-video.md`** — the Apps & Tech Stack DEFAULT (map it onto the chosen product during the tech-stack interview), including the NON-NEGOTIABLE UI STACK; the Design Bar (drives the design-direction question set and the design-system spec); the Video tooling constraint (governs the PRD's launch promo video); and the Build constraint (drives the single-session MVP cut order documented in the PRD).
+- **`../saas-launch-blueprint/references/tech-design-video.md`** — the Apps & Tech Stack DEFAULT (map it onto the chosen product during the tech-stack interview), including the NON-NEGOTIABLE UI STACK; the Design Bar (drives the design-direction question set and the design-system spec); the Video tooling constraint (governs the PRD's launch promo video); the Build constraint (drives the single-session MVP cut order documented in the PRD); and the Agent Harness tiers (drives the STEP 2 harness interview and the PRD's Agent harness section).
 - **`../saas-launch-blueprint/references/interaction-rules.md`** — the AskUserQuestion rules (each interview round needs its own standalone write-up first; contested choices carry an environment-appropriate comparison per rule 6 + the Presentation Environment section — inline widget in Cowork, rich markdown scorecard table in Claude Code / the TUI), the Delegation Model (fan research out to subagents, keep judgments yourself), the Deliverable Presentation hard rule (present PRD.md + OWNER-TASKS.md before Gate 2), and the Approval Gates rule.
 
 ## STEP 0 — Interview mode
@@ -34,6 +34,37 @@ AskUserQuestion rounds grouped by theme, each preceded by its own standalone exp
 - **Branding**: naming preferences, tone of voice, names/domains the founder has in mind — and confirm/override the CTA CONTACT BLOCK for public deliverables
 - **Operations**: support hours (timezone coverage if Worldwide), payment verification turnaround, launch timing
 - **Anything else** only the founder can decide
+
+## STEP 2 — Agent harness tier (ALWAYS asked)
+
+This step runs REGARDLESS of STEP 0's mode — even in "You decide everything" it is the one question still put to the founder. The harness tier sets the build session's unattended-safety envelope and its build-cost floor (more files, more hooks, more tokens burned before a single feature ships); that trade-off is a founder-only call, not something the agent should silently pick.
+
+Standalone write-up covering all four tiers before the widget, per AskUserQuestion rules 1–3 (`../saas-launch-blueprint/references/interaction-rules.md`) — what it adds, when it's the right call, its setup/token cost, and its risk profile if left unattended. Make explicit in the write-up: EVERY tier ships both AGENTS.md (the rulebook any coding agent obeys) and CLAUDE.md (Claude Code's per-tier entry point listing the machinery active at that tier) — the tiers differ only in how in-depth the harness is and how constrained agents are:
+
+- **L1 — Minimal**: AGENTS.md (rules, non-negotiables, domain rules, orchestration roles, Definition of Done) + a CLAUDE.md pointer at it + init.sh (install/verify/test/start dispatcher). Adds almost no setup or token overhead. Right for a quick, closely supervised build where the founder is watching every step. Risk: nothing stops a runaway agent mid-build — no guardrails, no task tracking, no restart recovery if the session drops.
+- **L2 — Guarded**: L1 + `.claude/settings.json` hooks (append-only migrations guard, hook self-protection, destructive-Bash guard, feature_list schema + single-WIP validation) + feature_list.json + claude-progress.md + session-handoff.md. Modest setup cost (a handful of extra files, one settings.json), light token cost (hooks run outside the model). Right as the floor for any build left even briefly unattended, or one likely to span a restart. Risk: no crew structure — a single agent still does everything, no delegation routing, no automated quality gate.
+- **L3 — Structured Crew (Recommended)**: L2 + `.claude/agents/` (surface-builder, backend-engineer, qa-verifier, code-reviewer, research-scout) + `workflows/` PRD-keyed playbooks (payment-lifecycle, tenant-lifecycle, surface-build, release) + shared task-id conventions. Setup cost is real but one-time (deterministic overlay copy, not hand-authored); token cost rises with the added subagent routing but stays proportionate to a single build session. Right for the default single-session MVP build this workflow targets — full crew separation (builder/reviewer/QA) without unattended-loop machinery it won't use in one session. Risk: still no clean-state gate — nothing forces the session to end in a verifiably done state.
+- **L4 — Autonomous Factory**: L3 + clean-state-checklist.md + evaluator-rubric.md (6 dimensions × 0–2, pass ≥10) + `logs/` JSONL observability + autonomous-loop.md + a settings.json superset adding a SessionStart memory reminder and a BLOCKING Stop gate (session cannot end with an in-progress feature). Highest setup and token cost of the four — the rubric and logging machinery cost real overhead even inside one session. Right ONLY when the build is expected to run multiple sessions or genuinely unattended (no founder watching for stretches). Risk of NOT choosing it in that scenario: a dropped or unattended session can silently leave the repo in a half-built, unverified state with no gate to catch it.
+
+Comparison scorecard (rule 6 — Claude Code / TUI markdown table; criteria as columns, tiers as rows, dot scores, closing Verdict row):
+
+| Criteria | L1 — Minimal | L2 — Guarded | L3 — Structured Crew | L4 — Autonomous Factory |
+|---|---|---|---|---|
+| Unattended safety | ●○○○○ | ●●●○○ | ●●●●○ | ●●●●● |
+| Session-restart resilience | ○○○○○ | ●●●●○ | ●●●●○ | ●●●●● |
+| Setup overhead | ●○○○○ | ●●○○○ | ●●●●○ | ●●●●● |
+| Token cost | ●○○○○ | ●●○○○ | ●●●○○ | ●●●●● |
+| Solo-founder single-session fit | ●●●●● | ●●●●○ | ●●●○○ | ●●○○○ |
+| **Verdict** | throwaway/closely-watched builds only | floor for anything left briefly unattended | **default recommendation** — full crew, still one session | choose only if the build spans multiple sessions or runs genuinely unattended |
+
+Then AskUserQuestion, single-select, the four tiers AS the four options — option names match the write-up exactly, each `preview` filled with a compact per-tier file-inventory snippet:
+
+- **"L1 — Minimal"** — preview: `AGENTS.md + CLAUDE.md pointer + init.sh — 3 files, no hooks`
+- **"L2 — Guarded"** — preview: `+ settings.json hooks, feature_list.json, claude-progress.md, session-handoff.md`
+- **"L3 — Structured Crew (Recommended)"** — preview: `+ 5 subagents (.claude/agents/) + workflows/ (4 playbooks) + task-id conventions`
+- **"L4 — Autonomous Factory"** — preview: `+ clean-state-checklist.md, evaluator-rubric.md, logs/, autonomous-loop.md, blocking Stop gate`
+
+The founder may delegate this via "Other" ("you decide") — if so, pick using the scorecard's own criteria (default L3, escalate to L4 only if the founder's earlier answers already signal a multi-session or unattended build) and document the choice + rationale in the PRD like every other delegated decision.
 
 ## The complete end-to-end PRD.md contents
 
@@ -56,6 +87,7 @@ Write the complete end-to-end business PRD — saved as a standalone file (PRD.m
 - **Launch Dossier**: final self-contained HTML artifact (Tailwind v4 CDN, product's own design system) summarizing the delivery — pitch line, production URL, repo, locked stack + distribution set, gate history, analytics links, open owner issues, promo video, CTA CONTACT BLOCK. Presented per the Deliverable Presentation rule (inline render in Cowork; copyable absolute path opened in the browser in Claude Code / the TUI); the build session's handoff document.
 - **Project-level skills to install and document**: find-skills (https://www.skills.sh/vercel-labs/skills/find-skills, on demand), agent-browser (https://www.skills.sh/vercel-labs/agent-browser/agent-browser, on demand), frontend-design (https://www.skills.sh/anthropics/skills/frontend-design, HARD REQUIREMENT for all frontend agents), pwa-development (`npx skills add https://github.com/alinaqi/claude-bootstrap --skill pwa-development`, REQUIRED for the PWA workstream), hyperframes agent skill (https://hyperframes.heygen.com/quickstart, for video work)
 - **Agent orchestration** (ultracode dynamic workflows): Fable is MASTER ORCHESTRATOR ONLY — never writes code; owns decomposition, dependency ordering, routing, delegation, integration review. Sonnet: most implementation + code reviews (parallel workers per surface workstream). Opus: architectural decisions and complex reasoning only, on escalation. Haiku/Explore: trivial mechanical tasks, spawnable by Sonnet agents. Frontend delegation requires design direction settled + frontend-design loaded (+ pwa-development for PWA). All agents verify UI via Playwright MCP; completion gated on green Vitest + Playwright AND the quality bar. The PRD documents this as the build session's execution plan.
+- **Agent harness**: the chosen tier from STEP 2 (or the delegated choice + rationale, if the founder deferred it), per the Agent Harness tiers (`../saas-launch-blueprint/references/tech-design-video.md`) — never restate the tier rules here, only record the outcome. List the exact cumulative file inventory the chosen tier ships (every file from tier 1 through the chosen tier N, one line per file naming its purpose — e.g. AGENTS.md: rulebook + Definition of Done; init.sh: install/verify/test/start dispatcher; feature_list.json: single-WIP task tracker; and so on through the chosen tier). Note that instantiation is deterministic — the `saas-launch:saas-scaffold` skill's harness step copies the ordered tier overlays verbatim, byte-identical for the same tier choice — and that the instantiated AGENTS.md's Definition of Done binds every build agent regardless of role.
 
 ## Gate 2
 

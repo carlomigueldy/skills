@@ -1,6 +1,6 @@
 ---
 name: wind-tunnel
-description: Phase 3 (Prototype) of the SaaS Launch Blueprint: choosing storyboard vs clickable format, selecting device targets, building the high-fidelity Tailwind-CDN HTML prototype, the optional Hyperframes pitch clip, and Gate 3 (including the 'Validate first' prospect-pitch-kit path), ending before the build. Invoked by the saas-launch-blueprint orchestrator after Gate 2 approval, or when the user explicitly asks to run/resume 'Phase 3', rebuild the prototype, or attempt the pitch clip for an active Launch Blueprint run. Do NOT trigger on generic 'make me a prototype/mockup' requests outside an active Launch Blueprint — the saas-launch-blueprint orchestrator is the entry point, and this session never starts the build.
+description: "Phase 3 (Prototype) of the SaaS Launch Blueprint: choosing storyboard vs clickable format, selecting device targets, building the high-fidelity Tailwind-CDN HTML prototype, the optional Hyperframes pitch clip, and Gate 3 (including the 'Validate first' prospect-pitch-kit path), ending before the build. Invoked by the saas-launch-blueprint orchestrator after Gate 2 approval, or when the user explicitly asks to run/resume 'Phase 3', rebuild the prototype, or attempt the pitch clip for an active Launch Blueprint run. Do NOT trigger on generic 'make me a prototype/mockup' requests outside an active Launch Blueprint — the saas-launch-blueprint orchestrator is the entry point, and this session never starts the build."
 ---
 
 # Phase 3 — Prototype
