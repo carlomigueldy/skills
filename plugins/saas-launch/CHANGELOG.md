@@ -9,6 +9,14 @@ point forward — entries below the `0.1.0` heading are generated
 automatically from Conventional Commits on future releases; do not hand-edit
 past this initial entry.
 
+## [0.4.1](https://github.com/carlomigueldy/skills/compare/saas-launch--v0.4.0...saas-launch--v0.4.1) (2026-07-19)
+
+
+### Bug Fixes
+
+* **saas-launch:** reference bundled saas-monorepo template in PRD scaffold guidance ([#13](https://github.com/carlomigueldy/skills/issues/13)) ([0e0670a](https://github.com/carlomigueldy/skills/commit/0e0670a65eb23ac03fb622df65f61a297fcce7af))
+* **saas-launch:** require per-option descriptions in every AskUserQuestion call ([#10](https://github.com/carlomigueldy/skills/issues/10)) ([7b60997](https://github.com/carlomigueldy/skills/commit/7b60997ccc239340c9d46e819d77d3517d058b1d))
+
 ## [0.4.0](https://github.com/carlomigueldy/skills/compare/saas-launch--v0.3.0...saas-launch--v0.4.0) (2026-07-19)
 
 
