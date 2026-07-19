@@ -15,7 +15,7 @@ Before doing any Phase 3 work, read:
 
 - `../saas-launch-blueprint/references/tech-design-video.md` — the Design Bar (the prototype must feel like $50k of design and implement the PRD's design-system tokens), the Apps & Tech Stack note on the SANCTIONED Tailwind-v4-CDN / no-shadcn prototype exception, and the Video tooling constraint (governs STEP 3's pitch clip: rendered MP4 only, Hyperframes local, two-attempt bound + failure path, ElevenLabs key discovery/graceful-skip).
 - `../saas-launch-blueprint/references/interaction-rules.md` — the AskUserQuestion rules, the Deliverable Presentation hard rule (present all prototype files + any clip BEFORE Gate 3), the Presentation Environment section (client detection → widget in Cowork vs. markdown scorecard / copyable-paths block in the TUI), Known Failure Modes #2 (deliverables never shown) and #3 (HTML instead of video), and the Approval Gates rule.
-- `../saas-launch-blueprint/references/shared-context.md` — the CTA Contact Block (the pitch clip ends with it).
+- `../saas-launch-blueprint/references/shared-context.md` — the CTA Contact Block (the pitch clip always ends on it as its final clip).
 
 ## STEP 0 — Prototype format
 
@@ -34,7 +34,7 @@ High-fidelity HTML-only prototype in the chosen format for every selected device
 ## STEP 3 — Pitch clip (OPTIONAL — always ASK first)
 
 Hyperframes rendering frequently fails, so never attempt it silently. Post a short write-up of the trade-off (great investor material vs. tokens burned on a failure-prone render), then AskUserQuestion:
-- **"Attempt pitch clip now"** — render per the Video tooling constraint (two attempts max), showcasing the selected devices, ending with the CTA CONTACT BLOCK. Only a rendered .mp4 satisfies an opted-in attempt.
+- **"Attempt pitch clip now"** — render per the Video tooling constraint (two attempts max), showcasing the selected devices, ALWAYS ending on the CTA CONTACT BLOCK as its final clip per the Video tooling constraint. Only a rendered .mp4 satisfies an opted-in attempt.
 - **"Skip — defer to the build session"** — the clip moves to Phase 4's deliverables; Phase 3.5 MUST include it in the handoff prompt.
 
 A failed attempt follows the Video tooling failure path and does not block Gate 3.
