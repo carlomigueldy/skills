@@ -2,6 +2,7 @@
   "name": "@{{PRODUCT_SLUG}}/config",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "license": "UNLICENSED",
   "description": "Shared TypeScript and ESLint configuration for {{PRODUCT_NAME}}.",
   "files": [

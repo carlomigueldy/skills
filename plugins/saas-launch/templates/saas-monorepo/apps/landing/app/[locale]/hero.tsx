@@ -3,6 +3,8 @@
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 
+import { Button } from "@{{PRODUCT_SLUG}}/ui";
+
 // Placeholders live in string literals so JSX-child interpolation never
 // mis-parses "{{TOKEN}}" as an object literal expression.
 const PRODUCT_NAME = "{{PRODUCT_NAME}}";
@@ -32,14 +34,7 @@ export function Hero() {
       <p className="max-w-2xl text-balance text-lg text-muted-foreground">
         {description}
       </p>
-      {/* TODO(scaffold): swap for the shadcn/ui Button once
-          `pnpm dlx shadcn@latest add button` has run against @{{PRODUCT_SLUG}}/ui. */}
-      <button
-        type="button"
-        className="rounded-md bg-foreground px-6 py-3 text-sm font-medium text-background transition-opacity hover:opacity-90"
-      >
-        {cta}
-      </button>
+      <Button size="lg">{cta}</Button>
     </motion.div>
   );
 }

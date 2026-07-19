@@ -6,9 +6,11 @@ TypeScript, Tailwind v4 + shadcn/ui, TanStack Router (file-based routes,
 (persisted to IndexedDB), Zustand, react-hook-form + zod, react-i18next.
 
 See `../../SCAFFOLD.md` at the repo root for the full instantiation flow
-(placeholder substitution, `shadcn init`, the baseline component list).
-This app still needs its own `pnpm --filter pwa dlx shadcn@latest init`
-per SCAFFOLD.md §3.4 before `src/index.css` / components will look right.
+(placeholder substitution, verifying the vendored shadcn/ui setup). The
+baseline shadcn/ui components ship pre-generated in `packages/ui` — see
+`../../packages/ui/README.md` — so there's no per-app `shadcn init` here;
+`src/index.css` already imports the shared tokens from
+`@{{PRODUCT_SLUG}}/ui/tokens.css` per SCAFFOLD.md §3.6.
 
 ## Commands
 

@@ -9,12 +9,17 @@ import { createOfflineQueue, type SupabaseLike } from "./queue";
  * *in what order* — the property this suite is actually testing.
  */
 function createMockSupabase(callLog: string[], failOn?: string): SupabaseLike {
+  // One-shot: `failOn` simulates a single transient failure (e.g. a dropped
+  // request), not a permanently broken row — otherwise the "network
+  // recovers on retry" scenario below could never actually recover.
+  let failOnTriggered = false;
   return {
     from(table) {
       return {
         async insert(payload) {
           const id = (payload as { id?: string }).id ?? "unknown";
-          if (failOn && id === failOn) {
+          if (failOn && id === failOn && !failOnTriggered) {
+            failOnTriggered = true;
             return { error: { message: `simulated failure for ${id}` } };
           }
           callLog.push(`insert:${table}:${id}`);

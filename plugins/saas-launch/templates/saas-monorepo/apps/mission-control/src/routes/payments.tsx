@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { Button } from "@{{PRODUCT_SLUG}}/ui";
+
 export const Route = createFileRoute("/payments")({
   component: PaymentsRoute,
 });
@@ -15,9 +17,9 @@ function PaymentsRoute() {
         actions to an RPC that updates payment + subscription state
         together.
       </p>
-      {/* TODO(scaffold): replace with @{{PRODUCT_SLUG}}/ui's Table component and a
-          Dialog for the verify/approve/reject action. Plain markup for now
-          so this renders without shadcn imports. */}
+      {/* TODO: swap this grid for @{{PRODUCT_SLUG}}/ui's Table component once
+          rows are loading from Supabase — see the connection TODO above.
+          Wire the verify/approve/reject action to a Dialog at the same time. */}
       <div className="rounded-lg border border-border">
         <div className="grid grid-cols-[1fr_1fr_auto_auto] gap-4 border-b border-border p-4 text-sm font-medium text-muted-foreground">
           <span>Tenant</span>
@@ -31,20 +33,12 @@ function PaymentsRoute() {
         </div>
       </div>
       <div className="flex gap-2 text-sm">
-        <button
-          type="button"
-          disabled
-          className="rounded-md border border-border px-3 py-1.5 disabled:opacity-50"
-        >
+        <Button variant="outline" size="sm" disabled>
           Approve
-        </button>
-        <button
-          type="button"
-          disabled
-          className="rounded-md border border-border px-3 py-1.5 disabled:opacity-50"
-        >
+        </Button>
+        <Button variant="outline" size="sm" disabled>
           Reject
-        </button>
+        </Button>
       </div>
     </div>
   );

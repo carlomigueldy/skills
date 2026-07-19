@@ -1,5 +1,5 @@
 {
-  "extends": "@{{PRODUCT_SLUG}}/config/tsconfig.base.json",
+  "extends": "@{{PRODUCT_SLUG}}/config/tsconfig.react.json",
   "compilerOptions": {
     "plugins": [{ "name": "next" }],
     "paths": {

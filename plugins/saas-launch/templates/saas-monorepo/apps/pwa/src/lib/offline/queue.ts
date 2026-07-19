@@ -128,7 +128,6 @@ export function createOfflineQueue(options: CreateOfflineQueueOptions = {}) {
     for (; index < queue.length; index += 1) {
       const mutation = queue[index]!;
       try {
-        // eslint-disable-next-line no-await-in-loop -- intentional, see comment above
         await runMutation(mutation);
         flushed.push(mutation.id);
       } catch {

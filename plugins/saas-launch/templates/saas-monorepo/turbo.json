@@ -20,6 +20,14 @@
       "dependsOn": ["^build"],
       "outputs": []
     },
+    "pwa#typecheck": {
+      "dependsOn": ["^build", "build"],
+      "outputs": []
+    },
+    "mission-control#typecheck": {
+      "dependsOn": ["^build", "build"],
+      "outputs": []
+    },
     "test": {
       "dependsOn": ["^build"],
       "outputs": ["coverage/**"]

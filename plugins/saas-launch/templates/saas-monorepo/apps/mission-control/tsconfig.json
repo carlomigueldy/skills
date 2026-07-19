@@ -2,7 +2,10 @@
   "extends": "@{{PRODUCT_SLUG}}/config/tsconfig.react.json",
   "compilerOptions": {
     "types": ["node", "vite/client"],
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src", "vite.config.ts"]
 }

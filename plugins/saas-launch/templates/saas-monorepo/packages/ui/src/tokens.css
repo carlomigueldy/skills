@@ -16,7 +16,15 @@
  *   apps/landing         -> app/globals.css    @import "@{{PRODUCT_SLUG}}/ui/tokens.css";
  *   apps/pwa             -> src/index.css      @import "@{{PRODUCT_SLUG}}/ui/tokens.css";
  *   apps/mission-control -> src/styles.css     @import "@{{PRODUCT_SLUG}}/ui/tokens.css";
+ *
+ * `tw-animate-css` registers the `animate-in`/`animate-out`/`fade-*`/
+ * `zoom-*`/`slide-*` utilities the vendored shadcn/ui components
+ * (dialog, sheet, select, dropdown-menu) apply for open/close transitions.
+ * It has to load after "tailwindcss" too, so it's re-exported from here
+ * rather than required in every app's own CSS.
  */
+
+@import "tw-animate-css";
 
 @theme {
   /* -- radius --------------------------------------------------------- */

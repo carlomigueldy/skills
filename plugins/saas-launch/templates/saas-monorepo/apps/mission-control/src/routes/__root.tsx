@@ -1,9 +1,10 @@
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 
-// TODO(scaffold): swap this nav shell for @{{PRODUCT_SLUG}}/ui's shadcn/ui-derived
-// AppShell / Sidebar components once `pnpm dlx shadcn@latest add ...` has
-// run against @{{PRODUCT_SLUG}}/ui. Kept as plain markup so the skeleton renders and
-// typechecks with zero shadcn imports.
+// TODO: @{{PRODUCT_SLUG}}/ui ships the shadcn/ui primitives (Button, Sheet,
+// DropdownMenu, ...) but no composite AppShell/Sidebar — that's a
+// product-specific composition, not a baseline component. Build it out of
+// the vendored Sheet + DropdownMenu once this app needs a collapsible or
+// mobile nav; plain markup is intentional here until then.
 export const Route = createRootRoute({
   component: RootLayout,
 });

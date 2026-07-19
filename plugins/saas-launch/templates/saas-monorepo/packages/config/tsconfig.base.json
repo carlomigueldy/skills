@@ -21,6 +21,7 @@
     "declaration": false,
     "declarationMap": false,
     "sourceMap": true,
+    "noEmit": true,
     "allowJs": false,
     "checkJs": false
   },

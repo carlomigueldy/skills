@@ -42,11 +42,18 @@ ${CLAUDE_PLUGIN_ROOT}/templates/saas-monorepo/SCAFFOLD.md
 ```
 
 This skill is a pointer to that document, not a replacement for it.
-`SCAFFOLD.md` owns the authoritative placeholder table, the exact shadcn/ui
-init flags per app, the component add list, the token-wiring step, the
-verification commands, and the surface-trimming rules. Follow it exactly as
-written. If anything below appears to conflict with a newer `SCAFFOLD.md`,
+`SCAFFOLD.md` owns the authoritative placeholder table, the vendored
+shadcn/ui component list and how to verify it, the optional
+add-more-components step, the token-wiring step, the verification
+commands, and the surface-trimming rules. Follow it exactly as written. If
+anything below appears to conflict with a newer `SCAFFOLD.md`,
 `SCAFFOLD.md` wins — this skill may be stale relative to it.
+
+Note also: the copied template includes a bundled `shadcn` agent skill at
+`.claude/skills/shadcn/`, vendored verbatim from upstream shadcn/ui. It
+travels with every scaffolded product and is available in that product's
+own Claude Code sessions for adding, searching, fixing, or styling
+components beyond the 14 already vendored — see §5 step 4.
 
 ## 3. Copy the template into the target project
 
@@ -92,19 +99,27 @@ Run these in order, exactly as `SCAFFOLD.md` specifies:
 
 1. `pnpm install` — resolves the workspace graph and generates a fresh
    `pnpm-lock.yaml` for this product.
-2. Per production surface (`apps/landing`, `apps/pwa`,
-   `apps/mission-control`), run `pnpm dlx shadcn@latest init` with the exact
-   flags in `SCAFFOLD.md` §3.4 (`-t next`/`-t vite`, `-b base`,
-   `--css-variables`, `--cwd <app dir>` — no `--filter`), pointed at that
-   app's own global stylesheet. Record the `style` the CLI actually writes
-   to each app's `components.json` per §3.4; don't assume it in advance.
-3. Wire `packages/ui` tokens into each app's global stylesheet as the first
-   `@import` line, per `SCAFFOLD.md` §3.6 — do this before adding
-   components, so generated components pick up shared tokens from the start.
-4. Run the fixed component add list from `SCAFFOLD.md` §3.5
-   (`button card dialog form input label select table tabs toast badge
-   dropdown-menu sheet skeleton sonner`) once per app that was just
-   initialized.
+2. Verify the vendored shadcn/ui setup rather than initializing it — per
+   `SCAFFOLD.md` §3.4, `packages/ui/src/components/ui/` already ships the
+   14 baseline components (`badge card button dialog dropdown-menu form
+   input label select sheet skeleton sonner table tabs`) pre-generated at
+   style `new-york-v4`, plus `packages/ui/src/lib/utils.ts` and
+   `packages/ui/src/index.ts` re-exporting everything. There is no `shadcn
+   init` or `shadcn add` step at scaffold time — confirm the files are
+   present (`ls packages/ui/src/components/ui/`) and move on. If anything's
+   missing, that's a bug in the template itself, not something to route
+   around by running the CLI inside the product repo.
+3. Confirm `packages/ui` tokens are wired into each app's global stylesheet
+   as the first `@import` after `"tailwindcss"` — per `SCAFFOLD.md` §3.6,
+   this should already be present in every app's scaffold-generated
+   stylesheet; only re-wire by hand if a stylesheet was regenerated from
+   scratch after copying the template.
+4. **Optional**: if the PRD needs a component beyond the 14 vendored ones,
+   add it with the bundled `shadcn` agent skill (vendored into every
+   scaffolded project at `.claude/skills/shadcn/`) rather than improvising
+   the CLI invocation from memory — see `SCAFFOLD.md` §3.5 for the exact
+   steps, including converting the CLI's `@/...` imports to this package's
+   relative-import convention before committing.
 5. Apply the PRD's design tokens (colors, radius, typography scale, etc.)
    into the `packages/ui/src/tokens.css` token file — this is the single
    place product-specific design tokens live. Do not duplicate tokens into
@@ -141,6 +156,7 @@ verification after any trim.
   training-data memory of pnpm/Turborepo conventions. This template's
   structure, file locations, and command sequence are deliberately fixed so
   every scaffolded product looks the same.
-- Never vendor `node_modules/`, a `pnpm-lock.yaml`, or pre-generated shadcn
-  component output back into the template — those stay product-specific,
-  per `SCAFFOLD.md` §6.
+- Never vendor `node_modules/` or a `pnpm-lock.yaml` back into the
+  template — those stay product-specific, per `SCAFFOLD.md` §6. (shadcn/ui
+  component output is the one exception: it *is* vendored in the template,
+  deliberately — see `SCAFFOLD.md` §3.4 and §6.)

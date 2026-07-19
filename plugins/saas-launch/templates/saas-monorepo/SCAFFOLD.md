@@ -103,70 +103,59 @@ This resolves the workspace graph (`pnpm-workspace.yaml`) and generates
 `pnpm-lock.yaml` fresh for this product — see §6 for why the lockfile is
 never part of the template itself.
 
-### 3.4 shadcn/ui init — per app, exact flags
+### 3.4 shadcn/ui — verify the vendored setup, don't re-init
 
-Every production surface (`apps/landing`, `apps/pwa`, `apps/mission-control`)
-gets its own shadcn/ui install, pointed at the shared tokens in
-`packages/ui/src/tokens.css`. Run each of these from the repo root, after
-`pnpm install`:
-
-Flags below match the current `shadcn` CLI (`-t/--template`, `-b/--base`,
-`-p/--preset`, `--css-variables`, `-c/--cwd`) — there is no `--base-color`,
-`--style`, or `--tsx` flag; `--filter` is a pnpm workspace-recursive-command
-selector and does not combine with `dlx`, so don't prefix these with
-`pnpm --filter <app>`. `--cwd` alone is what targets the app directory:
+shadcn/ui components are **already vendored** in this template — they ship
+pre-generated in `packages/ui/src/components/ui/`, so there is no `shadcn
+init` or `shadcn add` step at scaffold time. Verify the vendored setup
+instead of generating it:
 
 ```bash
-# apps/landing (Next.js)
-pnpm dlx shadcn@latest init \
-  -t next \
-  -b base \
-  --css-variables \
-  --cwd apps/landing
-
-# apps/pwa (Vite)
-pnpm dlx shadcn@latest init \
-  -t vite \
-  -b base \
-  --css-variables \
-  --cwd apps/pwa
-
-# apps/mission-control (Vite)
-pnpm dlx shadcn@latest init \
-  -t vite \
-  -b base \
-  --css-variables \
-  --cwd apps/mission-control
+ls packages/ui/src/components/ui/
+cat packages/ui/components.json
 ```
 
-This produces `cssVariables: true` in each app's `components.json`; the
-CLI no longer exposes `style`/`baseColor`/`tsx` as init flags (they're
-implied by the chosen template/preset and the project's own `.tsx`
-sources), so don't assert a specific `style: new-york` value here — after
-init, open each app's `components.json` and record whatever `style` the
-CLI actually wrote, then confirm it against the PRD's design direction
-before adding components in §3.5. When the CLI's `components.json` prompt
-asks for the global CSS file, point it at the app's own `globals.css` /
-`index.css`, **not** at `packages/ui/src/tokens.css` directly — the app CSS
-file `@import`s the shared tokens (see §3.6), and shadcn writes its
-utility-layer scaffolding into the app file.
+You should see 14 components (`badge.tsx`, `button.tsx`, `card.tsx`,
+`dialog.tsx`, `dropdown-menu.tsx`, `form.tsx`, `input.tsx`, `label.tsx`,
+`select.tsx`, `sheet.tsx`, `skeleton.tsx`, `sonner.tsx`, `table.tsx`,
+`tabs.tsx`) plus `packages/ui/src/lib/utils.ts` (the `cn()` helper) and
+`packages/ui/src/index.ts` (re-exports all of the above). `style` in
+`components.json` should read `new-york-v4` — that's the style this
+template's `packages/ui/src/tokens.css` CSS-variable naming and
+`--radius-*` calc convention was built to match. Each app
+(`apps/landing`, `apps/pwa`, `apps/mission-control`) also has its own
+`components.json` for `shadcn` CLI file-placement conventions if it ever
+adds app-local components directly, but none of the 14 baseline components
+are duplicated per-app — they're consumed from `packages/ui` via
+`@{{PRODUCT_SLUG}}/ui`.
 
-### 3.5 Component add list — same list, every app
+If any of the above is missing, the template itself is broken — fix
+`templates/saas-monorepo` upstream in this plugin, don't route around it by
+running `shadcn init` inside the product repo.
 
-Baseline components every surface needs, added identically wherever shadcn
-was just initialized:
+### 3.5 OPTIONAL — add more components
+
+The 14 vendored components (§3.4) are the baseline. If the PRD needs a
+component beyond that list, add it with the bundled `shadcn` agent skill
+(vendored into every scaffolded project at `.claude/skills/shadcn/`) rather
+than improvising the CLI invocation from memory — invoke it (or just ask
+for the component by name; it's an agent skill, not a slash command) and
+let it run the CLI against `packages/ui`'s existing `components.json`. It
+already knows this project's aliases, `new-york-v4` style, and Tailwind v4
+setup from that file. Equivalent manually:
 
 ```bash
-pnpm dlx shadcn@latest add \
-  button card dialog form input label select table tabs toast badge \
-  dropdown-menu sheet skeleton sonner
+cd packages/ui
+pnpm dlx shadcn@latest add <component-name>
 ```
 
-Run this once per app (`apps/landing`, `apps/pwa`, `apps/mission-control`),
-or once inside `packages/ui` if a product centralizes generated component
-output there instead of per-app (see `packages/ui/README.md`). Either way,
-the list stays fixed — add product-specific components on top of this
-baseline, never instead of it.
+Same caveat as the original vendoring pass: this template's component
+source uses relative imports (`../../lib/utils`, `./button`), not the
+`@/...` aliases `components.json` declares — the CLI writes `@/...` by
+default, so convert any newly-added component's imports to match the
+existing relative-import convention in `packages/ui/src/components/ui/`
+before committing it. Re-export the new component from
+`packages/ui/src/index.ts` alongside the existing 14.
 
 ### 3.6 Wire `packages/ui` tokens into each app
 
@@ -185,11 +174,11 @@ the first line, then import the shared tokens right after it:
 meant to load after the app's own Tailwind import, not stand alone; see
 the doc comment at the top of that file. Together these two lines are what
 make `--background`, `--primary`, `--radius`, etc. — and therefore every
-shadcn/ui component — resolve to the shared design system in
-`packages/ui/src/tokens.css` instead of shadcn's own scaffolded defaults.
-Do this immediately after each `shadcn init` in §3.4, before adding
-components in §3.5, so generated components pick up the shared tokens from
-the start.
+vendored shadcn/ui component — resolve to the shared design system in
+`packages/ui/src/tokens.css`. This should already be wired in every app's
+scaffold-generated stylesheet; §3.4's verification step covers confirming
+it's present. It only needs doing by hand if an app's stylesheet was
+regenerated from scratch after copying the template.
 
 ### 3.7 Generate real icon assets
 
@@ -242,15 +231,19 @@ not break `pnpm turbo run *` for what remains:
   `pnpm install` against each product's own `pnpm-lock.yaml`, so dependency
   resolution reflects that product's actual dependency graph, not whatever
   happened to be installed when this template was last touched.
-- **shadcn/ui component output (`packages/ui/src/components/**`, or the
-  per-app equivalent)** — deliberately not pre-generated. Components are
-  produced by `pnpm dlx shadcn@latest add ...` at instantiation time (§3.5)
-  so each product gets components generated against *its own*
-  `packages/ui/src/tokens.css` values and the current shadcn/ui source,
-  and stays upgradeable later via `shadcn diff` / `shadcn add --overwrite`.
-  A vendored copy in the template would go stale the moment shadcn/ui
-  ships an update and would silently diverge from whatever tokens a given
-  product actually set.
+- **shadcn/ui component output is now vendored, deliberately** —
+  `packages/ui/src/components/ui/` ships the 14 baseline components
+  (`badge`, `button`, `card`, `dialog`, `dropdown-menu`, `form`, `input`,
+  `label`, `select`, `sheet`, `skeleton`, `sonner`, `table`, `tabs`)
+  pre-generated against `new-york-v4` and this template's own
+  `packages/ui/src/tokens.css` values (see §3.4). This reverses the
+  template's earlier stance of generating components at scaffold time —
+  vendoring removes an entire deterministic-but-flaky CLI step (network
+  access, CLI version drift, preset changes) from every product's first
+  hour, at the cost of needing an occasional manual re-vendor pass in this
+  template when shadcn/ui ships upstream changes worth pulling in. Stays
+  upgradeable the same way either way: `shadcn diff` / `shadcn add
+  --overwrite`, run via the bundled `shadcn` agent skill (§3.5) or by hand.
 - **`pnpm-lock.yaml`** — not part of the template. A lockfile encodes exact
   resolved versions for one dependency graph at one point in time; carrying
   one across unrelated products would either be meaningless (paths don't

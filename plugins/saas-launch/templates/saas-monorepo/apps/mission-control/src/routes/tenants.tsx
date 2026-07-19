@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type { TenantStatus } from "@{{PRODUCT_SLUG}}/schemas";
 
+import { Button } from "@{{PRODUCT_SLUG}}/ui";
+
 export const Route = createFileRoute("/tenants")({
   component: TenantsRoute,
 });
@@ -23,9 +25,9 @@ function TenantsRoute() {
         transitions through an RPC that also updates RLS-visible status
         flags.
       </p>
-      {/* TODO(scaffold): replace with @{{PRODUCT_SLUG}}/ui's Table + DropdownMenu
-          components. Kept as a plain div grid so this renders without any
-          shadcn imports. */}
+      {/* TODO: swap this grid for @{{PRODUCT_SLUG}}/ui's Table component, and
+          the actions row below for a DropdownMenu, once rows are loading
+          from Supabase — see the connection TODO above. */}
       <div className="rounded-lg border border-border">
         <div className="grid grid-cols-[1fr_auto_auto] gap-4 border-b border-border p-4 text-sm font-medium text-muted-foreground">
           <span>Tenant</span>
@@ -38,14 +40,14 @@ function TenantsRoute() {
       </div>
       <div className="flex gap-2 text-sm">
         {LIFECYCLE_ACTIONS.map((action) => (
-          <button
+          <Button
             key={action.targetStatus}
-            type="button"
+            variant="outline"
+            size="sm"
             disabled
-            className="rounded-md border border-border px-3 py-1.5 disabled:opacity-50"
           >
             {action.label}
-          </button>
+          </Button>
         ))}
       </div>
     </div>
