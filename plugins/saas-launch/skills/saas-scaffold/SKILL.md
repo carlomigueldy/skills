@@ -1,6 +1,6 @@
 ---
 name: saas-scaffold
-description: Use when starting the Phase 4 build of a SaaS Launch Blueprint PRD, when scaffolding a new SaaS monorepo, or when the user asks to "scaffold the saas template" / "use my saas starter". Instantiates the plugin's bundled pnpm + Turborepo SaaS monorepo template (Tailwind v4 + shadcn/ui, Next.js landing, Vite PWA, Vite mission-control, Supabase backend) into a target project directory instead of scaffolding a monorepo from scratch. Also instantiates the PRD's chosen agent-harness tier from the bundled `templates/agent-harness` overlays (AGENTS.md rulebook, init.sh, and the tier-appropriate hooks/agents/workflows) on top of the monorepo.
+description: Use when starting the Phase 4 build of a SaaS Launch Blueprint PRD, when scaffolding a new SaaS monorepo, or when the user asks to "scaffold the saas template" / "use my saas starter". Instantiates the plugin's bundled pnpm + Turborepo SaaS monorepo template (Tailwind v4 + shadcn/ui, Next.js landing, Vite PWA, Vite mission-control, Supabase backend) into a target project directory instead of scaffolding a monorepo from scratch. Also instantiates the PRD's chosen agent-harness tier from the bundled `templates/agent-harness` overlays (AGENTS.md rulebook, init.sh, and the tier-appropriate hooks/agents/workflows) on top of the monorepo. Applies only when the PRD's Tech section records `Stack source: template`; fails fast on `Stack source: custom`.
 ---
 
 # saas-scaffold
@@ -17,6 +17,23 @@ the same structure, and the same token file locations.
   and prototype phases are done and it's time to produce a real repo.
 - Any request to scaffold a new SaaS monorepo, greenfield or otherwise.
 - Literal requests to "scaffold the saas template" or "use my saas starter".
+
+## 0. Precondition — bundled-template stacks only
+
+Before touching the filesystem, read the PRD's Tech section. Its first line
+is the `Stack source: template | custom` marker — check it before doing
+anything else in this skill.
+
+- **`custom`** — STOP. Do not copy the template, do not run any step below.
+  This skill only instantiates the bundled `templates/saas-monorepo`
+  template; a custom stack has no template for it to scaffold. Report this
+  to the founder and point them at the PRD's CUSTOM STACK SPEC (the Tech
+  section's scaffold-sufficient stack description) and countdown's
+  custom-path build branch, which builds from that spec directly instead of
+  invoking this skill.
+- **`template`** — proceed to §1.
+- **Marker absent** — do not assume; confirm the stack source with the
+  founder before proceeding.
 
 ## 1. Locate the template
 
@@ -83,6 +100,11 @@ harness's designed replace-never-merge mechanic. Read
 `${CLAUDE_PLUGIN_ROOT}/templates/agent-harness/HARNESS.md` first; it is the
 harness's source of truth the same way `SCAFFOLD.md` is the monorepo's —
 if anything here conflicts with a newer `HARNESS.md`, `HARNESS.md` wins.
+
+This deterministic overlay copy is template-path-only — it is what §0
+gates on `Stack source: template`. A custom-stack PRD never reaches this
+step; countdown's custom branch instantiates the same harness tier by
+adaptation instead.
 
 ## 4. Substitute placeholders
 
@@ -189,10 +211,13 @@ verification after any trim.
 
 ## Non-negotiables
 
-- The UI stack is **Tailwind v4 + shadcn/ui** on every production surface,
-  full stop. Never substitute another CSS framework or component library,
-  and never hand-roll design-system primitives that shadcn/ui already
-  provides — that defeats the reason this template exists.
+- On the `Stack source: template` path this skill scaffolds, the UI stack
+  is **Tailwind v4 + shadcn/ui** on every production surface, full stop.
+  Never substitute another CSS framework or component library, and never
+  hand-roll design-system primitives that shadcn/ui already provides —
+  that defeats the reason this template exists. Custom-stack PRDs are out
+  of this skill's scope entirely — §0 stops them before this rule ever
+  applies.
 - Never skip `SCAFFOLD.md` and improvise the monorepo structure from
   training-data memory of pnpm/Turborepo conventions. This template's
   structure, file locations, and command sequence are deliberately fixed so

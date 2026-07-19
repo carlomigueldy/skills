@@ -153,3 +153,5 @@ generation, which the monorepo template deliberately vendors instead of
 regenerating for exactly this reason). Re-running the loop for the same tier
 into a fresh directory and diffing against a prior run should always come
 back empty.
+
+**Scope:** This byte-identical determinism guarantee holds for the bundled-template path only. Custom-stack builds instantiate tiers by adaptation — stack-agnostic files copied verbatim, stack-coupled files re-authored against the PRD's CUSTOM STACK SPEC.

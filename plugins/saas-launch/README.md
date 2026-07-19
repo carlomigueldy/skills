@@ -7,7 +7,7 @@ deterministic pnpm + Turborepo SaaS monorepo project template.
 
 | Skill | Use it for |
 | --- | --- |
-| [`saas-launch-blueprint`](./skills/saas-launch-blueprint/SKILL.md) | Phases 1–3.5: target-market selection, scored product ideation, an interview-driven PRD, a high-fidelity HTML prototype, and a build-handoff prompt for a separate Claude Code session. Never starts the build itself. |
+| [`saas-launch-blueprint`](./skills/saas-launch-blueprint/SKILL.md) | Phases 1–3.5: target-market selection, scored product ideation, an interview-driven PRD, a high-fidelity HTML prototype, then a Phase 3.5 build fork — build it out now in this session (through delivery at GATE 4) or hand off a build prompt for a separate Claude Code session. |
 | [`saas-scaffold`](./skills/saas-scaffold/SKILL.md) | Phase 4 (build): instantiates this plugin's bundled `saas-monorepo` project template into a target project directory, instead of scaffolding a monorepo from scratch. |
 
 ## Template
