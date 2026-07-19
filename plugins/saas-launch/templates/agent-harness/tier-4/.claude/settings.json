@@ -20,6 +20,12 @@
             "command": "cmd=$(jq -r '.tool_input.command // empty'); [ -n \"$cmd\" ] || exit 0; if printf '%s' \"$cmd\" | grep -qE '(rm|unlink|git +checkout|git +restore).*(supabase/migrations|packages/ui/src/tokens\\.css|feature_list\\.json)'; then printf 'BLOCKED: destructive command targets a protected path (migrations, design tokens, or feature_list.json) — see AGENTS.md > Non-negotiables.\\n' >&2; exit 2; fi; exit 0",
             "timeout": 10,
             "statusMessage": "Checking destructive-command guard"
+          },
+          {
+            "type": "command",
+            "command": "cmd=$(jq -r '.tool_input.command // empty'); [ -n \"$cmd\" ] || exit 0; if printf '%s' \"$cmd\" | grep -qE 'git([^|;&]*) config .*user\\.(name|email)'; then printf 'BLOCKED: commit identity comes from the existing git config / gh auth login — never reconfigure user.name or user.email in a build session (AGENTS.md > Non-negotiables).\\n' >&2; exit 2; fi; if printf '%s' \"$cmd\" | grep -qE 'git([^|;&]*) commit|gh +pr'; then if printf '%s' \"$cmd\" | grep -qiE 'co-authored-by|generated with|noreply@anthropic|--author[= ]|-c +user\\.'; then printf 'BLOCKED: no AI attribution and no author overrides — commits and PRs carry the human owner identity from git config / gh auth, with no Co-Authored-By trailers or Generated-with footers (AGENTS.md > Non-negotiables).\\n' >&2; exit 2; fi; fi; exit 0",
+            "timeout": 10,
+            "statusMessage": "Checking commit-identity guard"
           }
         ]
       }

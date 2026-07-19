@@ -54,6 +54,14 @@ happen to be running by hand.
 - **No secrets committed.** API keys, service-role keys, and provider
   credentials live in environment variables / Vercel project secrets, never
   in a committed file, never hardcoded in source.
+- **Commits carry the human owner's identity — never an AI's.** The commit
+  author/committer is exactly what `git config user.name` / `user.email`
+  already says (equivalently, the account `gh auth status` reports) — never
+  override it with `--author` or `-c user.*`, and never reconfigure
+  `user.name` / `user.email` during a build session. No AI/LLM attribution
+  anywhere: no `Co-Authored-By:` trailers, no "Generated with ..." footers,
+  no bot sign-offs — in commit messages or PR bodies alike. This is enforced
+  by a hook at tier 2+ — at tier 1 it is enforced by discipline only.
 
 ## Domain rules
 

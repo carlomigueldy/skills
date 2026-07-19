@@ -29,7 +29,7 @@ strict and how constrained agents are — never which of the two files exists.
 | Tier | Name | Adds |
 |---|---|---|
 | `tier-1` | Minimal | `AGENTS.md` (rulebook: non-negotiables, domain rules, orchestration roles, Definition of Done), `CLAUDE.md` (pointer to AGENTS.md), `init.sh` (install/verify/test/start dispatcher) |
-| `tier-2` | Guarded | + `.claude/settings.json` hooks (migrations append-only guard, hook self-protection, destructive-Bash guard, `feature_list.json` schema + single-WIP validation), `feature_list.json`, `claude-progress.md`, `session-handoff.md`; `AGENTS.md` + `CLAUDE.md` supersets |
+| `tier-2` | Guarded | + `.claude/settings.json` hooks (migrations append-only guard, hook self-protection, destructive-Bash guard, commit-identity guard — no AI attribution, no author/identity overrides, `feature_list.json` schema + single-WIP validation), `feature_list.json`, `claude-progress.md`, `session-handoff.md`; `AGENTS.md` + `CLAUDE.md` supersets |
 | `tier-3` | Structured Crew | + `.claude/agents/` (surface-builder, backend-engineer, qa-verifier, code-reviewer, research-scout), `workflows/` PRD-keyed playbooks (payment-lifecycle, tenant-lifecycle, surface-build, release, README routing table), shared task-id conventions; `AGENTS.md` + `CLAUDE.md` supersets |
 | `tier-4` | Autonomous Factory | + `clean-state-checklist.md`, `evaluator-rubric.md`, `logs/` JSONL observability, `autonomous-loop.md`, `.claude/settings.json` superset adding a `SessionStart` reminder + a blocking `Stop` gate; `AGENTS.md` + `CLAUDE.md` supersets |
 
