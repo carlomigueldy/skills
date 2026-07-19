@@ -1,0 +1,22 @@
+{
+  "_conventions": {
+    "entry_fields": [
+      "id",
+      "priority",
+      "area",
+      "title",
+      "user_visible_behavior",
+      "status",
+      "verification",
+      "evidence",
+      "notes"
+    ],
+    "status_values": ["not_started", "in_progress", "blocked", "passing"],
+    "rules": [
+      "Only one feature may be in_progress at a time.",
+      "status: passing requires both verification and evidence to be filled in.",
+      "id is PRD-keyed, e.g. payments-03, tenant-01, landing-02."
+    ]
+  },
+  "features": []
+}

@@ -249,3 +249,29 @@ not break `pnpm turbo run *` for what remains:
   one across unrelated products would either be meaningless (paths don't
   match) or actively wrong (pins versions that predate the product's own
   `pnpm install`). Each product generates its own at §3.3.
+
+## 7. Agent harness overlays (sibling template)
+
+Agent-orchestration harness files — `AGENTS.md`, `init.sh`, and (at higher
+tiers) `.claude/settings.json` hooks, `feature_list.json`, memory files,
+`.claude/agents/`, `workflows/`, and autonomous-loop infrastructure — are
+**not part of this template**. They live in the sibling template at
+`../agent-harness/`, and its `HARNESS.md` is the authoritative source of
+truth for them — this section only states where the harness copy sits
+relative to this document's own instantiation sequence, it does not repeat
+`HARNESS.md`'s content.
+
+The harness copy runs immediately after §3.1 (copy the template) and
+**before** §3.2 (substitute placeholders). This ordering is deliberate, not
+incidental: because the harness files land on disk before the substitution
+pass and the leftover-placeholder grep run, that single sweep across the
+target directory covers harness files for free — there is no separate
+substitution or verification pass for the harness layer's own copy of the
+five placeholders.
+
+The harness's `.claude/` additions (`settings.json`, and at tier ≥3
+`agents/`) merge into the **same** `.claude/` directory this template
+already populated with the vendored `shadcn` skill (§3.4) — the harness
+copy must land beside `.claude/skills/shadcn/`, never overwrite or displace
+it. See `../agent-harness/HARNESS.md` §5 for the harness's own post-copy
+verification steps (`jq empty`, `bash -n init.sh`).

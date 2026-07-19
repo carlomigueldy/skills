@@ -1,0 +1,41 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r '.tool_input.file_path // empty'); [ -n \"$f\" ] || exit 0; case \"$f\" in */.claude/settings.json) printf 'BLOCKED: hook config is part of the harness — do not modify it during a build session.\\n' >&2; exit 2 ;; esac; case \"$f\" in */supabase/migrations/*) if [ -f \"$f\" ]; then printf 'BLOCKED: applied migrations are append-only — create a NEW migration file instead (AGENTS.md > Non-negotiables).\\n' >&2; exit 2; fi ;; esac; exit 0",
+            "timeout": 10,
+            "statusMessage": "Checking migration/settings write guard"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd=$(jq -r '.tool_input.command // empty'); [ -n \"$cmd\" ] || exit 0; if printf '%s' \"$cmd\" | grep -qE '(rm|unlink|git +checkout|git +restore).*(supabase/migrations|packages/ui/src/tokens\\.css|feature_list\\.json)'; then printf 'BLOCKED: destructive command targets a protected path (migrations, design tokens, or feature_list.json) — see AGENTS.md > Non-negotiables.\\n' >&2; exit 2; fi; exit 0",
+            "timeout": 10,
+            "statusMessage": "Checking destructive-command guard"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r '.tool_input.file_path // .tool_response.filePath // empty'); [ -n \"$f\" ] && [ -f \"$f\" ] || exit 0; case \"$f\" in */feature_list.json) ;; *) exit 0 ;; esac; err=$(jq empty \"$f\" 2>&1) || { printf 'Invalid JSON in %s:\\n%s\\n' \"$f\" \"$err\" >&2; exit 2; }; bad=$(jq -r '[.features[]?.status] - [\"not_started\",\"in_progress\",\"blocked\",\"passing\"] | .[]' \"$f\" 2>&1); if [ -n \"$bad\" ]; then printf 'Invalid feature status value(s) in %s: %s (must be one of not_started/in_progress/blocked/passing)\\n' \"$f\" \"$bad\" >&2; exit 2; fi; wip=$(jq -r '[.features[]? | select(.status == \"in_progress\")] | length' \"$f\"); if [ \"$wip\" -gt 1 ]; then printf '%s has %s features in_progress — only ONE is allowed at a time (single-WIP, AGENTS.md > Task tracking).\\n' \"$f\" \"$wip\" >&2; exit 2; fi; exit 0",
+            "timeout": 10,
+            "statusMessage": "Validating feature_list.json"
+          }
+        ]
+      }
+    ]
+  }
+}

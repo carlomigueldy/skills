@@ -1,6 +1,6 @@
 ---
 name: saas-scaffold
-description: Use when starting the Phase 4 build of a SaaS Launch Blueprint PRD, when scaffolding a new SaaS monorepo, or when the user asks to "scaffold the saas template" / "use my saas starter". Instantiates the plugin's bundled pnpm + Turborepo SaaS monorepo template (Tailwind v4 + shadcn/ui, Next.js landing, Vite PWA, Vite mission-control, Supabase backend) into a target project directory instead of scaffolding a monorepo from scratch.
+description: Use when starting the Phase 4 build of a SaaS Launch Blueprint PRD, when scaffolding a new SaaS monorepo, or when the user asks to "scaffold the saas template" / "use my saas starter". Instantiates the plugin's bundled pnpm + Turborepo SaaS monorepo template (Tailwind v4 + shadcn/ui, Next.js landing, Vite PWA, Vite mission-control, Supabase backend) into a target project directory instead of scaffolding a monorepo from scratch. Also instantiates the PRD's chosen agent-harness tier from the bundled `templates/agent-harness` overlays (AGENTS.md rulebook, init.sh, and the tier-appropriate hooks/agents/workflows) on top of the monorepo.
 ---
 
 # saas-scaffold
@@ -55,12 +55,34 @@ travels with every scaffolded product and is available in that product's
 own Claude Code sessions for adding, searching, fixing, or styling
 components beyond the 14 already vendored — see §5 step 4.
 
-## 3. Copy the template into the target project
+## 3. Copy the template + harness overlays
 
 ```bash
 cp -R "${CLAUDE_PLUGIN_ROOT}/templates/saas-monorepo/" path/to/new-product/
 cd path/to/new-product/
 ```
+
+Then layer the PRD's chosen agent-harness tier on top, in order, from
+`templates/agent-harness/` — tiers `1..N` are cumulative overlays, so the
+loop must run every tier from 1 up to the chosen tier, not just tier N
+alone:
+
+```bash
+for t in $(seq 1 "$TIER"); do
+  cp -R "${CLAUDE_PLUGIN_ROOT}/templates/agent-harness/tier-$t/." "path/to/new-product/"
+done
+chmod +x path/to/new-product/init.sh
+```
+
+`TIER` comes from the PRD's "Agent harness" section — **ask the founder if
+it's absent, never guess it**. The overlays are cumulative and ordered on
+purpose: a higher tier's `AGENTS.md` and `.claude/settings.json` are
+authored as complete superset files and are meant to overwrite the
+same-path file a lower tier just copied — that is not data loss, it's the
+harness's designed replace-never-merge mechanic. Read
+`${CLAUDE_PLUGIN_ROOT}/templates/agent-harness/HARNESS.md` first; it is the
+harness's source of truth the same way `SCAFFOLD.md` is the monorepo's —
+if anything here conflicts with a newer `HARNESS.md`, `HARNESS.md` wins.
 
 ## 4. Substitute placeholders
 
@@ -68,6 +90,10 @@ Five placeholders appear across the template's root files and `packages/`:
 `{{PRODUCT_NAME}}`, `{{PRODUCT_SLUG}}`, `{{PRODUCT_DESCRIPTION}}`,
 `{{PRIMARY_LOCALE}}`, `{{CONTACT_EMAIL}}`. Get their values from the PRD (or
 ask the user if any are missing — do not invent a slug or contact email).
+Because the harness copy in §3 ran before this pass, the same five tokens
+also resolve inside harness files (`AGENTS.md`, `claude-progress.md`,
+`session-handoff.md`, `autonomous-loop.md`, etc.) — no separate
+substitution step is needed for them.
 
 Find every file containing a placeholder, then replace in place:
 
@@ -135,6 +161,21 @@ This must exit 0. If the PRD also specifies test coverage expectations,
 follow with `pnpm turbo run test`. Do not report the scaffold as complete
 until this passes — fix failures in the copied product repo, not by
 skipping the check.
+
+Also verify the harness layer copied in §3, tier ≥2 only for the first two
+checks:
+
+```bash
+jq empty path/to/new-product/.claude/settings.json
+jq empty path/to/new-product/feature_list.json
+bash -n path/to/new-product/init.sh
+```
+
+Then confirm the harness's `.claude/` additions (`settings.json`,
+`agents/`, at tier ≥3) sit **beside** the vendored `.claude/skills/shadcn/`
+from the monorepo template without clobbering it — `ls
+path/to/new-product/.claude/skills/shadcn/` should still show the vendored
+skill untouched.
 
 ## 7. Surface trimming
 
