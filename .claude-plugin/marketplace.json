@@ -1,0 +1,27 @@
+{
+  "name": "carlomigueldy",
+  "owner": {
+    "name": "Carlo Miguel Dy",
+    "email": "carlomigueldy@yahoo.com"
+  },
+  "metadata": {
+    "description": "Carlo's personal agent skills, project templates, and workflows"
+  },
+  "plugins": [
+    {
+      "name": "saas-launch",
+      "source": "./plugins/saas-launch",
+      "description": "End-to-end SaaS ideation to PRD to prototype to build-handoff workflow, plus a deterministic pnpm + Turborepo SaaS monorepo project template",
+      "version": "0.1.0",
+      "author": {
+        "name": "Carlo Miguel Dy",
+        "email": "carlomigueldy@yahoo.com"
+      },
+      "homepage": "https://github.com/carlomigueldy/skills/tree/main/plugins/saas-launch",
+      "repository": "https://github.com/carlomigueldy/skills",
+      "license": "MIT",
+      "keywords": ["saas", "launch", "boilerplate", "deployment"],
+      "category": "productivity"
+    }
+  ]
+}

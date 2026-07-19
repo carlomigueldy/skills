@@ -1,0 +1,43 @@
+{
+  "name": "mission-control",
+  "version": "0.1.0",
+  "private": true,
+  "description": "{{PRODUCT_NAME}} admin console — tenant lifecycle, payment ops, and audit log for {{PRODUCT_DESCRIPTION}}",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@{{PRODUCT_SLUG}}/config": "workspace:*",
+    "@{{PRODUCT_SLUG}}/locales": "workspace:*",
+    "@{{PRODUCT_SLUG}}/schemas": "workspace:*",
+    "@{{PRODUCT_SLUG}}/ui": "workspace:*",
+    "@sentry/react": "^8.42.0",
+    "@supabase/supabase-js": "^2.47.0",
+    "@tanstack/react-query": "^5.62.0",
+    "@tanstack/react-router": "^1.92.0",
+    "i18next": "^24.0.0",
+    "posthog-js": "^1.194.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.0",
+    "react-i18next": "^15.1.0",
+    "zod": "^3.24.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@tanstack/router-plugin": "^1.92.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.13.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.0",
+    "vite": "^6.0.0"
+  }
+}

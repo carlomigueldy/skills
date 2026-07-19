@@ -1,0 +1,43 @@
+# {{PRODUCT_NAME}} ({{PRODUCT_SLUG}}) — local dev orchestration.
+#
+# The Supabase stack (Postgres, Auth, Storage, Studio, Inbucket) is NOT
+# defined here. Use the Supabase CLI instead — it owns its own container set
+# and applies migrations under ./supabase/migrations automatically:
+#
+#   supabase start      # boots the full local stack (see ./supabase/config.toml)
+#   supabase stop
+#   supabase db reset   # re-applies every migrations/*.sql from scratch
+#
+# This file is intentionally minimal: it only adds a containerized
+# Playwright runner for CI-parity E2E runs (see .github/workflows/ci.yml),
+# which talks to `pnpm dev` + the local Supabase stack over the host
+# network. It is NOT how you run the app day-to-day — use `pnpm dev` for
+# that.
+
+services:
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.49.1-jammy
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+      # Keep node_modules inside the container rather than mounting the
+      # host's (or an absent host) node_modules over it.
+      - playwright_node_modules:/workspace/node_modules
+    # Reach `supabase start` (ports 54321-54324) and `pnpm dev` (5173) on
+    # localhost from inside the container.
+    network_mode: host
+    environment:
+      CI: "true"
+      PWA_BASE_URL: http://localhost:5173
+      VITE_SUPABASE_URL: http://127.0.0.1:54321
+      # Well-known Supabase local-dev demo anon key (see apps/pwa/.env.example)
+      # — only valid against a local `supabase start` stack.
+      VITE_SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0}
+    command: >
+      sh -c "corepack enable &&
+             pnpm install --frozen-lockfile &&
+             pnpm --filter pwa exec playwright install --with-deps chromium &&
+             pnpm --filter pwa test:e2e"
+
+volumes:
+  playwright_node_modules:

@@ -1,0 +1,7 @@
+# pnpm workspace definition for the {{PRODUCT_NAME}} monorepo.
+# Every app lives under apps/, every shared/internal package lives under packages/.
+# Do not hand-add individual paths here — new apps/packages are picked up automatically
+# by dropping a directory with a package.json under one of these globs.
+packages:
+  - "apps/*"
+  - "packages/*"

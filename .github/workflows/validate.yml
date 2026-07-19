@@ -1,0 +1,33 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate marketplace + plugin manifests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check all JSON files parse
+        run: |
+          set -euo pipefail
+          find . -name '*.json' -not -path '*/node_modules/*' -not -path './.git/*' \
+            -print0 | xargs -0 -n1 jq empty
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Validate marketplace
+        run: claude plugin validate .
+
+      - name: Validate saas-launch plugin
+        run: claude plugin validate ./plugins/saas-launch

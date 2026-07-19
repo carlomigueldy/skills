@@ -1,0 +1,53 @@
+{
+  "common": {
+    "appName": "{{PRODUCT_NAME}}",
+    "loading": "Loading lang…",
+    "save": "I-save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "back": "Balik"
+  },
+  "nav": {
+    "home": "Home",
+    "pricing": "Pricing",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "logout": "Log out"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Gumawa ng account",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Nakalimutan ang password?",
+    "signInError": "Di ka namin ma-sign in. I-check mo ulit yung details mo.",
+    "signOutConfirm": "Sure ka bang mag-log out?"
+  },
+  "payments": {
+    "title": "Payments",
+    "method": "Paraan ng pagbabayad",
+    "methods": {
+      "gcash": "GCash",
+      "maya": "Maya",
+      "gotyme": "GoTyme",
+      "bank_transfer": "Bank transfer",
+      "paypal": "PayPal",
+      "crypto": "Crypto"
+    },
+    "status": {
+      "pending": "Pending pa for review",
+      "approved": "Approved na",
+      "rejected": "Na-reject"
+    },
+    "submitReceipt": "I-submit ang resibo",
+    "receiptNote": "Magdagdag ng note para sa reviewer (optional)",
+    "submitSuccess": "Na-submit na yung payment mo for review."
+  },
+  "offline": {
+    "youAreOffline": "Offline ka ngayon",
+    "pendingSync": "{{count}} changes naghihintay i-sync",
+    "syncNow": "Sync now",
+    "syncing": "Nagsi-sync pa…",
+    "syncFailed": "Failed yung sync, aautuhin ulit"
+  }
+}

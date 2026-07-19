@@ -1,0 +1,59 @@
+# Supabase local dev stack config — consumed by the Supabase CLI, not Docker
+# Compose (see ../docker-compose.yml, which is intentionally minimal). Run
+# `supabase start` from the repo root; it reads this file automatically.
+project_id = "{{PRODUCT_SLUG}}"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 15
+
+[db.pooler]
+enabled = false
+
+[studio]
+enabled = true
+port = 54323
+
+[inbucket]
+# Local email testing UI (magic links, password resets) — no real mail sent.
+enabled = true
+port = 54324
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:3000",
+]
+jwt_expiry = 3600
+enable_signup = true
+enable_confirmations = false # local dev only — flip on before staging/prod
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = false
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[edge_runtime]
+enabled = true
+
+# ---------------------------------------------------------------------------
+# Migrations
+# ---------------------------------------------------------------------------
+# `supabase start` / `supabase db reset` apply everything under
+# ./migrations in filename order (0001_init.sql, 0002_..., ...). Never edit
+# an already-applied migration in place once it has shipped — add a new
+# numbered file instead.

@@ -1,0 +1,23 @@
+{
+  "name": "@{{PRODUCT_SLUG}}/locales",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "description": "Shared i18n message catalogs for {{PRODUCT_NAME}} (en / tl / taglish), consumed by next-intl (landing) and react-i18next (pwa, mission-control).",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./en.json": "./src/en.json",
+    "./tl.json": "./src/tl.json",
+    "./taglish.json": "./src/taglish.json"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@{{PRODUCT_SLUG}}/config": "workspace:*",
+    "eslint": "^9.13.0",
+    "typescript": "^5.6.3"
+  }
+}
