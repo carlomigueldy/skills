@@ -12,10 +12,11 @@ to automate versioning for each plugin independently, driven by
    package configured in `release-please-config.json`. Today that's a single
    package: `plugins/saas-launch`.
 3. Merging a release PR:
-   - Bumps the package's version in `plugins/saas-launch/.claude-plugin/plugin.json`.
-   - Updates the matching entry in the root `.claude-plugin/marketplace.json`
-     (`plugins[0].version`) via the `extra-files` config, so the two never
-     drift out of sync.
+   - Bumps the package's version in `plugins/saas-launch/.claude-plugin/plugin.json`
+     via the `extra-files` config. The root `.claude-plugin/marketplace.json`
+     entry deliberately carries no `version` field — `plugin.json` is the single
+     source of truth, so nothing can drift. (release-please rejects `../` paths
+     in `extra-files`, so syncing a root file from a package is not possible.)
    - Appends a new entry to `plugins/saas-launch/CHANGELOG.md`.
    - Cuts a tag scoped to the plugin, in the form `saas-launch--vX.Y.Z`.
 4. `.release-please-manifest.json` tracks the last-released version per
@@ -26,7 +27,7 @@ to automate versioning for each plugin independently, driven by
 
 | File | Purpose |
 | --- | --- |
-| `release-please-config.json` | Declares each package, its release type, and any `extra-files` that also need their version bumped (e.g. `marketplace.json`). |
+| `release-please-config.json` | Declares each package, its release type, and any `extra-files` inside the package that also need their version bumped (e.g. `plugin.json`). Paths must stay within the package directory. |
 | `.release-please-manifest.json` | Tracks the last-released version per package path. |
 | `.github/workflows/release.yml` | Runs `googleapis/release-please-action` on every push to `main`. |
 | `.github/workflows/validate.yml` | Runs `claude plugin validate` and a JSON sanity pass on every push/PR. |

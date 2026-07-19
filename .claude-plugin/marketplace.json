@@ -12,7 +12,6 @@
       "name": "saas-launch",
       "source": "./plugins/saas-launch",
       "description": "End-to-end SaaS ideation to PRD to prototype to build-handoff workflow, plus a deterministic pnpm + Turborepo SaaS monorepo project template",
-      "version": "0.1.0",
       "author": {
         "name": "Carlo Miguel Dy",
         "email": "carlomigueldy@yahoo.com"
