@@ -19,17 +19,17 @@ Phase 2 draws on essentially every cross-phase rule and constraint this workflow
 
 ## STEP 0 — Interview mode
 
-Standalone write-up explaining the two paths, then AskUserQuestion:
+Standalone write-up explaining the two paths, then AskUserQuestion — each option's per-option `description` populated per AskUserQuestion rule 4 (`../saas-launch-blueprint/references/interaction-rules.md`) with what the path means for the founder and its standout trade-off, never a bare label:
 
 "Interview me" · "You decide everything" (agent decides all open items, documents each decision + rationale in the PRD)
 
 ## STEP 1 — Interview (if "Interview me")
 
-AskUserQuestion rounds grouped by theme, each preceded by its own standalone explainer write-up, until NOTHING material is ambiguous:
+AskUserQuestion rounds grouped by theme, each preceded by its own standalone explainer write-up, until NOTHING material is ambiguous. Every round's AskUserQuestion call is subject to the SELF-CHECK in AskUserQuestion rule 3 (`../saas-launch-blueprint/references/interaction-rules.md`): each option's per-option `description` MUST be populated with 1–2 concrete sentences — what choosing it means for THIS product plus its standout trade-off — per AskUserQuestion rule 4, never a bare label, in every one of the rounds below:
 
 - **Product**: MVP scope boundaries, must-have vs nice-to-have, trial policy, tiers and price points
-- **Tech stack**: map the DEFAULT stack onto the chosen product in a standalone write-up — for EVERY major choice explain WHY it fits THIS product, cost (₱0/free tier), and the strongest alternative's trade-off; a stack-comparison scorecard for contested choices per the Comparison Format rule (`../saas-launch-blueprint/references/interaction-rules.md`, AskUserQuestion rule 6) — the contested options as rows; fit-for-this-product, cost, and strongest-alternative trade-off as columns — the inline widget in Cowork, a rich markdown table inline in the write-up in Claude Code / the TUI. Product-driven deviations (realtime, heavy media, Web3 wallets, edge inference) go through AskUserQuestion. Iterate until LOCKED IN; the locked stack supersedes the default, recorded in the PRD with per-choice rationale.
-- **App distribution**: the DEFAULT surfaces are the landing page, the mobile PWA, and Mission Control. Discuss (write-up first, then AskUserQuestion) which distribution targets this product ships on: mobile PWA, web app, desktop app (Tauri or Electron — recommend one with trade-offs), and/or native mobile app (React Native ONLY — never Flutter or any other cross-platform framework). Explain per-option build effort, cost, and fit. The selected set becomes the PRD's LOCKED DISTRIBUTION SET — every later reference to "surfaces" means exactly this list, and the monorepo extends accordingly.
+- **Tech stack**: map the DEFAULT stack onto the chosen product in a standalone write-up — for EVERY major choice explain WHY it fits THIS product, cost (₱0/free tier), and the strongest alternative's trade-off; a stack-comparison scorecard for contested choices per the Comparison Format rule (`../saas-launch-blueprint/references/interaction-rules.md`, AskUserQuestion rule 6) — the contested options as rows; fit-for-this-product, cost, and strongest-alternative trade-off as columns — the inline widget in Cowork, a rich markdown table inline in the write-up in Claude Code / the TUI. Product-driven deviations (realtime, heavy media, Web3 wallets, edge inference) go through AskUserQuestion — each deviation option's per-option `description` populated per AskUserQuestion rule 4 (`../saas-launch-blueprint/references/interaction-rules.md`) with what the deviation is and its standout trade-off, never a bare label. Iterate until LOCKED IN; the locked stack supersedes the default, recorded in the PRD with per-choice rationale.
+- **App distribution**: the DEFAULT surfaces are the landing page, the mobile PWA, and Mission Control. Discuss (write-up first, then AskUserQuestion) which distribution targets this product ships on: mobile PWA, web app, desktop app (Tauri or Electron — recommend one with trade-offs), and/or native mobile app (React Native ONLY — never Flutter or any other cross-platform framework). Explain per-option build effort, cost, and fit — and populate that same build-effort/cost/fit explanation into each option's per-option `description` field per AskUserQuestion rule 4 (`../saas-launch-blueprint/references/interaction-rules.md`), never a bare label. The selected set becomes the PRD's LOCKED DISTRIBUTION SET — every later reference to "surfaces" means exactly this list, and the monorepo extends accordingly.
 - **Design**: the full design-direction question set from the Design Bar
 - **Branding**: naming preferences, tone of voice, names/domains the founder has in mind. (The CTA Contact Block contact-collection step is NOT part of this round — it runs in STEP 2, which is always asked regardless of interview mode.)
 - **Operations**: support hours (timezone coverage if Worldwide), payment verification turnaround, launch timing
@@ -61,7 +61,7 @@ Comparison scorecard (rule 6 — Claude Code / TUI markdown table; criteria as c
 | Solo-founder single-session fit | ●●●●● | ●●●●○ | ●●●○○ | ●●○○○ |
 | **Verdict** | throwaway/closely-watched builds only | floor for anything left briefly unattended | **default recommendation** — full crew, still one session | choose only if the build spans multiple sessions or runs genuinely unattended |
 
-Then AskUserQuestion, single-select, the four tiers AS the four options — option names match the write-up exactly, each `preview` filled with a compact per-tier file-inventory snippet:
+Then AskUserQuestion, single-select, the four tiers AS the four options — option names match the write-up exactly, each option carrying BOTH a per-option `description` (1–2 sentences: what the tier adds plus its standout trade-off, recommended tier saying why — per AskUserQuestion rule 4) AND a `preview` filled with a compact per-tier file-inventory snippet:
 
 - **"L1 — Minimal"** — preview: `AGENTS.md + CLAUDE.md pointer + init.sh — 3 files, no hooks`
 - **"L2 — Guarded"** — preview: `+ settings.json hooks, feature_list.json, claude-progress.md, session-handoff.md`
@@ -104,9 +104,11 @@ Write the complete end-to-end business PRD — saved as a standalone file (PRD.m
 
 ## Gate 2
 
-Present the PRD file and OWNER-TASKS.md per the Deliverable Presentation rule (`../saas-launch-blueprint/references/interaction-rules.md`), then AskUserQuestion:
+Present the PRD file and OWNER-TASKS.md per the Deliverable Presentation rule (`../saas-launch-blueprint/references/interaction-rules.md`), then AskUserQuestion — each option's per-option `description` populated per AskUserQuestion rule 4 and the Approval Gates rule:
 
-"Approve PRD — proceed to prototype" / "Request changes" / "Go back — revisit the idea, segment, or scope"
+"Approve PRD — proceed to prototype" (locks the PRD and moves to Phase 3) / "Request changes" (revise interview answers or the PRD in place — the phase does not advance) / "Go back — revisit the idea, segment, or scope" (reopens Phase 1; the PRD is invalidated and regenerated once that decision changes)
+
+The parenthetical after each option label above is not gloss for a human reader — it IS the literal text (verbatim or lightly adapted to the run's specifics) to place in that option's `description` field passed to AskUserQuestion. Do not leave the field empty because the explanation already appears in this write-up.
 
 ## Closing / handback
 
