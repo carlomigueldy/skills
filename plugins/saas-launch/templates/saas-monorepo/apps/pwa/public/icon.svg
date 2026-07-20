@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="{{PRODUCT_NAME}} icon">
-  <!-- Placeholder mark — swap for the real product icon before shipping.
-       Kept as a single flat shape so it stays legible at 16px in a tab. -->
-  <rect width="512" height="512" rx="112" fill="#09090b" />
-  <circle cx="256" cy="256" r="128" fill="#fafafa" />
-</svg>
