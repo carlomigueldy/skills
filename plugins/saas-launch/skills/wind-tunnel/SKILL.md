@@ -1,6 +1,6 @@
 ---
 name: wind-tunnel
-description: "Phase 3 (Prototype) of the SaaS Launch Blueprint: choosing storyboard vs clickable format, selecting device targets, building the high-fidelity Tailwind-CDN HTML prototype, the optional Hyperframes pitch clip, and Gate 3 (including the 'Validate first' prospect-pitch-kit path), ending before the build. Invoked by the saas-launch-blueprint orchestrator after Gate 2 approval, or when the user explicitly asks to run/resume 'Phase 3', rebuild the prototype, or attempt the pitch clip for an active Launch Blueprint run. Do NOT trigger on generic 'make me a prototype/mockup' requests outside an active Launch Blueprint — the saas-launch-blueprint orchestrator is the entry point, and this session never starts the build."
+description: "Phase 3 (Prototype) of the SaaS Launch Blueprint: choosing storyboard vs clickable format, selecting device targets, building the high-fidelity Tailwind-CDN HTML prototype, the optional Hyperframes pitch clip, and Gate 3 (including the 'Validate first' prospect-pitch-kit path), ending before the build. Invoked by the saas-launch-blueprint orchestrator after Gate 2 approval, or when the user explicitly asks to run/resume 'Phase 3', rebuild the prototype, or attempt the pitch clip for an active Launch Blueprint run. Do NOT trigger on generic 'make me a prototype/mockup' requests outside an active Launch Blueprint — the saas-launch-blueprint orchestrator is the entry point, and Phase 3 itself never builds — the build, if any, starts later at the countdown fork (Phase 3.5), in this same session on 'Build it out now' or in a separate session on the hand-off path."
 ---
 
 # Phase 3 — Prototype
@@ -35,18 +35,18 @@ High-fidelity HTML-only prototype in the chosen format for every selected device
 
 Hyperframes rendering frequently fails, so never attempt it silently. Post a short write-up of the trade-off (great investor material vs. tokens burned on a failure-prone render), then AskUserQuestion — each option's per-option `description` populated per AskUserQuestion rule 4 (`../saas-launch-blueprint/references/interaction-rules.md`) with what choosing it does and its standout trade-off, never a bare label:
 - **"Attempt pitch clip now"** — render per the Video tooling constraint (two attempts max), showcasing the selected devices, ALWAYS ending on the CTA CONTACT BLOCK as its final clip per the Video tooling constraint. Only a rendered .mp4 satisfies an opted-in attempt.
-- **"Skip — defer to the build session"** — the clip moves to Phase 4's deliverables; Phase 3.5 MUST include it in the handoff prompt.
+- **"Skip — defer to the build session"** — the clip moves to Phase 4's deliverables; Phase 3.5 MUST carry it forward — rendered directly in-session on the "Build it out now" branch, or included among the hand-off prompt's deliverables on the hand-off branch. Either way it is never silently dropped.
 
 A failed attempt follows the Video tooling failure path and does not block Gate 3.
 
 ## GATE 3
 
 BEFORE asking, present all deliverables per the DELIVERABLE PRESENTATION rule and the Presentation Environment section (`../saas-launch-blueprint/references/interaction-rules.md`) — in Cowork: cards for every file plus inline rendering of a representative subset when the set is large; in Claude Code / the TUI: every file's absolute path in one copyable block with an open command, the HTML prototype opening in the browser (no inline render); the clip if one exists. Then AskUserQuestion — EVERY option's per-option `description` populated per AskUserQuestion rule 4 and the Approval Gates rule (`../saas-launch-blueprint/references/interaction-rules.md`) with what selecting it does, never a bare label:
-- "Approve — prepare build handoff" (moves to Phase 3.5 and assembles the build handoff)
+- "Approve — prepare build handoff" (moves to Phase 3.5, which ALWAYS asks whether to build it out now in this session — Phase 4 runs to GATE 4 — or just hand off a build prompt for a separate session)
 - "Validate first" — before any build spend, produce a PROSPECT PITCH KIT: a shareable version of the prototype, a short pitch script that includes the ACTUAL price, and a response tracker for 5 prospects; pause here while the founder pitches, then reconvene at this gate with real reactions (which may revise pricing or scope via "Go back")
 - "Request changes" (iterate the prototype in place — the phase does not advance) / "Go back — revisit an earlier decision" (reopens the named earlier phase; downstream deliverables are invalidated)
 
-DO NOT START THE BUILD. This session never builds.
+DO NOT START THE BUILD HERE. Phase 3 never builds — the build, if any, begins only later at the countdown fork (Phase 3.5).
 
 ## Closing / handback
 

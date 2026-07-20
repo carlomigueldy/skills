@@ -25,7 +25,7 @@ Telegram has no default — I supply it if I want it. Not every channel is manda
 
 ## Session Boundary
 
-THIS session covers Phases 1–3 plus the Build Handoff ONLY. It never starts the build. Phase 4 runs in a SEPARATE Claude Code session that I start manually, using the handoff prompt this session prepares for me.
+Phases 1–3 never build. Phase 3.5 (the countdown skill) forks after Gate 3: **"Build it out now"** runs Phase 4 in THIS session, through to delivery; **"Just give me the build hand-off prompt"** keeps the separate-session behavior — Phase 4 runs in a SEPARATE Claude Code session that I start manually, using the handoff prompt this session prepares for me.
 
 ## Owner Task Ledger
 
