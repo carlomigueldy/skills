@@ -9,6 +9,14 @@ point forward — entries below the `0.1.0` heading are generated
 automatically from Conventional Commits on future releases; do not hand-edit
 past this initial entry.
 
+## [0.5.0](https://github.com/carlomigueldy/skills/compare/saas-launch--v0.4.1...saas-launch--v0.5.0) (2026-07-21)
+
+
+### Features
+
+* **saas-launch:** make skills installable from Codex CLI and OpenCode ([#15](https://github.com/carlomigueldy/skills/issues/15)) ([bc35f9f](https://github.com/carlomigueldy/skills/commit/bc35f9f23bb0324eaf3ae93649d78db3957ba2cf))
+* **saas-launch:** two-path stack source, build-now fork, platform detection ([#14](https://github.com/carlomigueldy/skills/issues/14)) ([60a4100](https://github.com/carlomigueldy/skills/commit/60a4100ce8238988cb1f71af1e03879e95e86b08))
+
 ## [0.4.1](https://github.com/carlomigueldy/skills/compare/saas-launch--v0.4.0...saas-launch--v0.4.1) (2026-07-19)
 
 
