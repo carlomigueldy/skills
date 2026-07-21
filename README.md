@@ -12,7 +12,7 @@ Pick the row for your agent:
 | Agent | Install | Notes |
 | --- | --- | --- |
 | Claude Code (marketplace) | `claude plugin marketplace add carlomigueldy/skills`<br>`claude plugin install saas-launch@carlomigueldy` | See caveat below — not yet published. |
-| Codex CLI | `npx skills add carlomigueldy/skills` | See caveat below — not yet published. Manual fallback: copy `skills/*` into your project's `.agents/skills/` or into `~/.codex/skills/`. |
+| Codex CLI | `codex plugin marketplace add carlomigueldy/skills` (reads `.claude-plugin/marketplace.json` and installs `saas-launch` from `plugins/saas-launch/.claude-plugin/plugin.json`), or `npx skills add carlomigueldy/skills` for skills only | See caveat below — not yet published. Manual fallback: copy `skills/*` into your project's `.agents/skills/` or into `~/.codex/skills/`. |
 | OpenCode | `npx skills add carlomigueldy/skills` | See caveat below — not yet published. Manual fallback: copy `skills/*` into `~/.config/opencode/skills/` or your project's `.agents/skills/`. |
 | Claude Cowork / Claude Desktop | Build a zip with `scripts/package-plugin.py` (see below) | No marketplace support in the desktop apps. |
 
@@ -76,7 +76,7 @@ correct names.
 ```
 skills/
 ├── .claude-plugin/
-│   └── marketplace.json          # marketplace definition (lists all plugins)
+│   └── marketplace.json          # marketplace definition (lists all plugins; Codex CLI reads this too)
 ├── plugins/
 │   └── saas-launch/
 │       ├── .claude-plugin/
