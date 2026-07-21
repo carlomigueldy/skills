@@ -1,7 +1,7 @@
 {
   "name": "product-foundry",
   "description": "A gated, stack-agnostic product discovery, prototype, PRD, go-to-market, and implementation handoff workflow for Codex and Claude Code.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "skills": "./skills/",
   "interface": {
     "displayName": "Product Foundry",
@@ -9,7 +9,11 @@
     "longDescription": "Guides a founder through evidence-backed product discovery, executable prototypes, a traceable PRD, go-to-market planning, and a portable implementation handoff.",
     "developerName": "Carlo Miguel Dy",
     "category": "Productivity",
-    "capabilities": ["Interactive", "Read", "Write"],
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
     "defaultPrompt": [
       "Run Product Foundry with me from idea through implementation handoff.",
       "Resume the current Product Foundry phase from my docs artifacts.",
