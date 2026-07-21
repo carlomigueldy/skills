@@ -1,7 +1,7 @@
 {
   "name": "saas-launch",
   "description": "End-to-end SaaS launch toolkit for a solo bootstrapped founder: the saas-launch-blueprint skill (gated ideation, PRD, prototype, build handoff) and saas-scaffold, which instantiates a deterministic pnpm + Turborepo monorepo (Next.js landing, offline-first Vite PWA, Mission Control admin, Supabase multi-tenant backend) plus a four-tier agent harness (L1-L4) with an AGENTS.md rulebook, migration and feature-tracking guard hooks, specialized subagents, and autonomous-loop gates.",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "author": {
     "name": "Carlo Miguel Dy",
     "email": "carlomigueldy@yahoo.com"
