@@ -1,0 +1,22 @@
+{
+  "name": "product-foundry",
+  "description": "A gated, stack-agnostic product discovery, prototype, PRD, go-to-market, and implementation handoff workflow for Codex and Claude Code.",
+  "version": "0.1.0",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Product Foundry",
+    "shortDescription": "Discover, define, prototype, and hand off an MVP",
+    "longDescription": "Guides a founder through evidence-backed product discovery, executable prototypes, a traceable PRD, go-to-market planning, and a portable implementation handoff.",
+    "developerName": "Carlo Miguel Dy",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Read", "Write"],
+    "defaultPrompt": [
+      "Run Product Foundry with me from idea through implementation handoff.",
+      "Resume the current Product Foundry phase from my docs artifacts.",
+      "Implement this approved Product Foundry PRD safely."
+    ]
+  },
+  "homepage": "https://github.com/carlomigueldy/skills/tree/main/plugins/product-foundry",
+  "repository": "https://github.com/carlomigueldy/skills",
+  "license": "MIT"
+}

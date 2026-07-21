@@ -21,6 +21,20 @@
       "license": "MIT",
       "keywords": ["saas", "launch", "boilerplate", "deployment"],
       "category": "productivity"
+    },
+    {
+      "name": "product-foundry",
+      "source": "./plugins/product-foundry",
+      "description": "Evidence-backed product discovery, executable prototypes, PRD, go-to-market planning, and safe implementation handoff.",
+      "author": {
+        "name": "Carlo Miguel Dy",
+        "email": "carlomigueldy@yahoo.com"
+      },
+      "homepage": "https://github.com/carlomigueldy/skills/tree/main/plugins/product-foundry",
+      "repository": "https://github.com/carlomigueldy/skills",
+      "license": "MIT",
+      "keywords": ["product", "discovery", "prd", "prototype", "handoff"],
+      "category": "productivity"
     }
   ]
 }

@@ -1,0 +1,7 @@
+{
+  "version": "1.0",
+  "delegationDepth": 2,
+  "agents": [
+    {"id": "AGENT-ROOT", "role": "root-orchestrator", "responsibility": "Coordinate shared state and cross-domain decisions.", "ownership": ["shared state"], "inputs": ["implementation manifest"], "outputs": ["task graph"], "skills": ["find-skills"], "tools": ["task state"], "escalation": "cross-domain changes"}
+  ]
+}

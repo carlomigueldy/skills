@@ -1,3 +1,4 @@
 {
-  "plugins/saas-launch": "0.5.0"
+  "plugins/saas-launch": "0.5.0",
+  "plugins/product-foundry": "0.1.0"
 }

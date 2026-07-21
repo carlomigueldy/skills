@@ -1,0 +1,7 @@
+{
+  "host": "codex-structured",
+  "capabilities": {"structuredInput": true},
+  "question": {"id": "harness-level", "prompt": "Choose a harness level.", "options": [{"id": "lean", "label": "Lean", "recommended": false, "consequence": "Uses local controls only."}, {"id": "standard", "label": "Standard", "recommended": true, "consequence": "Adds CI and specialist review."}]},
+  "response": {"selectedOptionId": "standard"},
+  "normalizedAnswer": {"questionId": "harness-level", "selectedOptionId": "standard"}
+}

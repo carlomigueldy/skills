@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "product": {"name": "Signal Notes", "status": "implementation"},
+  "artifacts": [{"id": "PRD", "path": "docs/product/prd.md", "status": "approved"}, {"id": "ARCH", "path": "docs/architecture/adr-001.md", "status": "approved"}],
+  "requirements": [{"id": "REQ-001", "status": "approved", "priority": "must", "acceptanceCriteria": ["A team can create an auditable workspace."], "traceability": {"evidence": [], "assumptions": ["ASSUMPTION-001"]}}],
+  "mvp": {"hypothesis": "Teams pay for governed research synthesis", "inScope": ["workspace", "audit trail"], "exclusions": ["global rollout"]},
+  "unresolvedDecisions": ["privacy review"], "unresolvedBlockers": ["privacy review"], "designReferences": ["docs/prototypes/high-fidelity/index.html"], "architectureDecisions": ["ADR-001", "ADR-002"], "qualityGates": ["contract", "security", "accessibility"], "requiredSkills": ["find-skills", "frontend-design"],
+  "harness": {"level": "Advanced", "taskState": "docs/delivery/task-state.json"}, "environmentConstraints": ["custom stack", "regulated data"], "implementationOrder": ["TASK-001", "TASK-002", "TASK-003"], "completionCriteria": ["approval", "evidence"], "state": {"mode": "resume", "writer": "root", "reconciled": true},
+  "inputFingerprints": {"docs/product/prd.md": "sha256:advanced-prd"}, "reconciliation": {"staleOwners": ["TASK-002"], "partialTasks": ["TASK-002"], "conflicts": [], "preservedVerifiedTaskIds": ["TASK-001"]}, "changedInputInvalidation": {"policy": "reopen changed or failed tasks", "affectedTasks": ["TASK-002"]}
+}

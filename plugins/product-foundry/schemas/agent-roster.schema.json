@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["version", "agents", "delegationDepth"],
+  "properties": {"version": {"const": "1.0"}, "delegationDepth": {"type": "integer", "minimum": 0}, "deeperDelegationJustification": {"type": "string", "minLength": 1}, "agents": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["id", "role", "responsibility", "ownership", "inputs", "outputs", "skills", "tools", "escalation"], "properties": {"id": {"type": "string", "minLength": 1}, "role": {"type": "string", "minLength": 1}, "responsibility": {"type": "string", "minLength": 1}, "ownership": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}, "inputs": {"type": "array", "items": {"type": "string"}}, "outputs": {"type": "array", "items": {"type": "string"}}, "skills": {"type": "array", "items": {"type": "string"}}, "tools": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}, "escalation": {"type": "string", "minLength": 1}}}}},
+  "if": {"properties": {"delegationDepth": {"minimum": 3}}, "required": ["delegationDepth"]},
+  "then": {"required": ["deeperDelegationJustification"], "properties": {"deeperDelegationJustification": {"type": "string", "minLength": 1}}}
+}

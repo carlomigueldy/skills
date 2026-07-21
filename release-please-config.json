@@ -18,6 +18,24 @@
           "jsonpath": "$.version"
         }
       ]
+    },
+    "plugins/product-foundry": {
+      "release-type": "simple",
+      "component": "product-foundry",
+      "package-name": "product-foundry",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": ".claude-plugin/plugin.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": ".codex-plugin/plugin.json",
+          "jsonpath": "$.version"
+        }
+      ]
     }
   }
 }

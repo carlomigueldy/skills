@@ -1,6 +1,8 @@
 # carlomigueldy/skills
 
-Carlo Miguel Dy's personal [Claude Code](https://claude.com/claude-code) plugin marketplace — a collection of agent skills, project templates, and workflows packaged as installable plugins.
+Carlo Miguel Dy's personal [Claude Code](https://claude.com/claude-code) and
+Codex plugin collection — agent skills, project templates, and workflows
+packaged as installable plugins.
 
 ## Install
 
@@ -50,6 +52,7 @@ marketplace. Build one with:
 
 ```bash
 scripts/package-plugin.py                 # -> dist/saas-launch-<version>-cowork.zip
+scripts/package-plugin.py product-foundry # -> dist/product-foundry-<version>-cowork.zip
 scripts/package-plugin.py --list          # preview contents and path rewrites
 ```
 
@@ -70,6 +73,12 @@ correct names.
 | Plugin | Description | Skills |
 | --- | --- | --- |
 | [`saas-launch`](./plugins/saas-launch) | End-to-end SaaS ideation → PRD → prototype → build-handoff workflow, plus a deterministic pnpm + Turborepo SaaS monorepo project template | `saas-launch-blueprint`, `saas-scaffold` |
+| [`product-foundry`](./plugins/product-foundry) | Cross-platform, approval-gated product discovery → prototype → PRD → go-to-market → implementation-handoff workflow | `product-foundry`, `implement-prd` |
+
+Product Foundry keeps one package-local `skills/` tree shared by its native
+Claude and Codex manifests, so it does not need a second top-level mirror. The
+older `saas-launch` plugin continues to use the repository's generated
+top-level `skills/` mirror for Codex CLI, OpenCode, and `npx skills add`.
 
 ## Repo layout
 
@@ -78,22 +87,16 @@ skills/
 ├── .claude-plugin/
 │   └── marketplace.json          # marketplace definition (lists all plugins; Codex CLI reads this too)
 ├── plugins/
-│   └── saas-launch/
-│       ├── .claude-plugin/
-│       │   └── plugin.json       # plugin manifest
+│   ├── saas-launch/
+│   │   ├── .claude-plugin/plugin.json
+│   │   └── skills/             # canonical source for generated mirror
+│   └── product-foundry/
+│       ├── .claude-plugin/plugin.json # Claude manifest
+│       ├── .codex-plugin/plugin.json  # Codex manifest
 │       ├── skills/
-│       │   ├── saas-launch-blueprint/
-│       │   │   └── SKILL.md
-│       │   ├── ignition/
-│       │   │   └── SKILL.md
-│       │   ├── flight-plan/
-│       │   │   └── SKILL.md
-│       │   ├── wind-tunnel/
-│       │   │   └── SKILL.md
-│       │   ├── countdown/
-│       │   │   └── SKILL.md
-│       │   └── saas-scaffold/
-│       │       └── SKILL.md
+│       │   ├── product-foundry/SKILL.md
+│       │   ├── implement-prd/SKILL.md
+│       │   └── foundry-*/SKILL.md
 │       └── README.md
 ├── skills/                        # generated mirror of plugins/saas-launch/skills/
 │   └── ...                       # for Codex CLI / OpenCode / `npx skills add` — synced by scripts/sync-skills.py, don't hand-edit
@@ -110,7 +113,7 @@ skills/
 This repo follows [Conventional Commits](https://www.conventionalcommits.org/) and uses [release-please](https://github.com/googleapis/release-please) to automate versioning:
 
 - Commits to `main` are analyzed by release-please, which opens (and keeps updated) a release PR per plugin.
-- Merging a release PR bumps that plugin's `version` in its `plugin.json`, updates its `CHANGELOG.md`, and cuts a tag scoped to the plugin, e.g. `saas-launch--v0.1.0`.
+- Merging a release PR bumps the package's configured manifest version(s), updates its `CHANGELOG.md`, and cuts a tag scoped to the plugin, e.g. `product-foundry--v0.1.0`.
 - Each plugin under `plugins/<name>/` maintains its own `CHANGELOG.md`.
 
 See [`docs/VERSIONING.md`](./docs/VERSIONING.md) for full details on the release process and tag format.
@@ -118,7 +121,7 @@ See [`docs/VERSIONING.md`](./docs/VERSIONING.md) for full details on the release
 ## Adding a new plugin
 
 1. `mkdir -p plugins/<name>/.claude-plugin plugins/<name>/skills`
-2. Add `plugins/<name>/.claude-plugin/plugin.json`
+2. Add the Claude manifest and, when the plugin has native Codex metadata, a `.codex-plugin/plugin.json` with the same semantic version.
 3. Add one or more skills under `plugins/<name>/skills/<skill-name>/SKILL.md`
 4. Register the plugin in `.claude-plugin/marketplace.json`
 5. Add the plugin to the release-please config and manifest so it gets versioned and released independently
