@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "product": {"name": "Signal Notes", "status": "implementation"},
+  "artifacts": [{"id": "PRD", "path": "docs/product/prd.md", "status": "approved"}, {"id": "DESIGN", "path": "docs/design/thesis.md", "status": "approved"}],
+  "requirements": [{"id": "REQ-001", "status": "approved", "priority": "must", "acceptanceCriteria": ["A founder can save and export a research note."], "traceability": {"evidence": ["docs/research/evidence.md#E-001"], "assumptions": []}}],
+  "mvp": {"hypothesis": "Founders pay for concise research synthesis", "inScope": ["notes", "export"], "exclusions": ["native apps"]},
+  "unresolvedDecisions": [], "unresolvedBlockers": [], "designReferences": ["docs/prototypes/high-fidelity/index.html"], "architectureDecisions": ["ADR-001"], "qualityGates": ["typecheck", "tests", "a11y"], "requiredSkills": ["find-skills", "frontend-design"],
+  "harness": {"level": "Standard", "taskState": "docs/delivery/task-state.json"}, "environmentConstraints": ["pnpm monorepo"], "implementationOrder": ["TASK-001", "TASK-002"], "completionCriteria": ["all quality gates"], "state": {"mode": "fresh", "writer": "root"},
+  "inputFingerprints": {"docs/product/prd.md": "sha256:standard-prd"}, "reconciliation": {"staleOwners": [], "partialTasks": [], "conflicts": [], "preservedVerifiedTaskIds": []}, "changedInputInvalidation": {"policy": "reopen changed or failed tasks", "affectedTasks": []}
+}

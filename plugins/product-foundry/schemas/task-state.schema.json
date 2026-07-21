@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["version", "mode", "inputFingerprints", "reconciliation", "tasks"],
+  "properties": {"version": {"const": "1.0"}, "mode": {"enum": ["fresh", "resume"]}, "inputFingerprints": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "string", "minLength": 1}}, "reconciliation": {"type": "object", "required": ["staleOwners", "partialTasks", "conflicts", "preservedVerifiedTaskIds", "changedInputInvalidation", "failedVerificationReopens"]}, "tasks": {"type": "array", "items": {"type": "object", "required": ["id", "status", "owner", "inputFingerprints", "verificationEvidence"], "properties": {"id": {"type": "string", "minLength": 1}, "status": {"enum": ["pending", "in_progress", "blocked", "partial", "verified", "stale"]}, "inputFingerprints": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "string", "minLength": 1}}}}}}
+}

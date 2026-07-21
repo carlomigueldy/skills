@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["id", "status", "mode", "rationale", "evidence", "assumptions", "confidence", "risks", "revisitConditions"],
+  "properties": {
+    "id": {"type": "string"},
+    "status": {"enum": ["open", "approved", "superseded"]},
+    "mode": {"enum": ["Interview me", "Decide for me"]},
+    "rationale": {"type": "string"},
+    "evidence": {"type": "array"},
+    "assumptions": {"type": "array"},
+    "confidence": {"type": "string"},
+    "risks": {"type": "array"},
+    "revisitConditions": {"type": "array"}
+  }
+}

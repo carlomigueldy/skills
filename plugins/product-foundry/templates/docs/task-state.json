@@ -1,0 +1,9 @@
+{
+  "version": "1.0",
+  "mode": "fresh",
+  "inputFingerprints": {"docs/implementation-manifest.json": "sha256:{{MANIFEST_FINGERPRINT}}"},
+  "reconciliation": {"staleOwners": [], "partialTasks": [], "conflicts": [], "preservedVerifiedTaskIds": [], "changedInputInvalidation": [], "failedVerificationReopens": []},
+  "tasks": [
+    {"id": "TASK-001", "status": "pending", "owner": "implementation", "inputFingerprints": {"docs/implementation-manifest.json": "sha256:{{MANIFEST_FINGERPRINT}}"}, "verificationEvidence": []}
+  ]
+}

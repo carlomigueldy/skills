@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{PRODUCT_NAME}} low-fidelity prototype</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="bg-stone-100 p-4 font-sans text-stone-950 sm:p-8">
+    <main class="mx-auto max-w-4xl rounded border-2 border-stone-950 bg-white p-5">
+      <nav class="flex flex-wrap gap-2" aria-label="Prototype state navigation">
+        <button class="border border-stone-950 px-3 py-2" data-state="loading">Loading</button>
+        <button class="border border-stone-950 px-3 py-2" data-state="empty">Empty</button>
+        <button class="border border-stone-950 px-3 py-2" data-state="error">Error</button>
+        <button class="border border-stone-950 px-3 py-2" data-state="permission">Permission</button>
+        <button class="border border-stone-950 px-3 py-2" data-state="success">Success</button>
+        <button class="border border-stone-950 px-3 py-2" data-state="validation">Validation</button>
+      </nav>
+      <section class="mt-6" aria-live="polite" aria-atomic="true" id="view"></section>
+    </main>
+    <script>
+      const views = {
+        loading: '<h1 class="text-2xl font-bold">Loading</h1><p>Show progress without blocking navigation.</p>',
+        empty: '<h1 class="text-2xl font-bold">Nothing here yet</h1><p>Explain the next safe action.</p>',
+        error: '<h1 class="text-2xl font-bold">We could not load this</h1><button class="border border-stone-950 px-3 py-2">Try again</button>',
+        permission: '<h1 class="text-2xl font-bold">Permission needed</h1><p>Explain why and how to continue safely.</p>',
+        success: '<h1 class="text-2xl font-bold">Saved</h1><p>Confirm the result and next step.</p>',
+        validation: '<h1 class="text-2xl font-bold">Check your input</h1><label>Email <input class="border border-red-700" aria-invalid="true" aria-describedby="input-error"></label><p id="input-error">Enter a valid email address.</p>'
+      };
+      const view = document.querySelector('#view');
+      document.querySelectorAll('[data-state]').forEach((button) => button.addEventListener('click', () => { view.innerHTML = views[button.dataset.state]; view.querySelector('button, input')?.focus(); }));
+      document.querySelector('[data-state="loading"]').click();
+    </script>
+  </body>
+</html>

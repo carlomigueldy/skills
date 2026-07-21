@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "product": {"name": "Signal Notes", "status": "approved"},
+  "artifacts": [{"id": "PRD", "path": "docs/product/prd.md", "status": "approved"}],
+  "requirements": [{"id": "REQ-001", "status": "approved", "priority": "must", "acceptanceCriteria": ["A founder can save one research note."], "traceability": {"evidence": ["docs/research/evidence.md#E-001"], "assumptions": []}}],
+  "mvp": {"hypothesis": "Founders pay for concise research synthesis", "inScope": ["notes"], "exclusions": ["team billing"]},
+  "unresolvedDecisions": [], "unresolvedBlockers": [], "designReferences": [], "architectureDecisions": [], "qualityGates": ["tests"], "requiredSkills": ["find-skills"],
+  "harness": {"level": "Lean"}, "environmentConstraints": [], "implementationOrder": ["TASK-001"], "completionCriteria": ["evidence"], "state": {"mode": "fresh"},
+  "inputFingerprints": {"docs/product/prd.md": "sha256:lean-prd"}, "reconciliation": {"staleOwners": [], "partialTasks": [], "conflicts": [], "preservedVerifiedTaskIds": []}, "changedInputInvalidation": {"policy": "reopen changed or failed tasks", "affectedTasks": []}
+}

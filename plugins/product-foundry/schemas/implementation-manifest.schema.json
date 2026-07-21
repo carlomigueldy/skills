@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Product Foundry implementation manifest",
+  "type": "object",
+  "required": ["schemaVersion", "product", "artifacts", "requirements", "mvp", "unresolvedDecisions", "unresolvedBlockers", "designReferences", "architectureDecisions", "qualityGates", "requiredSkills", "harness", "environmentConstraints", "implementationOrder", "completionCriteria", "state", "inputFingerprints", "reconciliation", "changedInputInvalidation"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "product": {"type": "object", "required": ["name", "status"], "properties": {"name": {"type": "string", "minLength": 1}, "status": {"enum": ["draft", "approved", "implementation"]}}},
+    "artifacts": {"type": "array", "items": {"type": "object", "required": ["id", "path", "status"], "properties": {"id": {"type": "string"}, "path": {"type": "string", "pattern": "^docs/"}, "status": {"enum": ["draft", "approved", "stale"]}}}},
+    "requirements": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["id", "status", "priority", "acceptanceCriteria", "traceability"], "properties": {"id": {"type": "string", "minLength": 1}, "status": {"enum": ["draft", "approved", "implemented", "verified", "stale"]}, "priority": {"enum": ["must", "should", "could", "wont"]}, "acceptanceCriteria": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}, "traceability": {"type": "object", "required": ["evidence", "assumptions"], "properties": {"evidence": {"type": "array"}, "assumptions": {"type": "array"}}}}}},
+    "mvp": {"type": "object"}, "unresolvedDecisions": {"type": "array"}, "unresolvedBlockers": {"type": "array"}, "designReferences": {"type": "array"}, "architectureDecisions": {"type": "array"}, "qualityGates": {"type": "array"}, "requiredSkills": {"type": "array"}, "harness": {"type": "object"}, "environmentConstraints": {"type": "array"}, "implementationOrder": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^TASK-[A-Z0-9][A-Z0-9-]*$"}}, "completionCriteria": {"type": "array"}, "state": {"type": "object"},
+    "inputFingerprints": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "string", "minLength": 1}},
+    "reconciliation": {"type": "object", "required": ["staleOwners", "partialTasks", "conflicts", "preservedVerifiedTaskIds"], "properties": {"staleOwners": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^TASK-[A-Z0-9][A-Z0-9-]*$"}}, "partialTasks": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^TASK-[A-Z0-9][A-Z0-9-]*$"}}, "conflicts": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^TASK-[A-Z0-9][A-Z0-9-]*$"}}, "preservedVerifiedTaskIds": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^TASK-[A-Z0-9][A-Z0-9-]*$"}}}},
+    "changedInputInvalidation": {"type": "object", "required": ["policy"]}
+  },
+  "additionalProperties": true
+}

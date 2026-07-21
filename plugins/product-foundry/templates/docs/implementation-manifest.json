@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "product": {"name": "{{PRODUCT_NAME}}", "status": "draft"},
+  "artifacts": [],
+  "requirements": [{"id": "REQ-001", "status": "draft", "priority": "must", "acceptanceCriteria": ["{{TESTABLE_ACCEPTANCE_CRITERION}}"], "traceability": {"evidence": [], "assumptions": ["ASSUMPTION-001"]}}],
+  "mvp": {"hypothesis": "", "inScope": [], "exclusions": []},
+  "unresolvedDecisions": [],
+  "unresolvedBlockers": [],
+  "designReferences": [],
+  "architectureDecisions": [],
+  "qualityGates": [],
+  "requiredSkills": [],
+  "harness": {"level": "Standard", "taskState": "docs/delivery/task-state.json"},
+  "environmentConstraints": [],
+  "implementationOrder": ["TASK-001"],
+  "completionCriteria": [],
+  "state": {"mode": "fresh", "lastVerifiedAt": null},
+  "inputFingerprints": {"docs/product/prd.md": "sha256:{{PRD_FINGERPRINT}}"},
+  "reconciliation": {"staleOwners": [], "partialTasks": [], "conflicts": [], "preservedVerifiedTaskIds": []},
+  "changedInputInvalidation": {"policy": "Reopen only tasks whose recorded input fingerprints changed or whose verification fails.", "affectedTasks": []}
+}

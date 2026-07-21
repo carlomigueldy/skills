@@ -23,6 +23,9 @@ jobs:
           find . -name '*.json' -not -path '*/node_modules/*' -not -path './.git/*' \
             -print0 | xargs -0 -n1 jq empty
 
+      - name: Install validation dependencies
+        run: python3 -m pip install -r requirements-dev.txt
+
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code
 
@@ -34,3 +37,19 @@ jobs:
 
       - name: Validate saas-launch plugin
         run: claude plugin validate ./plugins/saas-launch
+
+      - name: Validate product-foundry plugin
+        run: claude plugin validate ./plugins/product-foundry
+
+      - name: Validate product-foundry Codex native manifest
+        run: python3 scripts/validate_product_foundry.py --codex-manifest-only ./plugins/product-foundry/.codex-plugin/plugin.json
+
+      - name: Validate product-foundry package contract
+        run: |
+          python3 -m unittest -v tests.test_product_foundry_contract
+          python3 scripts/validate_product_foundry.py .
+
+      - name: Smoke-test product-foundry package layout
+        run: |
+          package_dir=$(mktemp -d)
+          scripts/package-plugin.py product-foundry --output-dir "$package_dir"
