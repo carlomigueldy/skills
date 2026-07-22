@@ -35,6 +35,20 @@
       "license": "MIT",
       "keywords": ["product", "discovery", "prd", "prototype", "handoff"],
       "category": "productivity"
+    },
+    {
+      "name": "grok-ultracode",
+      "source": "./plugins/grok-ultracode",
+      "description": "Grok Ultracode multi-agent orchestration: /ultracode skill, ship-feature workflow, and tiered personas/roles for plan→implement→review loops.",
+      "author": {
+        "name": "Carlo Miguel Dy",
+        "email": "carlomigueldy@yahoo.com"
+      },
+      "homepage": "https://github.com/carlomigueldy/skills/tree/main/plugins/grok-ultracode",
+      "repository": "https://github.com/carlomigueldy/skills",
+      "license": "MIT",
+      "keywords": ["grok", "grok-ultracode", "orchestration", "multi-agent", "ultracode"],
+      "category": "productivity"
     }
   ]
 }

@@ -36,6 +36,19 @@
           "jsonpath": "$.version"
         }
       ]
+    },
+    "plugins/grok-ultracode": {
+      "release-type": "simple",
+      "component": "grok-ultracode",
+      "package-name": "grok-ultracode",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": ".claude-plugin/plugin.json",
+          "jsonpath": "$.version"
+        }
+      ]
     }
   }
 }

@@ -1,0 +1,5 @@
+# Sweeper role — low effort mechanical exploration
+description = "Mechanical codebase sweeper (low effort)"
+default_capability_mode = "read-only"
+reasoning_effort = "low"
+model = "grok-4.5"

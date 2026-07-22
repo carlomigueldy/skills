@@ -1,0 +1,5 @@
+# Implementer role — medium effort workhorse
+description = "Implementation workhorse (medium effort)"
+default_capability_mode = "all"
+reasoning_effort = "medium"
+model = "grok-4.5"
