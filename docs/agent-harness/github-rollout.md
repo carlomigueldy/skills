@@ -1,0 +1,9 @@
+# GitHub enforcement rollout
+
+The contribution-policy workflow validates pull-request titles and bodies, every commit in the proposed range, commit identities and trailers, and added text. `pull_request_target` checks out only base-branch policy code; it fetches the PR as Git objects and never checks out or executes the PR tree. The stable status context is `Contribution policy`.
+
+`GitHub <noreply@github.com>` is allowed only as a platform committer paired with an otherwise approved author and valid context. It is never accepted as an author or co-author. Release automation is the only non-human author exception and is restricted to `chore(main): release ...` commits.
+
+Git metadata is self-asserted, so server-side provenance also requires the pull-request author's authenticated login to appear in `.github/contribution-policy.json`. Add a future contributor's login and exact Git identity together; adding only one must continue to fail. Release automation is additionally restricted to release-titled pull requests. The protected, no-bypass pull-request path is authoritative—local identity checks are an early governance guard, not cryptographic proof. Issues remain open to all users, subject to their title and body policy.
+
+After this workflow is merged to `main` and has emitted its first status, an authorized maintainer should update the active `main` ruleset to require both `Contribution policy` and `Validate marketplace + plugin manifests`. Require branches to be up to date before merging so an unchanged PR head cannot reuse a status produced by older base-branch policy. Preserve squash-only merging and no bypass actors, and configure squash commit messages to use the validated pull-request title. These authenticated repository-setting changes are intentionally not performed by workspace implementation and existing history must not be rewritten.
