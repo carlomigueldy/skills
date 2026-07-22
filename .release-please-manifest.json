@@ -1,5 +1,5 @@
 {
   "plugins/saas-launch": "0.5.0",
-  "plugins/product-foundry": "0.2.0",
+  "plugins/product-foundry": "0.3.0",
   "plugins/grok-build": "0.1.0"
 }
