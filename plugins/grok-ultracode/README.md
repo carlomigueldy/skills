@@ -1,4 +1,4 @@
-# grok-build
+# grok-ultracode
 
 Grok Build multi-agent orchestration kit for shipping features with a
 tiered plan → explore → implement → verify → adversarial-review loop.
@@ -21,16 +21,16 @@ From a checkout of this repo:
 
 ```bash
 # User-level (recommended)
-python3 plugins/grok-build/scripts/install.py
+python3 plugins/grok-ultracode/scripts/install.py
 
 # Or from repo root helper
-python3 scripts/install-grok-build.py
+python3 scripts/install-grok-ultracode.py
 
 # Project-level instead of ~/.grok
-python3 plugins/grok-build/scripts/install.py --target .grok
+python3 plugins/grok-ultracode/scripts/install.py --target .grok
 
 # Preview without writing
-python3 plugins/grok-build/scripts/install.py --dry-run
+python3 plugins/grok-ultracode/scripts/install.py --dry-run
 ```
 
 Requirements: [Grok Build](https://grok.com) CLI installed and authenticated
@@ -91,5 +91,5 @@ Do not expect full behavior under Claude Code or Codex without a port.
 
 ## Versioning
 
-Released independently via release-please. Tags look like `grok-build--v0.1.0`.
+Released independently via release-please. Tags look like `grok-ultracode--v0.1.0`.
 See the root [`docs/VERSIONING.md`](../../docs/VERSIONING.md).

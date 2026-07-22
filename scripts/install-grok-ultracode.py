@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Repo-root helper that runs plugins/grok-build/scripts/install.py.
+"""Repo-root helper that runs plugins/grok-ultracode/scripts/install.py.
 
 Example:
-    python3 scripts/install-grok-build.py
-    python3 scripts/install-grok-build.py --target .grok
-    python3 scripts/install-grok-build.py --dry-run
+    python3 scripts/install-grok-ultracode.py
+    python3 scripts/install-grok-ultracode.py --target .grok
+    python3 scripts/install-grok-ultracode.py --dry-run
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ from pathlib import Path
 INSTALLER = (
     Path(__file__).resolve().parents[1]
     / "plugins"
-    / "grok-build"
+    / "grok-ultracode"
     / "scripts"
     / "install.py"
 )

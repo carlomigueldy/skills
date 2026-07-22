@@ -37,10 +37,10 @@
         }
       ]
     },
-    "plugins/grok-build": {
+    "plugins/grok-ultracode": {
       "release-type": "simple",
-      "component": "grok-build",
-      "package-name": "grok-build",
+      "component": "grok-ultracode",
+      "package-name": "grok-ultracode",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
         {

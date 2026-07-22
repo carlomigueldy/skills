@@ -37,17 +37,17 @@
       "category": "productivity"
     },
     {
-      "name": "grok-build",
-      "source": "./plugins/grok-build",
-      "description": "Grok Build multi-agent orchestration: /ultracode skill, ship-feature workflow, and tiered personas/roles for plan→implement→review loops.",
+      "name": "grok-ultracode",
+      "source": "./plugins/grok-ultracode",
+      "description": "Grok Ultracode multi-agent orchestration: /ultracode skill, ship-feature workflow, and tiered personas/roles for plan→implement→review loops.",
       "author": {
         "name": "Carlo Miguel Dy",
         "email": "carlomigueldy@yahoo.com"
       },
-      "homepage": "https://github.com/carlomigueldy/skills/tree/main/plugins/grok-build",
+      "homepage": "https://github.com/carlomigueldy/skills/tree/main/plugins/grok-ultracode",
       "repository": "https://github.com/carlomigueldy/skills",
       "license": "MIT",
-      "keywords": ["grok", "grok-build", "orchestration", "multi-agent", "ultracode"],
+      "keywords": ["grok", "grok-ultracode", "orchestration", "multi-agent", "ultracode"],
       "category": "productivity"
     }
   ]

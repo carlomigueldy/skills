@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Install grok-build artifacts into a Grok config directory.
+"""Install grok-ultracode artifacts into a Grok config directory.
 
 Default target is ~/.grok (user-level). Use --target .grok for a project
 checkout, or any other directory with the same layout Grok discovers.
 
 Usage:
-    python3 plugins/grok-build/scripts/install.py
-    python3 plugins/grok-build/scripts/install.py --target .grok
-    python3 plugins/grok-build/scripts/install.py --dry-run
+    python3 plugins/grok-ultracode/scripts/install.py
+    python3 plugins/grok-ultracode/scripts/install.py --target .grok
+    python3 plugins/grok-ultracode/scripts/install.py --dry-run
 """
 
 from __future__ import annotations
@@ -61,7 +61,7 @@ def install(target: Path, *, dry_run: bool) -> int:
             print(f"error: missing package source: {path}", file=sys.stderr)
         return 1
 
-    print(f"Installing grok-build → {target}" + (" (dry-run)" if dry_run else ""))
+    print(f"Installing grok-ultracode → {target}" + (" (dry-run)" if dry_run else ""))
     if not dry_run:
         target.mkdir(parents=True, exist_ok=True)
 
@@ -92,7 +92,7 @@ def install(target: Path, *, dry_run: bool) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Install grok-build skill, workflow, personas, and roles for Grok Build.",
+        description="Install grok-ultracode skill, workflow, personas, and roles for Grok Build.",
     )
     parser.add_argument(
         "--target",

@@ -9,7 +9,7 @@ and workflows.
 This repo is a Claude Code plugin marketplace, but its skills are also
 installable straight from the top-level `skills/` mirror on any agent that
 speaks the emerging `skills/` convention — Codex CLI, OpenCode, and others.
-Grok Build uses a separate install path (see [Grok Build setup](#grok-build-setup)).
+Grok Build uses a separate install path (see [Grok Build setup](#grok-ultracode-setup)).
 Pick the row for your agent:
 
 | Agent | Install | Notes |
@@ -18,7 +18,7 @@ Pick the row for your agent:
 | Codex CLI | `codex plugin marketplace add carlomigueldy/skills` (reads `.claude-plugin/marketplace.json` and installs `saas-launch` from `plugins/saas-launch/.claude-plugin/plugin.json`), or `npx skills add carlomigueldy/skills` for skills only | See caveat below — not yet published. Manual fallback: copy `skills/*` into your project's `.agents/skills/` or into `~/.codex/skills/`. |
 | OpenCode | `npx skills add carlomigueldy/skills` | See caveat below — not yet published. Manual fallback: copy `skills/*` into `~/.config/opencode/skills/` or your project's `.agents/skills/`. |
 | Claude Cowork / Claude Desktop | Build a zip with `scripts/package-plugin.py` (see below) | No marketplace support in the desktop apps. |
-| **Grok Build** | `python3 scripts/install-grok-build.py` | Copies `ultracode`, `ship-feature` workflow, personas, and roles into `~/.grok/`. See [Grok Build setup](#grok-build-setup). |
+| **Grok Build** | `python3 scripts/install-grok-ultracode.py` | Copies `ultracode`, `ship-feature` workflow, personas, and roles into `~/.grok/`. See [Grok Build setup](#grok-ultracode-setup). |
 
 > **Not yet published to GitHub.** This repo isn't pushed to GitHub yet, so
 > every remote-install row above — the `claude plugin` commands AND the
@@ -70,9 +70,9 @@ copying the template out.** Next.js matches dynamic routes on the literal
 only affects the manual-upload path — a marketplace install ships the
 correct names.
 
-## Grok Build setup
+## Grok Ultracode setup
 
-[`plugins/grok-build`](./plugins/grok-build) packages the multi-agent
+[`plugins/grok-ultracode`](./plugins/grok-ultracode) packages the multi-agent
 orchestration kit used with [Grok Build](https://grok.com): the `/ultracode`
 skill, the `ship-feature` Rhai workflow, and tiered personas/roles
 (architect · sweeper · implementer · reviewer).
@@ -89,19 +89,19 @@ From a clone of this repo:
 ```bash
 git clone https://github.com/carlomigueldy/skills.git
 cd skills
-python3 scripts/install-grok-build.py          # → ~/.grok/
-# python3 scripts/install-grok-build.py --target .grok   # project-local
-# python3 scripts/install-grok-build.py --dry-run
+python3 scripts/install-grok-ultracode.py          # → ~/.grok/
+# python3 scripts/install-grok-ultracode.py --target .grok   # project-local
+# python3 scripts/install-grok-ultracode.py --dry-run
 ```
 
 The installer copies:
 
 | Source | Destination |
 | --- | --- |
-| `plugins/grok-build/skills/ultracode/` | `~/.grok/skills/ultracode/` |
-| `plugins/grok-build/workflows/ship-feature.rhai` | `~/.grok/workflows/ship-feature.rhai` |
-| `plugins/grok-build/personas/*.toml` | `~/.grok/personas/` |
-| `plugins/grok-build/roles/*.toml` | `~/.grok/roles/` |
+| `plugins/grok-ultracode/skills/ultracode/` | `~/.grok/skills/ultracode/` |
+| `plugins/grok-ultracode/workflows/ship-feature.rhai` | `~/.grok/workflows/ship-feature.rhai` |
+| `plugins/grok-ultracode/personas/*.toml` | `~/.grok/personas/` |
+| `plugins/grok-ultracode/roles/*.toml` | `~/.grok/roles/` |
 
 Restart the Grok TUI (or open a new session) so discovery reloads.
 
@@ -119,7 +119,7 @@ sweeps, implement, verify, adversarial review, fix loops).
 `/workflow ship-feature` is the deterministic Rhai harness for the same tier
 ladder. Both expect Grok Build subagents (`plan`, `explore`,
 `general-purpose`) and native model `grok-4.5` effort/capability tiering —
-see [`plugins/grok-build/README.md`](./plugins/grok-build/README.md).
+see [`plugins/grok-ultracode/README.md`](./plugins/grok-ultracode/README.md).
 
 ## Plugins
 
@@ -127,14 +127,14 @@ see [`plugins/grok-build/README.md`](./plugins/grok-build/README.md).
 | --- | --- | --- |
 | [`saas-launch`](./plugins/saas-launch) | End-to-end SaaS ideation → PRD → prototype → build-handoff workflow, plus a deterministic pnpm + Turborepo SaaS monorepo project template | `saas-launch-blueprint`, `saas-scaffold` |
 | [`product-foundry`](./plugins/product-foundry) | Cross-platform, approval-gated product discovery → prototype → PRD → go-to-market → implementation-handoff workflow | `product-foundry`, `implement-prd` |
-| [`grok-build`](./plugins/grok-build) | Grok Build multi-agent orchestration kit (skill + Rhai workflow + personas/roles) | `ultracode` |
+| [`grok-ultracode`](./plugins/grok-ultracode) | Grok Build multi-agent orchestration kit (skill + Rhai workflow + personas/roles) | `ultracode` |
 
 Product Foundry keeps one package-local `skills/` tree shared by its native
 Claude and Codex manifests, so it does not need a second top-level mirror. The
 older `saas-launch` plugin continues to use the repository's generated
 top-level `skills/` mirror for Codex CLI, OpenCode, and `npx skills add`.
-`grok-build` is installed into Grok's user/project config via
-`scripts/install-grok-build.py` rather than the flat `skills/` mirror.
+`grok-ultracode` is installed into Grok's user/project config via
+`scripts/install-grok-ultracode.py` rather than the flat `skills/` mirror.
 
 ## Repo layout
 
@@ -154,7 +154,7 @@ skills/
 │   │   │   ├── implement-prd/SKILL.md
 │   │   │   └── foundry-*/SKILL.md
 │   │   └── README.md
-│   └── grok-build/
+│   └── grok-ultracode/
 │       ├── .claude-plugin/plugin.json
 │       ├── skills/ultracode/
 │       ├── workflows/ship-feature.rhai
@@ -167,7 +167,7 @@ skills/
 ├── scripts/
 │   ├── package-plugin.py         # zip a plugin for manual Cowork upload
 │   ├── sync-skills.py            # regenerate the top-level skills/ mirror
-│   └── install-grok-build.py     # install grok-build into ~/.grok/
+│   └── install-grok-ultracode.py # install grok-ultracode into ~/.grok/
 ├── docs/
 │   └── VERSIONING.md
 └── README.md
