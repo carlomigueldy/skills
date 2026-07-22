@@ -1,0 +1,39 @@
+{
+  "approved_humans": [
+    {
+      "name": "Carlo Miguel Dy",
+      "email": "carlomigueldy@gmail.com"
+    },
+    {
+      "name": "Carlo Miguel Dy",
+      "email": "45052332+carlomigueldy@users.noreply.github.com"
+    }
+  ],
+  "approved_github_logins": [
+    "carlomigueldy",
+    "github-actions[bot]"
+  ],
+  "release_bot": {
+    "name": "github-actions[bot]",
+    "github_login": "github-actions[bot]",
+    "email": "41898282+github-actions[bot]@users.noreply.github.com",
+    "header_pattern": "^chore\\(main\\): release .+"
+  },
+  "platform_committer": {
+    "name": "GitHub",
+    "email": "noreply@github.com"
+  },
+  "conventional_types": [
+    "build",
+    "chore",
+    "ci",
+    "docs",
+    "feat",
+    "fix",
+    "perf",
+    "refactor",
+    "revert",
+    "style",
+    "test"
+  ]
+}

@@ -1,0 +1,143 @@
+name: Contribution policy
+
+on:
+  pull_request_target:
+    types: [opened, edited, reopened, synchronize]
+  issues:
+    types: [opened, edited, reopened]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: contribution-policy-${{ github.event.pull_request.number || github.event.issue.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pull-request:
+    if: github.event_name == 'pull_request_target'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      statuses: write
+    steps:
+      - name: Mark policy pending
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              ...context.repo,
+              sha: context.payload.pull_request.head.sha,
+              state: 'pending',
+              context: 'Contribution policy',
+              description: 'Validating contribution metadata',
+            });
+
+      # pull_request_target runs trusted base-branch workflow and policy code.
+      # The untrusted PR tree is fetched only as Git objects and never checked out
+      # or executed.
+      - name: Checkout trusted base policy
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Fetch PR Git objects without checkout
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "+refs/pull/${PR_NUMBER}/head:refs/remotes/origin/contribution-policy-head"
+          actual_head=$(git rev-parse refs/remotes/origin/contribution-policy-head)
+          test "$actual_head" = "$EXPECTED_HEAD"
+
+      - name: Validate PR and commit range
+        id: policy
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          MERGE_BASE=$(git merge-base "$BASE_SHA" "$HEAD_SHA")
+          test -n "$MERGE_BASE"
+          python3 scripts/contribution_policy.py event "$GITHUB_EVENT_PATH"
+          python3 scripts/contribution_policy.py range "$MERGE_BASE" "$HEAD_SHA"
+
+      - name: Publish policy result
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          POLICY_OUTCOME: ${{ steps.policy.outcome }}
+        with:
+          script: |
+            const passed = process.env.POLICY_OUTCOME === 'success';
+            await github.rest.repos.createCommitStatus({
+              ...context.repo,
+              sha: context.payload.pull_request.head.sha,
+              state: passed ? 'success' : 'failure',
+              context: 'Contribution policy',
+              description: passed
+                ? 'Contribution policy passed'
+                : 'Contribution policy failed',
+            });
+
+  issue:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout trusted policy
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      - name: Validate issue
+        id: policy
+        continue-on-error: true
+        run: python3 scripts/contribution_policy.py event "$GITHUB_EVENT_PATH"
+
+      - name: Comment once and close invalid issue
+        if: steps.policy.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = '<!-- contribution-policy-guidance -->';
+            const issue_number = context.payload.issue.number;
+            const comments = await github.paginate(
+              github.rest.issues.listComments,
+              { ...context.repo, issue_number, per_page: 100 },
+            );
+            if (!comments.some((comment) => comment.body?.includes(marker))) {
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number,
+                body: `${marker}\nThis issue was closed because its title or body does not satisfy the repository contribution policy. Use an accepted Conventional Commit prefix (for example, \`fix:\`, \`feat:\`, or \`chore:\`) and remove generation-credit or unauthorized attribution text. After correcting it, reopen the issue for validation.`,
+              });
+            }
+            await github.rest.issues.update({
+              ...context.repo,
+              issue_number,
+              state: 'closed',
+            });
+
+  main-push-audit:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout audited main history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Audit pushed commits
+        env:
+          BASE_SHA: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.event.after }}
+        run: python3 scripts/contribution_policy.py range "$BASE_SHA" "$HEAD_SHA"

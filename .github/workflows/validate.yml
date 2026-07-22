@@ -26,30 +26,52 @@ jobs:
       - name: Install validation dependencies
         run: python3 -m pip install -r requirements-dev.txt
 
+      - name: Set up Node.js for pinned repository tooling
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install repository tooling without running hooks
+        run: npm ci --ignore-scripts
+
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code
+
+      - name: Smoke-test commit message policy
+        run: |
+          printf '%s\n' 'chore: validate commit policy' | npx --no-install commitlint
+
+      - name: Run Python contract tests
+        run: python3 -m unittest discover -v
 
       - name: Check skills mirror is in sync
         run: python3 scripts/sync-skills.py --check
 
-      - name: Validate marketplace
-        run: claude plugin validate .
+      - name: Validate discovered plugin contracts
+        run: python3 scripts/validate_plugins.py
 
-      - name: Validate saas-launch plugin
-        run: claude plugin validate ./plugins/saas-launch
-
-      - name: Validate product-foundry plugin
-        run: claude plugin validate ./plugins/product-foundry
+      - name: Validate marketplace and every discovered Claude plugin
+        run: |
+          set -euo pipefail
+          claude plugin validate .
+          find plugins -mindepth 1 -maxdepth 1 -type d -print0 |
+            while IFS= read -r -d '' plugin_dir; do
+              claude plugin validate "$plugin_dir"
+            done
 
       - name: Validate product-foundry Codex native manifest
         run: python3 scripts/validate_product_foundry.py --codex-manifest-only ./plugins/product-foundry/.codex-plugin/plugin.json
 
       - name: Validate product-foundry package contract
-        run: |
-          python3 -m unittest -v tests.test_product_foundry_contract
-          python3 scripts/validate_product_foundry.py .
+        run: python3 scripts/validate_product_foundry.py .
 
-      - name: Smoke-test product-foundry package layout
+      - name: Smoke-test every discovered package layout
         run: |
+          set -euo pipefail
           package_dir=$(mktemp -d)
-          scripts/package-plugin.py product-foundry --output-dir "$package_dir"
+          find plugins -mindepth 1 -maxdepth 1 -type d -print0 |
+            while IFS= read -r -d '' plugin_dir; do
+              python3 scripts/package-plugin.py "$(basename "$plugin_dir")" \
+                --output-dir "$package_dir"
+            done

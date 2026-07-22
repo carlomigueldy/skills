@@ -1,0 +1,18 @@
+name: Bug report
+description: Report a reproducible defect
+title: "fix: "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Describe the observed and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Provide the smallest reliable reproduction and relevant output.
+    validations:
+      required: true
