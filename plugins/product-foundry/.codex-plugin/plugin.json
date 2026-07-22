@@ -1,7 +1,7 @@
 {
   "name": "product-foundry",
   "description": "A gated, stack-agnostic product discovery, prototype, PRD, go-to-market, and implementation handoff workflow for Codex and Claude Code.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "skills": "./skills/",
   "interface": {
     "displayName": "Product Foundry",

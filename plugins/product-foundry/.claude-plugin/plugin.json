@@ -1,7 +1,7 @@
 {
   "name": "product-foundry",
   "description": "A gated, stack-agnostic product discovery, prototype, PRD, go-to-market, and implementation handoff workflow for Claude Code and Codex.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": {
     "name": "Carlo Miguel Dy",
     "email": "carlomigueldy@yahoo.com"
