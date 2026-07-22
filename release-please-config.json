@@ -36,6 +36,19 @@
           "jsonpath": "$.version"
         }
       ]
+    },
+    "plugins/grok-build": {
+      "release-type": "simple",
+      "component": "grok-build",
+      "package-name": "grok-build",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": ".claude-plugin/plugin.json",
+          "jsonpath": "$.version"
+        }
+      ]
     }
   }
 }

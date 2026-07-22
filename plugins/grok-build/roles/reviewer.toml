@@ -1,0 +1,5 @@
+# Reviewer role — high effort adversarial review
+description = "Adversarial final review (high effort)"
+default_capability_mode = "read-only"
+reasoning_effort = "high"
+model = "grok-4.5"

@@ -1,0 +1,5 @@
+# Architect role — high effort, read-only planning
+description = "Staff architect for plan + design (high effort)"
+default_capability_mode = "read-only"
+reasoning_effort = "high"
+model = "grok-4.5"

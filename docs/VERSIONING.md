@@ -10,7 +10,7 @@ to automate versioning for each plugin independently, driven by
    Actions workflow (`.github/workflows/release.yml`).
 2. release-please opens (and keeps up to date) one release pull request per
    package configured in `release-please-config.json`: currently
-   `plugins/saas-launch` and `plugins/product-foundry`.
+   `plugins/saas-launch`, `plugins/product-foundry`, and `plugins/grok-build`.
 3. Merging a release PR:
    - Bumps the package's configured manifest version or versions via that
      package's `extra-files` config. Marketplace entries deliberately carry no
