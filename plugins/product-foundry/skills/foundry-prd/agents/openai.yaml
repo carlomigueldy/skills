@@ -1,0 +1,4 @@
+interface:
+  display_name: "Foundry PRD"
+  short_description: "Author traceable product requirements"
+  default_prompt: "Use $foundry-prd to turn approved product decisions into a traceable PRD."

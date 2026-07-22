@@ -1,0 +1,4 @@
+interface:
+  display_name: "Foundry Handoff"
+  short_description: "Package a validated implementation handoff"
+  default_prompt: "Use $foundry-handoff to package approved Foundry work for implementation."

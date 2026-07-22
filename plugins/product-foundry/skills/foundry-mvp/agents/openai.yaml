@@ -1,0 +1,4 @@
+interface:
+  display_name: "Foundry MVP"
+  short_description: "Scope the smallest testable MVP"
+  default_prompt: "Use $foundry-mvp to define and approve the smallest testable product experiment."

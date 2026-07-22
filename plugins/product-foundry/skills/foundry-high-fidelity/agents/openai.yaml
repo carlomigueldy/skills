@@ -1,0 +1,4 @@
+interface:
+  display_name: "Foundry High Fidelity"
+  short_description: "Build an interactive visual reference"
+  default_prompt: "Use $foundry-high-fidelity to create an approved MVP interaction reference."

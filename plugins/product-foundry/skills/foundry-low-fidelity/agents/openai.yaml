@@ -1,0 +1,4 @@
+interface:
+  display_name: "Low-Fidelity Prototype"
+  short_description: "Prototype low-fidelity flows and states"
+  default_prompt: "Use $foundry-low-fidelity to create and validate a build-free prototype."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Foundry Intake"
+  short_description: "Capture founder context and decisions"
+  default_prompt: "Use $foundry-intake to capture and approve the product discovery context."

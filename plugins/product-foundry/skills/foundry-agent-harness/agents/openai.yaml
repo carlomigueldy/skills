@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Harness"
+  short_description: "Set up an auditable delivery harness"
+  default_prompt: "Use $foundry-agent-harness to configure an auditable delivery harness."
