@@ -1,0 +1,4 @@
+interface:
+  display_name: "Brand Direction"
+  short_description: "Define a product visual system"
+  default_prompt: "Use $foundry-brand to define an evidence-backed brand direction."

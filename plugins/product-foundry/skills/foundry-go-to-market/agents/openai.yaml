@@ -1,0 +1,4 @@
+interface:
+  display_name: "Foundry Go to Market"
+  short_description: "Plan a focused, measurable product launch"
+  default_prompt: "Use $foundry-go-to-market to create a focused, measurable launch plan."

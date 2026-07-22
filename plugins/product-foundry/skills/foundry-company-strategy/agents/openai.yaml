@@ -1,0 +1,4 @@
+interface:
+  display_name: "Foundry Company Strategy"
+  short_description: "Define a falsifiable company strategy"
+  default_prompt: "Use $foundry-company-strategy to define and approve the commercial product strategy."

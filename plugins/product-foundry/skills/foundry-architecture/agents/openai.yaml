@@ -1,0 +1,4 @@
+interface:
+  display_name: "Architecture Planning"
+  short_description: "Choose and document product architecture"
+  default_prompt: "Use $foundry-architecture to choose and document MVP architecture."

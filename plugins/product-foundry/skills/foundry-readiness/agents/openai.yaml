@@ -1,0 +1,4 @@
+interface:
+  display_name: "Foundry Readiness"
+  short_description: "Verify release and implementation readiness"
+  default_prompt: "Use $foundry-readiness to reconcile approved artifacts and verify handoff gates."

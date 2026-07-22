@@ -1,37 +1,37 @@
 ---
 name: foundry-architecture
-description: Select a proportionate technical architecture and record explicit decisions for core platform, operations, privacy, and security concerns.
+description: Select or revise a proportionate technical architecture and durable ADRs for an approved Product Foundry MVP. Use when resolving system boundaries, data, security, privacy, operations, deployment, or recovery decisions before defining the delivery harness and PRD.
 ---
 
 # Architecture phase
 
-Interview stack constraints. Recommend a pnpm monorepo, compatible Turborepo,
-Docker/Compose, and modular monolith only when they fit; record deviations as
-ADRs. Decide boundaries, data, auth, APIs, validation, storage, jobs, billing,
-analytics, observability, backups, recovery, secrets, privacy, and deployment
-in `docs/architecture/`. Apply high-consequence safety limits from
-`../../references/policies.md`.
+Use `../../references/workflow.md` for phase state and participation, `../../references/platform-adapter.md` for questions, `../../references/artifact-contract.md` for canonical documentation, and `../../references/policies.md` for authority limits.
 
 ## Required inputs
 
-Approved MVP, design constraints, company constraints, and deployment requirements.
+- Require current, approved MVP and brand direction plus company, design, security, privacy, and deployment constraints. Stop on missing, draft, conflicting, or stale inputs; route the decision to the owning upstream phase.
 
 ## Deterministic outputs
 
-`docs/architecture/architecture.md` and ADRs for every meaningful deviation.
+1. Assess a pnpm monorepo, compatible Turborepo, Docker/Compose, and modular-monolith baseline against the constraints; adopt it only when proportionate.
+2. Write `docs/architecture/architecture.md` with system boundaries, domain ownership, data lifecycle, authN/authZ, APIs, validation, storage, asynchronous jobs, billing, analytics, observability, secrets, deployment, backups, recovery, privacy, and security controls that apply to the MVP.
+3. Create `docs/architecture/adr-<number>.md` for every material, durable decision or baseline deviation. State context, options, decision, consequences, risks, owner, evidence or assumptions, and revisit conditions.
+4. Distinguish decided constraints, open questions, and deferred work. Do not design production implementation or authorize deployment, paid services, accounts, domains, secrets, destructive data work, legal acceptance, or irreversible actions.
 
 ## Completion criteria
 
-Core platform, operations, privacy, security, and recovery decisions are explicit and approved.
+- Check that every MVP capability has an owning boundary and that data handling, authentication, authorization, failure behavior, observability, backup, and recovery decisions are explicit where applicable.
+- Reconcile architecture decisions with brand-driven accessibility needs, company constraints, and deployment environment. Flag unresolved conflicts rather than choosing silently.
+- Fail closed on missing critical decisions, stale input, unresolved security/privacy risk, absent recovery path where data is retained, or unapproved high-consequence action. Keep the phase `draft` or `in_review` until resolved.
 
 ## Invalidation rules
 
-Changed product constraints or ADRs stales harness, PRD, implementation order, and high fidelity where affected.
+Produce `docs/architecture/architecture.md` and the required `docs/architecture/adr-<number>.md` records. A changed product, design, company, security, privacy, deployment constraint, or ADR marks affected architecture artifacts stale and requires revisiting the harness, PRD, implementation order, and affected high-fidelity work.
 
 ## Participation gate
 
-At the start of every phase, selected independently at the start of every phase: `Interview me` or `Decide for me`; never inherit a previous selection. For `Decide for me`, record rationale, evidence, assumptions, confidence, risks, and revisit conditions.
+Offer exactly `Interview me` and `Decide for me`, selected independently at the start of every phase; never inherit a prior selection. Ask one material question at a time. In recommendation mode, record the recommendation, rationale, evidence, assumptions, confidence, risks, revisit conditions, and user authority. Obtain explicit approval for high-consequence choices and any external action.
 
 ## Approval gate
 
-Offer approve, request changes, or go back; only approval unlocks the agent harness.
+Mark artifacts approved only after explicit approval. Offer approve, request changes, or go back; never infer approval from silence. Approval unlocks the agent harness.

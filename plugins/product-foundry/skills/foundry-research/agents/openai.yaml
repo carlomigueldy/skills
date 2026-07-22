@@ -1,0 +1,4 @@
+interface:
+  display_name: "Foundry Research"
+  short_description: "Ground product choices in evidence"
+  default_prompt: "Use $foundry-research to investigate and approve evidence for this product opportunity."
