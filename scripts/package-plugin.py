@@ -38,6 +38,17 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 PLUGINS_DIR = REPO_ROOT / "plugins"
 DEFAULT_PLUGIN = "saas-launch"
 
+# `package_exclusions` is a sibling module, not a `scripts.` package import:
+# this script is also invoked directly (`python3 scripts/package-plugin.py`),
+# where only its own directory is on sys.path, not the repo root. Ensuring
+# that directory is present makes the import work identically whether this
+# runs standalone or gets loaded dynamically (e.g. by a test, via
+# importlib -- the hyphenated filename isn't import-able by name).
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+from package_exclusions import EXCLUDED_DIRS  # noqa: E402
+
 # Characters the desktop uploader rejects in archive paths. `[` and `]` are
 # legal on Windows but the uploader's validator refuses them anyway, which is
 # what broke the first saas-launch upload attempt.
@@ -45,7 +56,6 @@ ILLEGAL_CHARS = r'<>:"|?*\\[]'
 ILLEGAL_RE = re.compile(f"[{re.escape(ILLEGAL_CHARS)}]|[^\x20-\x7e]")
 
 # Never ship these, regardless of what is on disk or tracked in git.
-EXCLUDED_DIRS = {".git", "node_modules", ".turbo", "dist", ".next"}
 EXCLUDED_FILES = {".DS_Store"}
 EXCLUDED_SUFFIXES = {".log"}
 

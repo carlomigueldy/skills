@@ -1,0 +1,26 @@
+{
+  "name": "orchestra",
+  "description": "Host-agnostic multi-agent orchestration: a router skill plus 18 workflow skills (plan, design, spike, fan-out, implement, verify, review, debug, triage, research, refactor, migrate, upgrade, harden, perf, cover, document, ship) that delegate to isolated lanes chosen by capability tier, not model name, with resumable run state in a gitignored .orchestra/ ledger.",
+  "version": "0.1.0",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Orchestra",
+    "shortDescription": "Host-agnostic multi-agent orchestration for any codebase",
+    "longDescription": "Routes any engineering goal to one of 18 opinionated workflow skills, each of which decomposes the goal into lanes, dispatches them to isolated subagents by capability tier, enforces evidence-before-completion and adversarial verification gates, and integrates the verified result. Run state is tracked in a resumable, gitignored .orchestra/ ledger.",
+    "developerName": "Carlo Miguel Dy",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Route my goal to the right orchestra workflow.",
+      "Fan out this task across isolated lanes and verify the result.",
+      "Resume the current orchestra run from its ledger."
+    ]
+  },
+  "homepage": "https://github.com/carlomigueldy/skills/tree/main/plugins/orchestra",
+  "repository": "https://github.com/carlomigueldy/skills",
+  "license": "MIT"
+}

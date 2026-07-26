@@ -1,0 +1,265 @@
+"""Contract tests for the top-level skills/ mirror generator.
+
+`scripts/sync-skills.py` had zero coverage before this file and is about to
+fan in from more than one plugin's skills/. The round-trip test is the load-
+bearing one: it's what stops the generator and `validate_plugins.py`'s
+mirror check from drifting apart.
+"""
+
+from __future__ import annotations
+
+import contextlib
+import importlib.util
+import io
+import json
+import tempfile
+import unittest
+from pathlib import Path
+from unittest import mock
+
+from scripts import validate_plugins
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SCRIPT_PATH = REPO_ROOT / "scripts" / "sync-skills.py"
+COMMITTED_MARKER_PATH = REPO_ROOT / "skills" / ".generated"
+
+
+def load_sync_skills():
+    # The hyphen in the filename makes this un-importable by name -- same
+    # trick tests/test_product_foundry_contract.py uses for its validator.
+    spec = importlib.util.spec_from_file_location("sync_skills", SCRIPT_PATH)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("cannot load sync-skills.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def write_json(path: Path, payload: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
+def write_text(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content, encoding="utf-8")
+
+
+def make_skill(package: Path, skill_name: str) -> None:
+    write_text(
+        package / "skills" / skill_name / "SKILL.md",
+        f"---\nname: {skill_name}\ndescription: Test skill\n---\n\n# {skill_name}\n",
+    )
+
+
+def make_registered_repo(root: Path, plugin_name: str, skill_names: list[str]) -> None:
+    """A minimal synthetic repo with one fully-registered plugin -- enough
+    for `validate_plugins.validate_repository` to pass against it."""
+    package = root / "plugins" / plugin_name
+    write_json(
+        package / ".claude-plugin/plugin.json",
+        {
+            "name": plugin_name,
+            "description": f"{plugin_name} test plugin",
+            "version": "1.0.0",
+        },
+    )
+    write_text(package / "version.txt", "1.0.0\n")
+    for skill_name in skill_names:
+        make_skill(package, skill_name)
+
+    write_json(
+        root / ".claude-plugin/marketplace.json",
+        {
+            "name": "test-marketplace",
+            "plugins": [{"name": plugin_name, "source": f"./plugins/{plugin_name}"}],
+        },
+    )
+    write_json(
+        root / "release-please-config.json",
+        {
+            "packages": {
+                f"plugins/{plugin_name}": {
+                    "release-type": "simple",
+                    "component": plugin_name,
+                    "package-name": plugin_name,
+                    "extra-files": [
+                        {"type": "json", "path": ".claude-plugin/plugin.json"}
+                    ],
+                }
+            }
+        },
+    )
+    write_json(
+        root / ".release-please-manifest.json",
+        {f"plugins/{plugin_name}": "1.0.0"},
+    )
+
+
+def snapshot(directory: Path) -> dict[str, bytes]:
+    """Every file under `directory`, as relative-path -> raw bytes."""
+    if not directory.is_dir():
+        return {}
+    return {
+        path.relative_to(directory).as_posix(): path.read_bytes()
+        for path in directory.rglob("*")
+        if path.is_file()
+    }
+
+
+class SyncSkillsTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.module = load_sync_skills()
+
+    def test_source_dirs_are_sorted_regardless_of_declaration_order(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "plugins/zzz-plugin/skills").mkdir(parents=True)
+            (root / "plugins/aaa-plugin/skills").mkdir(parents=True)
+
+            with mock.patch.object(
+                self.module, "MIRRORED_PLUGINS", ("zzz-plugin", "aaa-plugin")
+            ):
+                sources = self.module.source_dirs(root)
+
+        self.assertEqual(
+            [relative for relative, _ in sources],
+            ["plugins/aaa-plugin/skills", "plugins/zzz-plugin/skills"],
+        )
+
+    def test_single_source_marker_matches_the_legacy_pre_multi_source_format(
+        self,
+    ) -> None:
+        """Backward-compat guarantee, pinned independently of whatever the
+        repo currently mirrors: a lone source must produce byte-identical
+        output to the marker sync-skills.py always wrote before it supported
+        more than one source. That's what lets a validator written against
+        the legacy format keep parsing markers going forward."""
+        content = self.module.marker_content(["plugins/saas-launch/skills"])
+        self.assertEqual(
+            content,
+            "generated by scripts/sync-skills.py from plugins/saas-launch/skills "
+            "-- edit the source, not this mirror.\n",
+        )
+
+    def test_committed_marker_matches_marker_content_for_current_mirrored_plugins(
+        self,
+    ) -> None:
+        """The committed skills/.generated must always be exactly what
+        `marker_content` produces for the repo's current `MIRRORED_PLUGINS`
+        -- the generator's own self-consistency check against production
+        data, so this adapts automatically as more plugins get mirrored."""
+        sources = [relative for relative, _ in self.module.source_dirs(REPO_ROOT)]
+        expected = self.module.marker_content(sources).encode("utf-8")
+        committed = COMMITTED_MARKER_PATH.read_bytes()
+        self.assertEqual(expected, committed)
+
+    def test_multi_source_marker_lists_sources_sorted_and_comma_joined(self) -> None:
+        content = self.module.marker_content(
+            ["plugins/aaa-plugin/skills", "plugins/zzz-plugin/skills"]
+        )
+        self.assertEqual(
+            content,
+            "generated by scripts/sync-skills.py from "
+            "plugins/aaa-plugin/skills, plugins/zzz-plugin/skills "
+            "-- edit the source, not this mirror.\n",
+        )
+
+    def test_round_trip_sync_then_full_repository_validation_passes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            make_registered_repo(root, "saas-launch", ["demo-skill", "other-skill"])
+            sources = [("plugins/saas-launch/skills", root / "plugins/saas-launch/skills")]
+            mirror_dir = root / "skills"
+
+            exit_code = self.module.run_sync(mirror_dir, sources)
+            self.assertEqual(exit_code, 0)
+
+            errors = validate_plugins.validate_repository(root)
+        self.assertEqual(errors, [])
+
+    def test_check_passes_on_fresh_mirror_and_attributes_drift_when_corrupted(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            make_registered_repo(root, "saas-launch", ["demo-skill"])
+            sources = [("plugins/saas-launch/skills", root / "plugins/saas-launch/skills")]
+            mirror_dir = root / "skills"
+
+            self.assertEqual(self.module.run_sync(mirror_dir, sources), 0)
+
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                fresh_code = self.module.run_check(mirror_dir, sources)
+            self.assertEqual(fresh_code, 0)
+            self.assertIn("OK", stdout.getvalue())
+
+            (mirror_dir / "demo-skill" / "SKILL.md").write_text(
+                "drifted\n", encoding="utf-8"
+            )
+
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                drifted_code = self.module.run_check(mirror_dir, sources)
+            self.assertEqual(drifted_code, 1)
+            output = stdout.getvalue()
+            self.assertIn(
+                "changed: demo-skill/SKILL.md (from plugins/saas-launch/skills)",
+                output,
+            )
+
+    def test_sync_is_idempotent(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            make_registered_repo(root, "saas-launch", ["demo-skill", "other-skill"])
+            sources = [("plugins/saas-launch/skills", root / "plugins/saas-launch/skills")]
+            mirror_dir = root / "skills"
+
+            self.assertEqual(self.module.run_sync(mirror_dir, sources), 0)
+            first = snapshot(mirror_dir)
+
+            self.assertEqual(self.module.run_sync(mirror_dir, sources), 0)
+            second = snapshot(mirror_dir)
+
+        self.assertEqual(first, second)
+        self.assertTrue(first)  # sanity: the snapshot isn't empty
+
+    def test_collision_raises_and_leaves_existing_mirror_intact(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            mirror_dir = root / "skills"
+
+            # An initial, non-colliding mirror stands in for the committed
+            # skills/ tree that must survive a later failed sync attempt.
+            make_skill(root / "plugins/gamma", "keep-me")
+            initial_sources = [
+                ("plugins/gamma/skills", root / "plugins/gamma/skills")
+            ]
+            self.assertEqual(self.module.run_sync(mirror_dir, initial_sources), 0)
+            before = snapshot(mirror_dir)
+
+            # Two different plugins now ship a same-named skill, differing
+            # only in case.
+            make_skill(root / "plugins/alpha", "dup")
+            make_skill(root / "plugins/beta", "Dup")
+            colliding_sources = [
+                ("plugins/alpha/skills", root / "plugins/alpha/skills"),
+                ("plugins/beta/skills", root / "plugins/beta/skills"),
+            ]
+
+            with self.assertRaises(self.module.MirrorError) as ctx:
+                self.module.run_sync(mirror_dir, colliding_sources)
+
+            message = str(ctx.exception)
+            self.assertIn("plugins/alpha/skills", message)
+            self.assertIn("plugins/beta/skills", message)
+
+            after = snapshot(mirror_dir)
+        self.assertEqual(before, after)
+
+
+if __name__ == "__main__":
+    unittest.main()

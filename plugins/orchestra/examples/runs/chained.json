@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "20260214T091500Z-parser-migration",
+  "goal": "Replace the legacy parser entry point and migrate every call site.",
+  "host": "claude-code",
+  "capabilities": {"parallelSubagents": true, "childDepth": 1, "isolatedContext": true},
+  "tierResolution": {"deep": "high", "standard": "medium", "fast": "low"},
+  "scheduler": "parallel-subagents",
+  "delegationDepth": 1,
+  "isolation": "intact",
+  "reopenCount": {"02-implement/implement-parser": 1},
+  "chain": [
+    {"chainPosition": 1, "workflow": "plan", "status": "complete"},
+    {"chainPosition": 2, "workflow": "implement", "status": "complete"},
+    {"chainPosition": 3, "workflow": "verify", "status": "complete"}
+  ],
+  "adversaryEscalations": [
+    {"laneId": "falsify", "workflow": "verify", "chainPosition": 3, "trigger": "cross-boundary-change", "resolvedTier": "deep"}
+  ],
+  "lanes": [
+    {"laneId": "inventory", "workflow": "plan", "chainPosition": 1, "resolvedTier": "fast", "wave": 0, "workerId": "worker-01", "depth": 1},
+    {"laneId": "constraints", "workflow": "plan", "chainPosition": 1, "resolvedTier": "standard", "wave": 0, "workerId": "worker-02", "depth": 1},
+    {"laneId": "decompose", "workflow": "plan", "chainPosition": 1, "resolvedTier": "deep", "wave": 1, "workerId": "worker-03", "depth": 1},
+    {"laneId": "migrate-call-sites", "workflow": "implement", "chainPosition": 2, "resolvedTier": "fast", "wave": 0, "workerId": "worker-04", "hoistedFrom": "implement-parser", "depth": 1},
+    {"laneId": "implement-parser", "workflow": "implement", "chainPosition": 2, "resolvedTier": "standard", "wave": 1, "workerId": "worker-05", "depth": 1},
+    {"laneId": "run-suite", "workflow": "verify", "chainPosition": 3, "resolvedTier": "standard", "wave": 0, "workerId": "worker-06", "depth": 1},
+    {"laneId": "falsify", "workflow": "verify", "chainPosition": 3, "resolvedTier": "deep", "wave": 0, "workerId": "worker-07", "depth": 1},
+    {"laneId": "adjudicate", "workflow": "verify", "chainPosition": 3, "resolvedTier": "deep", "wave": 1, "workerId": "worker-08", "depth": 1}
+  ],
+  "gateRun": {
+    "ranAfterIntegration": true,
+    "result": "pass",
+    "evidence": ["03-verify/evidence/03-integration-gate.txt"]
+  },
+  "stops": [
+    {
+      "action": "Change the exported signature of the legacy parser entry point.",
+      "blastRadius": "Every caller outside src/parser/, including two published packages.",
+      "rollback": "git revert the single commit that lands the signature change; no data migration is involved.",
+      "answer": "approved"
+    }
+  ]
+}

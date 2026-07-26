@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Orchestra finding",
+  "type": "object",
+  "required": ["id", "severity", "status", "precondition", "evidence", "impact", "remediation", "retest"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^F-[0-9]{3,}(?![\\s\\S])"},
+    "severity": {"enum": ["critical", "high", "medium", "low", "informational"]},
+    "status": {"enum": ["open", "fixed", "accepted", "wontfix"]},
+    "precondition": {"type": "string", "minLength": 1},
+    "evidence": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "impact": {"type": "string", "minLength": 1},
+    "remediation": {"type": "string", "minLength": 1},
+    "retest": {
+      "type": "object",
+      "required": ["result"],
+      "properties": {
+        "result": {"enum": ["pass", "fail", "not_run"]},
+        "evidence": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "afterRemediation": {"type": "boolean"},
+        "executedByLaneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(?![\\s\\S])"}
+      },
+      "additionalProperties": false
+    },
+    "inboundLabel": {"enum": ["bug", "suggestion", "nit"]},
+    "reportedByLaneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(?![\\s\\S])"},
+    "humanDecision": {
+      "type": "object",
+      "required": ["party", "reason"],
+      "properties": {
+        "party": {"type": "string", "minLength": 1},
+        "reason": {"type": "string", "minLength": 1},
+        "recordedAt": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {"if": {"properties": {"status": {"const": "fixed"}}, "required": ["status"]},
+     "then": {"properties": {"retest": {"required": ["result", "evidence", "afterRemediation"], "properties": {"result": {"const": "pass"}, "evidence": {"minItems": 1}, "afterRemediation": {"const": true}}}}}},
+    {"if": {"properties": {"status": {"enum": ["accepted", "wontfix"]}}, "required": ["status"]},
+     "then": {"required": ["humanDecision"]}},
+    {"if": {"properties": {"status": {"const": "open"}}, "required": ["status"]},
+     "then": {"properties": {"retest": {"properties": {"result": {"enum": ["fail", "not_run"]}}}}}}
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "1.0",
+  "host": "opencode",
+  "capabilities": {"parallelSubagents": false, "childDepth": 0, "isolatedContext": false},
+  "dispatch": {
+    "scheduler": "self-execute",
+    "isolation": "degraded",
+    "verdictCap": "unverified",
+    "hoisted": [{"laneId": "migrate-call-sites", "hoistedFrom": "implement-parser"}],
+    "waves": [
+      {"wave": 0, "laneIds": ["inventory"]},
+      {"wave": 1, "laneIds": ["constraints"]},
+      {"wave": 2, "laneIds": ["decompose"]},
+      {"wave": 3, "laneIds": ["migrate-call-sites"]},
+      {"wave": 4, "laneIds": ["implement-parser"]},
+      {"wave": 5, "laneIds": ["run-suite"]},
+      {"wave": 6, "laneIds": ["falsify"]},
+      {"wave": 7, "laneIds": ["adjudicate"]}
+    ]
+  },
+  "lanePlan": [
+    {
+      "id": "inventory",
+      "role": "scout",
+      "tier": "fast",
+      "mode": "read_only",
+      "depth": 1,
+      "dependsOn": [],
+      "ownedPaths": [],
+      "inputs": ["docs/parser-spec.md"],
+      "deliverable": "Inventory of every call site of the legacy parser entry point.",
+      "acceptance": "Every reported call site resolves to an existing path and line, and the reported count equals a rerun of the recorded search command."
+    },
+    {
+      "id": "constraints",
+      "role": "analyst",
+      "tier": "standard",
+      "mode": "read_only",
+      "depth": 1,
+      "dependsOn": [],
+      "ownedPaths": [],
+      "inputs": ["docs/parser-spec.md"],
+      "deliverable": "Scoped summary of the behaviors the replacement parser must preserve.",
+      "acceptance": "Every preserved behavior cites a path and line or a stored command output, and assumptions are listed separately."
+    },
+    {
+      "id": "decompose",
+      "role": "architect",
+      "tier": "deep",
+      "mode": "read_only",
+      "depth": 1,
+      "dependsOn": ["constraints", "inventory"],
+      "ownedPaths": [],
+      "inputs": ["lanes/inventory.md", "lanes/constraints.md"],
+      "deliverable": "Interface contract for the replacement parser plus the exact call-site edit to apply.",
+      "acceptance": "The contract names every preserved behavior from the constraints lane and the call-site edit is stated precisely enough to apply without further judgement."
+    },
+    {
+      "id": "migrate-call-sites",
+      "role": "mechanic",
+      "tier": "fast",
+      "mode": "write",
+      "depth": 2,
+      "parentLaneId": "implement-parser",
+      "dependsOn": ["decompose"],
+      "ownedPaths": ["src/parser/callers.ts"],
+      "inputs": ["decomposition.md", "lanes/inventory.md"],
+      "deliverable": "The specified call-site edit applied to every match in src/parser/callers.ts.",
+      "acceptance": "The before-count and after-count of edited call sites agree and no file outside src/parser/callers.ts is modified."
+    },
+    {
+      "id": "implement-parser",
+      "role": "builder",
+      "tier": "standard",
+      "mode": "write",
+      "depth": 1,
+      "dependsOn": ["decompose"],
+      "ownedPaths": ["src/parser/"],
+      "inputs": ["decomposition.md", "lanes/migrate-call-sites.md"],
+      "deliverable": "The replacement parser implemented against the contract, preceded by a failing test.",
+      "acceptance": "A stored failing test output predates the implementation, a stored passing output follows it, and the diff is confined to src/parser/."
+    },
+    {
+      "id": "run-suite",
+      "role": "prover",
+      "tier": "standard",
+      "mode": "execute",
+      "depth": 1,
+      "dependsOn": ["implement-parser"],
+      "ownedPaths": [],
+      "inputs": ["lanes/implement-parser.md"],
+      "deliverable": "Stored raw output of the full test suite and of the parser-specific tests.",
+      "acceptance": "Each stored artifact carries its exact command line and exit code, and the parser tests are shown to have been collected and run."
+    },
+    {
+      "id": "falsify",
+      "role": "adversary",
+      "tier": "standard",
+      "mode": "read_only",
+      "depth": 1,
+      "dependsOn": ["implement-parser"],
+      "ownedPaths": [],
+      "inputs": ["lanes/implement-parser.md", "decomposition.md"],
+      "deliverable": "Findings against the replacement parser, each with a reachable precondition.",
+      "acceptance": "Every finding names an input or sequence that reaches it and points at stored evidence; speculation is listed separately."
+    },
+    {
+      "id": "adjudicate",
+      "role": "judge",
+      "tier": "deep",
+      "mode": "read_only",
+      "depth": 1,
+      "dependsOn": ["falsify", "run-suite"],
+      "ownedPaths": [],
+      "inputs": ["findings.md", "lanes/run-suite.md"],
+      "deliverable": "One recorded verdict with its rationale and the unresolved critical and high count.",
+      "acceptance": "The verdict cites the post-integration gate output and is not approve while any critical or high finding is unresolved without a recorded human exception."
+    }
+  ],
+  "normalizedLaneResults": [
+    {"laneId": "inventory", "status": "verified", "deliverables": ["lanes/inventory.md"], "evidence": ["evidence/01-inventory-search.txt"], "findingIds": []},
+    {"laneId": "constraints", "status": "verified", "deliverables": ["lanes/constraints.md"], "evidence": ["evidence/02-constraint-sources.txt"], "findingIds": []},
+    {"laneId": "decompose", "status": "verified", "deliverables": ["decomposition.md"], "evidence": ["evidence/03-contract-crosscheck.txt"], "findingIds": []},
+    {"laneId": "migrate-call-sites", "status": "verified", "deliverables": ["lanes/migrate-call-sites.md"], "evidence": ["evidence/04-callers-diffstat.txt"], "findingIds": []},
+    {"laneId": "implement-parser", "status": "verified", "deliverables": ["lanes/implement-parser.md"], "evidence": ["evidence/05-parser-test-red.txt", "evidence/06-parser-test-green.txt"], "findingIds": []},
+    {"laneId": "run-suite", "status": "verified", "deliverables": ["lanes/run-suite.md"], "evidence": ["evidence/07-suite-full.txt"], "findingIds": []},
+    {"laneId": "falsify", "status": "verified", "deliverables": ["findings.md"], "evidence": ["evidence/08-empty-input-boundary.txt"], "findingIds": ["F-001"]},
+    {"laneId": "adjudicate", "status": "verified", "deliverables": ["verdicts.md"], "evidence": ["evidence/09-integration-gate.txt"], "findingIds": ["F-001"]}
+  ]
+}
