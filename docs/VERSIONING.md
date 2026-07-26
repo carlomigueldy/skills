@@ -10,7 +10,7 @@ to automate versioning for each plugin independently, driven by
    Actions workflow (`.github/workflows/release.yml`).
 2. release-please opens (and keeps up to date) one release pull request per
    package configured in `release-please-config.json`: currently
-   `plugins/saas-launch` and `plugins/product-foundry`.
+   `plugins/saas-launch`, `plugins/product-foundry`, and `plugins/orchestra`.
 3. Merging a release PR:
    - Bumps the package's configured manifest version or versions via that
      package's `extra-files` config. Marketplace entries deliberately carry no
@@ -33,7 +33,7 @@ to automate versioning for each plugin independently, driven by
 | `release-please-config.json` | Declares each package, its release type, and any `extra-files` inside the package that also need their version bumped (e.g. `plugin.json`). Paths must stay within the package directory. |
 | `.release-please-manifest.json` | Tracks the last-released version per package path. |
 | `.github/workflows/release.yml` | Runs `googleapis/release-please-action` on every push to `main`. |
-| `.github/workflows/validate.yml` | Runs JSON, Claude plugin, Product Foundry contract, validator, and package-layout checks on every push/PR. |
+| `.github/workflows/validate.yml` | Runs JSON, Claude plugin, Product Foundry contract, Orchestra contract, validator, and package-layout checks on every push/PR. |
 
 ## Adding a new plugin to the release pipeline
 

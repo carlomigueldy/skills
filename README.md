@@ -24,10 +24,19 @@ Pick the row for your agent:
 > `carlomigueldy/skills` exists there. Use the manual fallbacks in the notes
 > column, or the manual-upload path below, until then.
 
-**Install all six skills together.** `saas-launch-blueprint`, `ignition`,
-`flight-plan`, `wind-tunnel`, `countdown`, and `saas-scaffold` cross-reference
-each other across the ideation → PRD → prototype → build-handoff → scaffold
-flow — install and use them as a set, not individually.
+> **`npx skills add carlomigueldy/skills` is all-or-nothing.** The top-level
+> `skills/` mirror fans in from both `saas-launch` and `orchestra`, so this
+> command (and the Codex CLI / OpenCode installs that read the same mirror)
+> installs all ~25 skills from both plugins together — there's no way to pull
+> just the saas-launch set or just orchestra through it. If you only want one
+> plugin's skills, install that plugin directly (Claude Code marketplace) or
+> copy the relevant subset out of `skills/` manually.
+
+**Install all six `saas-launch` skills together.** `saas-launch-blueprint`,
+`ignition`, `flight-plan`, `wind-tunnel`, `countdown`, and `saas-scaffold`
+cross-reference each other across the ideation → PRD → prototype →
+build-handoff → scaffold flow — install and use them as a set, not
+individually.
 
 **Templates are cloned at scaffold time, not vendored.** The
 `saas-monorepo` and `agent-harness` project templates used by
@@ -39,11 +48,11 @@ including offline); set `SAAS_LAUNCH_TEMPLATES_DIR` to point at a local
 checkout instead if you'd rather work fully offline.
 
 **`skills/` at the repo root is a generated mirror**, kept in sync with
-`plugins/saas-launch/skills/` for agents that read a flat top-level `skills/`
-directory (Codex CLI, OpenCode, the `npx skills add` installer). Edit the
-skills under `plugins/saas-launch/skills/`, then run
-`scripts/sync-skills.py` to regenerate the mirror — don't edit `skills/`
-directly.
+`plugins/saas-launch/skills/` and `plugins/orchestra/skills/` for agents
+that read a flat top-level `skills/` directory (Codex CLI, OpenCode, the
+`npx skills add` installer). Edit the skills under those package
+directories, then run `scripts/sync-skills.py` to regenerate the mirror —
+don't edit `skills/` directly.
 
 ### Manual upload (Claude Cowork / Claude Desktop)
 
@@ -74,10 +83,11 @@ correct names.
 | --- | --- | --- |
 | [`saas-launch`](./plugins/saas-launch) | End-to-end SaaS ideation → PRD → prototype → build-handoff workflow, plus a deterministic pnpm + Turborepo SaaS monorepo project template | `saas-launch-blueprint`, `saas-scaffold` |
 | [`product-foundry`](./plugins/product-foundry) | Cross-platform, approval-gated product discovery → prototype → PRD → go-to-market → implementation-handoff workflow | `product-foundry`, `implement-prd` |
+| [`orchestra`](./plugins/orchestra) | Host-agnostic multi-agent orchestration — turns the executing agent into a root orchestrator that decomposes a goal into lanes, dispatches subagents, and gates on evidence | `orchestra` router + 18 workflow skills |
 
 Product Foundry keeps one package-local `skills/` tree shared by its native
 Claude and Codex manifests, so it does not need a second top-level mirror. The
-older `saas-launch` plugin continues to use the repository's generated
+`saas-launch` and `orchestra` plugins both use the repository's generated
 top-level `skills/` mirror for Codex CLI, OpenCode, and `npx skills add`.
 
 ## Repo layout
@@ -90,15 +100,21 @@ skills/
 │   ├── saas-launch/
 │   │   ├── .claude-plugin/plugin.json
 │   │   └── skills/             # canonical source for generated mirror
-│   └── product-foundry/
+│   ├── product-foundry/
+│   │   ├── .claude-plugin/plugin.json # Claude manifest
+│   │   ├── .codex-plugin/plugin.json  # Codex manifest
+│   │   ├── skills/
+│   │   │   ├── product-foundry/SKILL.md
+│   │   │   ├── implement-prd/SKILL.md
+│   │   │   └── foundry-*/SKILL.md
+│   │   └── README.md
+│   └── orchestra/
 │       ├── .claude-plugin/plugin.json # Claude manifest
 │       ├── .codex-plugin/plugin.json  # Codex manifest
-│       ├── skills/
-│       │   ├── product-foundry/SKILL.md
-│       │   ├── implement-prd/SKILL.md
-│       │   └── foundry-*/SKILL.md
+│       ├── skills/             # canonical source for generated mirror (router + 18 workflow skills)
+│       ├── roles/ references/ schemas/ examples/
 │       └── README.md
-├── skills/                        # generated mirror of plugins/saas-launch/skills/
+├── skills/                        # generated mirror of plugins/saas-launch/skills/ + plugins/orchestra/skills/
 │   └── ...                       # for Codex CLI / OpenCode / `npx skills add` — synced by scripts/sync-skills.py, don't hand-edit
 ├── scripts/
 │   ├── package-plugin.py         # zip a plugin for manual Cowork upload

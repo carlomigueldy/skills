@@ -23,3 +23,7 @@ dist/
 # (no installed dependencies or build output committed) — the entries
 # above mainly guard against future additions inside plugins/ and any
 # scratch monorepos generated while testing the template.
+
+# orchestra plugin run state — gitignored ledger generated in whatever
+# project orchestra runs in, including this repo while dogfooding.
+.orchestra/

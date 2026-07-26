@@ -35,6 +35,20 @@
       "license": "MIT",
       "keywords": ["product", "discovery", "prd", "prototype", "handoff"],
       "category": "productivity"
+    },
+    {
+      "name": "orchestra",
+      "source": "./plugins/orchestra",
+      "description": "Host-agnostic multi-agent orchestration: a router skill plus 18 workflow skills that delegate to isolated lanes chosen by capability tier, not model name, with resumable run state in a gitignored .orchestra/ ledger.",
+      "author": {
+        "name": "Carlo Miguel Dy",
+        "email": "carlomigueldy@yahoo.com"
+      },
+      "homepage": "https://github.com/carlomigueldy/skills/tree/main/plugins/orchestra",
+      "repository": "https://github.com/carlomigueldy/skills",
+      "license": "MIT",
+      "keywords": ["orchestration", "multi-agent", "delegation", "workflow", "quality-gates"],
+      "category": "productivity"
     }
   ]
 }

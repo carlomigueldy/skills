@@ -66,6 +66,15 @@ jobs:
       - name: Validate product-foundry package contract
         run: python3 scripts/validate_product_foundry.py .
 
+      - name: Validate orchestra Codex native manifest
+        run: python3 scripts/validate_orchestra.py --codex-manifest-only ./plugins/orchestra/.codex-plugin/plugin.json
+
+      - name: Validate orchestra package contract
+        run: python3 scripts/validate_orchestra.py
+
+      - name: Validate orchestra Grok export is derivable from source
+        run: python3 plugins/orchestra/scripts/install-grok.py --check
+
       - name: Smoke-test every discovered package layout
         run: |
           set -euo pipefail

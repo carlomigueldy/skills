@@ -36,6 +36,24 @@
           "jsonpath": "$.version"
         }
       ]
+    },
+    "plugins/orchestra": {
+      "release-type": "simple",
+      "component": "orchestra",
+      "package-name": "orchestra",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": ".claude-plugin/plugin.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": ".codex-plugin/plugin.json",
+          "jsonpath": "$.version"
+        }
+      ]
     }
   }
 }
