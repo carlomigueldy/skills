@@ -4,7 +4,7 @@
   "type": "object",
   "required": ["id", "severity", "status", "precondition", "evidence", "impact", "remediation", "retest"],
   "properties": {
-    "id": {"type": "string", "pattern": "^F-[0-9]{3,}$"},
+    "id": {"type": "string", "pattern": "^F-[0-9]{3,}(?![\\s\\S])"},
     "severity": {"enum": ["critical", "high", "medium", "low", "informational"]},
     "status": {"enum": ["open", "fixed", "accepted", "wontfix"]},
     "precondition": {"type": "string", "minLength": 1},
@@ -18,12 +18,12 @@
         "result": {"enum": ["pass", "fail", "not_run"]},
         "evidence": {"type": "array", "items": {"type": "string", "minLength": 1}},
         "afterRemediation": {"type": "boolean"},
-        "executedByLaneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"}
+        "executedByLaneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(?![\\s\\S])"}
       },
       "additionalProperties": false
     },
     "inboundLabel": {"enum": ["bug", "suggestion", "nit"]},
-    "reportedByLaneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "reportedByLaneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(?![\\s\\S])"},
     "humanDecision": {
       "type": "object",
       "required": ["party", "reason"],

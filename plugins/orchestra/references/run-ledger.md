@@ -73,6 +73,29 @@ record of hard-stop requests and their answers. `handoff.md` states the goal,
 what is verified with pointers to evidence, what is open, and the next
 dispatchable step.
 
+`reopenCount` is scoped the same way the ledger is. It maps
+`<nn>-<workflow>/<lane-id>` — a lane's own directory and file name, without
+the `lanes/` segment or the `.md` suffix — to the number of times that lane
+has been redispatched, and each count is capped at three. A single run-wide
+counter cannot express a per-lane cap: incremented globally it hard-stops a
+later lane that was never reopened, and reset between lanes it erases the
+history the cap is computed from. A lane with no entry has never been
+reopened.
+
+Read the cap as the key states it: three reopens per lane per chain
+position, not three per run. A workflow re-entered later in the chain —
+reopened after a review, or dispatched again as another link's prerequisite
+— takes the next free position and its own directory, so the same lane id
+carries a separate count under each link's key. The chain is capped at six
+links, so one lane id can be reopened up to three times in each of up to
+six invocations. That is the intended bound rather than a way around the
+cap: each link is a distinct dispatch with its own brief and its own
+evidence, and no spent count is carried forward for a later link to
+consume. The hard stop the cap names is the fourth reopen within a single
+chain position. Reaching three at one position escalates to a human there;
+it does not license opening the same workflow at the next position to buy
+three more.
+
 Inside a link, `decomposition.md` holds the lane plan that was dispatched, not
 a later summary of it. `lanes/<lane-id>.md` stores the brief verbatim followed
 by the normalized result verbatim. `evidence/` holds raw command output, never

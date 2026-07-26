@@ -2,10 +2,10 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Orchestra run record",
   "type": "object",
-  "required": ["schemaVersion", "runId", "goal", "host", "capabilities", "tierResolution", "scheduler", "delegationDepth", "isolation", "reopenCount", "lanes"],
+  "required": ["schemaVersion", "runId", "goal", "host", "capabilities", "tierResolution", "scheduler", "delegationDepth", "isolation", "reopenCount", "chain", "lanes"],
   "properties": {
     "schemaVersion": {"const": "1.0"},
-    "runId": {"type": "string", "pattern": "^[0-9]{8}T[0-9]{6}Z-[a-z0-9][a-z0-9-]*$"},
+    "runId": {"type": "string", "pattern": "^[0-9]{8}T[0-9]{6}Z-[a-z0-9][a-z0-9-]*(?![\\s\\S])"},
     "goal": {"type": "string", "minLength": 1},
     "host": {"enum": ["claude-cowork", "codex-cli", "opencode", "grok-build", "claude-code"]},
     "capabilities": {
@@ -28,11 +28,14 @@
       "additionalProperties": false
     },
     "scheduler": {"enum": ["parallel-subagents", "sequential-role-pass", "self-execute"]},
-    "delegationDepth": {"type": "integer", "minimum": 0},
-    "deeperDelegationJustification": {"type": "string", "minLength": 1},
+    "delegationDepth": {"type": "integer", "minimum": 0, "maximum": 2},
     "isolation": {"enum": ["intact", "degraded"]},
     "verdictCap": {"const": "unverified"},
-    "reopenCount": {"type": "integer", "minimum": 0, "maximum": 3},
+    "reopenCount": {
+      "type": "object",
+      "propertyNames": {"pattern": "^0[1-6]-(cover|debug|design|document|fan-out|harden|implement|migrate|perf|plan|refactor|research|review|ship|spike|triage|upgrade|verify)/[a-z0-9][a-z0-9-]*(?![\\s\\S])"},
+      "additionalProperties": {"type": "integer", "minimum": 0, "maximum": 3}
+    },
     "chain": {
       "type": "array",
       "minItems": 1,
@@ -54,7 +57,7 @@
         "type": "object",
         "required": ["laneId", "trigger", "resolvedTier"],
         "properties": {
-          "laneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+          "laneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(?![\\s\\S])"},
           "workflow": {"$ref": "#/$defs/workflow"},
           "chainPosition": {"type": "integer", "minimum": 1, "maximum": 6},
           "trigger": {"enum": ["security-surface", "cross-boundary-change", "prover-disagreement", "empty-findings-over-threshold"]},
@@ -70,13 +73,13 @@
         "type": "object",
         "required": ["laneId", "resolvedTier", "wave"],
         "properties": {
-          "laneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+          "laneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(?![\\s\\S])"},
           "workflow": {"$ref": "#/$defs/workflow"},
           "chainPosition": {"type": "integer", "minimum": 1, "maximum": 6},
           "resolvedTier": {"enum": ["deep", "standard", "fast"]},
           "wave": {"type": "integer", "minimum": 0},
           "workerId": {"type": "string", "minLength": 1},
-          "hoistedFrom": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+          "hoistedFrom": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(?![\\s\\S])"},
           "depth": {"type": "integer", "minimum": 0, "maximum": 2}
         }
       }
@@ -106,8 +109,7 @@
     }
   },
   "allOf": [
-    {"if": {"properties": {"delegationDepth": {"minimum": 3}}, "required": ["delegationDepth"]},
-     "then": {"required": ["deeperDelegationJustification"]}},
+    {"not": {"required": ["deeperDelegationJustification"]}},
     {"if": {"properties": {"isolation": {"const": "degraded"}}, "required": ["isolation"]},
      "then": {"required": ["verdictCap"]}},
     {"if": {"properties": {"scheduler": {"const": "self-execute"}}, "required": ["scheduler"]},

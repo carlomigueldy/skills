@@ -30,7 +30,7 @@
             "required": ["wave", "laneIds"],
             "properties": {
               "wave": {"type": "integer", "minimum": 0},
-              "laneIds": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"}}
+              "laneIds": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(?![\\s\\S])"}}
             }
           }
         },
@@ -40,8 +40,8 @@
             "type": "object",
             "required": ["laneId", "hoistedFrom"],
             "properties": {
-              "laneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
-              "hoistedFrom": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"}
+              "laneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(?![\\s\\S])"},
+              "hoistedFrom": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(?![\\s\\S])"}
             }
           }
         }
@@ -58,14 +58,14 @@
         "type": "object",
         "required": ["id", "role", "tier", "mode", "depth", "dependsOn", "ownedPaths", "inputs", "deliverable", "acceptance"],
         "properties": {
-          "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+          "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(?![\\s\\S])"},
           "role": {"enum": ["scout", "analyst", "architect", "builder", "prover", "adversary", "judge", "mechanic"]},
           "tier": {"enum": ["deep", "standard", "fast"]},
           "mode": {"enum": ["read_only", "write", "execute"]},
           "depth": {"type": "integer", "minimum": 1, "maximum": 2},
-          "parentLaneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
-          "dependsOn": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"}},
-          "ownedPaths": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "parentLaneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(?![\\s\\S])"},
+          "dependsOn": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(?![\\s\\S])"}},
+          "ownedPaths": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1, "pattern": "^(?:\\./)?(?!\\.{1,2}(?:/|(?![\\s\\S])))[A-Za-z0-9._-]+(?:/(?!\\.{1,2}(?:/|(?![\\s\\S])))[A-Za-z0-9._-]+)*/?(?![\\s\\S])"}},
           "inputs": {"type": "array", "items": {"type": "string", "minLength": 1}},
           "deliverable": {"type": "string", "minLength": 1},
           "acceptance": {"type": "string", "minLength": 1},
@@ -81,7 +81,13 @@
           {"if": {"properties": {"role": {"const": "mechanic"}}, "required": ["role"]},
            "then": {"required": ["parentLaneId"], "properties": {"depth": {"const": 2}}}},
           {"if": {"allOf": [{"properties": {"role": {"const": "adversary"}}, "required": ["role"]}, {"properties": {"tier": {"const": "deep"}}, "required": ["tier"]}]},
-           "then": {"required": ["escalationTrigger"]}}
+           "then": {"required": ["escalationTrigger"]}},
+          {"if": {"properties": {"role": {"enum": ["scout", "analyst", "architect", "adversary", "judge"]}}, "required": ["role"]},
+           "then": {"properties": {"mode": {"const": "read_only"}}}},
+          {"if": {"properties": {"role": {"enum": ["builder", "mechanic"]}}, "required": ["role"]},
+           "then": {"properties": {"mode": {"const": "write"}}}},
+          {"if": {"properties": {"role": {"const": "prover"}}, "required": ["role"]},
+           "then": {"properties": {"mode": {"const": "execute"}}}}
         ]
       }
     },
@@ -92,7 +98,7 @@
         "type": "object",
         "required": ["laneId", "status", "deliverables", "evidence", "findingIds"],
         "properties": {
-          "laneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+          "laneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(?![\\s\\S])"},
           "status": {"enum": ["pending", "in_progress", "blocked", "partial", "verified", "stale"]},
           "deliverables": {"type": "array", "items": {"type": "string", "minLength": 1}},
           "evidence": {"type": "array", "items": {"type": "string", "minLength": 1}},
@@ -110,6 +116,7 @@
     }
   },
   "allOf": [
+    {"not": {"required": ["deeperDelegationJustification"]}},
     {"if": {"properties": {"dispatch": {"properties": {"scheduler": {"const": "self-execute"}}, "required": ["scheduler"]}}, "required": ["dispatch"]},
      "then": {"properties": {"capabilities": {"properties": {"childDepth": {"const": 0}}, "required": ["childDepth"]}}}}
   ],

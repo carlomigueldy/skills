@@ -4,14 +4,14 @@
   "type": "object",
   "required": ["id", "verdict", "rationale", "unresolvedHighOrCritical", "isolation", "evidence"],
   "properties": {
-    "id": {"type": "string", "pattern": "^V-[0-9]{3,}$"},
+    "id": {"type": "string", "pattern": "^V-[0-9]{3,}(?![\\s\\S])"},
     "verdict": {"enum": ["approve", "request_changes", "unverified"]},
     "rationale": {"type": "string", "minLength": 1},
     "unresolvedHighOrCritical": {"type": "integer", "minimum": 0},
     "isolation": {"enum": ["intact", "degraded"]},
     "evidence": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
-    "findingIds": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^F-[0-9]{3,}$"}},
-    "decidedByLaneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "findingIds": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^F-[0-9]{3,}(?![\\s\\S])"}},
+    "decidedByLaneId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(?![\\s\\S])"},
     "gateRunEvidence": {"type": "string", "minLength": 1},
     "humanException": {
       "type": "object",

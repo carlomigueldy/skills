@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "20260301T140000Z-parser-review",
+  "goal": "Review the parser migration diff before it merges.",
+  "host": "codex-cli",
+  "capabilities": {"parallelSubagents": false, "childDepth": 1, "isolatedContext": true},
+  "tierResolution": {"deep": "high", "standard": "medium", "fast": "low"},
+  "scheduler": "sequential-role-pass",
+  "delegationDepth": 1,
+  "isolation": "intact",
+  "reopenCount": {"01-review/lens-security": 1},
+  "chain": [
+    {"chainPosition": 1, "workflow": "review", "status": "complete"}
+  ],
+  "adversaryEscalations": [
+    {"laneId": "lens-security", "workflow": "review", "chainPosition": 1, "trigger": "security-surface", "resolvedTier": "deep"}
+  ],
+  "lanes": [
+    {"laneId": "lens-correctness", "workflow": "review", "chainPosition": 1, "resolvedTier": "standard", "wave": 0, "workerId": "pass-01", "depth": 1},
+    {"laneId": "lens-security", "workflow": "review", "chainPosition": 1, "resolvedTier": "deep", "wave": 1, "workerId": "pass-02", "depth": 1},
+    {"laneId": "lens-performance", "workflow": "review", "chainPosition": 1, "resolvedTier": "standard", "wave": 2, "workerId": "pass-03", "depth": 1},
+    {"laneId": "lens-maintainability", "workflow": "review", "chainPosition": 1, "resolvedTier": "standard", "wave": 3, "workerId": "pass-04", "depth": 1},
+    {"laneId": "lens-test-adequacy", "workflow": "review", "chainPosition": 1, "resolvedTier": "standard", "wave": 4, "workerId": "pass-05", "depth": 1},
+    {"laneId": "adjudicate", "workflow": "review", "chainPosition": 1, "resolvedTier": "deep", "wave": 5, "workerId": "pass-06", "depth": 1}
+  ],
+  "gateRun": {
+    "ranAfterIntegration": true,
+    "result": "pass",
+    "evidence": ["01-review/evidence/05-suite-full.txt"]
+  }
+}

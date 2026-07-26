@@ -58,8 +58,9 @@ You dispatch at depth one; `architect` and `judge` both have
 Maximum delegation depth is two remains the ceiling plan itself must respect
 if a drafted plan proposes delegation beyond that: a lane plan that assigns a
 `mechanic` lane anywhere but depth two, or proposes depth three at all, fails
-validation and needs a written justification in the run record before
-`adjudicate` may accept it.
+schema validation outright. No justification field rescues it — `adjudicate`
+rejects the draft, and a goal that genuinely needs a third level is a
+HARD STOP for human escalation, not a note in the run record.
 
 On a host that cannot dispatch parallel subagents, plan degrades to a sequential fresh-context role-pass: `decompose-a` runs to completion in a
 fresh context, then `decompose-b` runs in its own fresh context without
@@ -69,9 +70,11 @@ on. `adjudicate` still runs last and still reads both.
 ## Quality gates
 
 G7 is what plan exists to make checkable downstream: one writer per path,
-declared before dispatch. The adjudicated plan is the declaration — every
-`write` lane's owned paths must be pairwise disjoint, and `adjudicate`
-rejects a draft that cannot satisfy this rather than passing the collision
+declared before dispatch. The adjudicated plan is the declaration — no two
+`write` lanes scheduled in the same wave may own intersecting paths, and
+containment counts, so a lane writing inside another lane's tree must be
+sequenced against it rather than run beside it. `adjudicate` rejects a
+draft that cannot satisfy this rather than passing the collision
 downstream for a `builder` lane to discover. G6 caps the depth any drafted
 plan may declare, as above. Because plan itself never writes, G1, G4, and G5
 do not apply to plan's own lanes; they apply to whatever the plan's lanes
@@ -95,9 +98,9 @@ HARD STOP before treating an unvalidated plan as dispatchable: if
 `adjudicate` cannot produce a lane plan with disjoint ownership and complete
 acceptance conditions, that is a stop, not a plan shipped with a known gap.
 Widening ownership after the fact, accepting a plan that proposes delegation
-depth beyond two without a recorded justification, and silently dropping a
-lane's acceptance condition to make the panel converge are stops in their own
-right. Record every stop request in `stops.md` before making it. See
+depth beyond two on any grounds, and silently dropping a lane's acceptance
+condition to make the panel converge are stops in their own right. Record
+every stop request in `stops.md` before making it. See
 `../../references/stops.md`.
 
 ## Deterministic outputs

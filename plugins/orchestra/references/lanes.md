@@ -23,6 +23,32 @@ normalized result resolves inside that link's directory, which is what keeps
 two workflows in one chain from writing the same `lanes/adjudicate.md`. The
 layout is in `run-ledger.md`.
 
+Part of this contract cannot be written as a schema. JSON Schema reaches
+only what is local to a single lane: the role, mode, and depth pairings,
+and that a `write` lane owns at least one path while a `read_only` or
+`execute` lane owns none. It has no keyword for uniqueness by property and
+none for a reference from one array into another, so the identity
+invariants that span lanes are checked mechanically before dispatch: ids
+are unique across the lane plan, normalized results map one-to-one onto
+those ids, and every `dependsOn`, `parentLaneId`, dispatch wave entry, and
+hoisted entry resolves to a declared lane. A dependency is scheduled in an
+earlier wave than the lane declaring it, the waves partition the plan's ids
+exactly, no two lanes scheduled in the same wave declare intersecting
+`ownedPaths` — the mechanical form of G7 — and a depth-two `mechanic` may
+name only a `builder` lane as its parent, that last edge being what makes
+the depth-two ceiling true of the data rather than only of the prose. These
+are contract terms, not advice: a duplicate lane id overwrites a brief at
+`lanes/<lane-id>.md` and leaves a document that still validates. The
+repository's `scripts/validate_orchestra.py` is the reference
+implementation of that list; a root on a host that cannot run it owes the
+same checks itself.
+
+What neither layer reaches is the root's alone, because it is not in the
+documents to check: that a lane's actual diff stays inside the paths it
+declared (G5), that acceptance is genuinely checkable by someone other than
+the lane, and that a hoisted lane's deliverable reaches the parent it was
+hoisted from as a declared input.
+
 Host specifics never enter the result. Resolved tier, dispatch wave, worker
 identity, hoisting, and degradation belong to the run record alone. That
 separation is what makes a run opened on one host resumable on another: the
