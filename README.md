@@ -15,18 +15,11 @@ skill trees directly, so pi users get all three plugins — including
 
 | Agent | Install | Notes |
 | --- | --- | --- |
-| Claude Code (marketplace) | `claude plugin marketplace add carlomigueldy/skills`<br>`claude plugin install saas-launch@carlomigueldy` | See caveat below — not yet published. |
-| Codex CLI | `codex plugin marketplace add carlomigueldy/skills` (reads `.claude-plugin/marketplace.json` and installs `saas-launch` from `plugins/saas-launch/.claude-plugin/plugin.json`), or `npx skills add carlomigueldy/skills` for skills only | See caveat below — not yet published. Manual fallback: copy `skills/*` into your project's `.agents/skills/` or into `~/.codex/skills/`. |
-| OpenCode | `npx skills add carlomigueldy/skills` | See caveat below — not yet published. Manual fallback: copy `skills/*` into `~/.config/opencode/skills/` or your project's `.agents/skills/`. |
-| pi | `pi install git:github.com/carlomigueldy/skills` (all 40 skills from all three plugins) | See caveat below — not yet published. One plugin only: `pi install "$PWD/plugins/orchestra"` from a local clone, or add `{"source": "git:github.com/carlomigueldy/skills", "skills": ["plugins/orchestra/skills/*"]}` to the `packages` array in `~/.pi/agent/settings.json`. |
+| Claude Code (marketplace) | `claude plugin marketplace add carlomigueldy/skills`<br>`claude plugin install saas-launch@carlomigueldy` | Swap `saas-launch` for `product-foundry` or `orchestra` to install those instead. |
+| Codex CLI | `codex plugin marketplace add carlomigueldy/skills` (reads `.claude-plugin/marketplace.json` and installs `saas-launch` from `plugins/saas-launch/.claude-plugin/plugin.json`), or `npx skills add carlomigueldy/skills` for skills only | Manual fallback: copy `skills/*` into your project's `.agents/skills/` or into `~/.codex/skills/`. |
+| OpenCode | `npx skills add carlomigueldy/skills` | Manual fallback: copy `skills/*` into `~/.config/opencode/skills/` or your project's `.agents/skills/`. |
+| pi | `pi install git:github.com/carlomigueldy/skills` (all 40 skills from all three plugins) | One plugin only: `pi install "$PWD/plugins/orchestra"` from a local clone, or add `{"source": "git:github.com/carlomigueldy/skills", "skills": ["plugins/orchestra/skills/*"]}` to the `packages` array in `~/.pi/agent/settings.json`. |
 | Claude Cowork / Claude Desktop | Build a zip with `scripts/package-plugin.py` (see below) | No marketplace support in the desktop apps. |
-
-> **Not yet published to GitHub.** This repo isn't pushed to GitHub yet, so
-> every remote-install row above — the `claude plugin` commands, the
-> `npx skills add carlomigueldy/skills` commands, AND the
-> `pi install git:github.com/carlomigueldy/skills` command — won't resolve
-> until `carlomigueldy/skills` exists there. Use the manual fallbacks in the
-> notes column, or the manual-upload path below, until then.
 
 > **`npx skills add carlomigueldy/skills` is all-or-nothing.** The top-level
 > `skills/` mirror fans in from both `saas-launch` and `orchestra`, so this
