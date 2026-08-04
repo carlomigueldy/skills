@@ -34,6 +34,15 @@ to automate versioning for each plugin independently, driven by
 | `.release-please-manifest.json` | Tracks the last-released version per package path. |
 | `.github/workflows/release.yml` | Runs `googleapis/release-please-action` on every push to `main`. |
 | `.github/workflows/validate.yml` | Runs JSON, Claude plugin, Product Foundry contract, Orchestra contract, validator, and package-layout checks on every push/PR. |
+| `package.json` | Root pi package manifest (`pi.skills`) plus repository tooling. Not release-managed. |
+
+## The root `package.json` is not release-managed
+
+The repository-root `package.json` carries the pi package manifest and the
+commitlint/husky tooling. It is `private`, pinned at `0.0.0`, and has no
+entry in `release-please-config.json` or `.release-please-manifest.json`.
+Nothing versions it, and no `package.json` in this repository is ever
+listed in an `extra-files` array.
 
 ## Adding a new plugin to the release pipeline
 
@@ -47,6 +56,10 @@ When you add a new plugin under `plugins/<name>/` (see the root `README.md`'s
 3. Add `.claude-plugin/plugin.json` and any additional host manifest, such as
    `.codex-plugin/plugin.json`, as package-local `extra-files` targets so
    release-please keeps them in sync.
+4. Do **not** give the plugin its own `package.json`. pi discovers a plugin
+   package by convention, and a per-plugin `package.json` would add a fourth
+   version to keep in lockstep through release-please's special-cased
+   `package.json` updater.
 
 ## Tag format
 

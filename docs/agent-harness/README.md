@@ -6,5 +6,6 @@ This stack-agnostic harness guides compatible coding agents through plugin maint
 - [Lifecycle](lifecycle.md) defines the mandatory end-to-end sequence.
 - [Modes](modes.md) defines the boundary of each operation.
 - [Red-team review](red-team.md) defines attack coverage, finding records, and the approval gate.
+- Host surfaces are Claude Cowork, Codex CLI, OpenCode, pi, Grok Build, and Claude Code; a change that adds or removes a host must land in every registry at once.
 
 Begin by naming the mode, inventorying the affected paths, and assigning exactly one writer to each path.

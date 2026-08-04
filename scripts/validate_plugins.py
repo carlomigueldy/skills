@@ -71,6 +71,17 @@ FOCUSED_VALIDATORS = {
     "product-foundry": "scripts/validate_product_foundry.py",
 }
 
+# pi has no subdirectory selector for git sources -- it clones the whole repo
+# and treats the repo root as the package root -- so one root manifest is the
+# only thing that routes `pi install git:...` at the per-plugin skill trees
+# instead of the generated mirror. Exposing the mirror as well would collide
+# all 25 mirrored skill names (pi keeps the first and warns on the rest) and
+# would hand pi the copies whose ../../references links resolve to nothing.
+PI_MANIFEST_FILE = "package.json"
+PI_RESOURCE_TYPES = ("extensions", "skills", "prompts", "themes")
+PI_OVERRIDE_PREFIXES = ("!", "+", "-")
+PI_GLOB_CHARACTERS = frozenset("*?[]")
+
 
 def _sanitize_archive_path(relative: str) -> str:
     parts: list[str] = []
@@ -184,6 +195,28 @@ def _validate_skills(
         errors.append(f"{package.name}: missing required skills/ directory")
         return
 
+    # pi's mode-aware skill discovery promotes any top-level `*.md` file
+    # directly under a scanned skills root to a skill in its own right, not
+    # just `*/SKILL.md` directories -- so a stray root-level Markdown file
+    # here becomes an unreviewed 41st skill for pi installs even though
+    # every other host and this validator's own skill enumeration ignore
+    # it. Reject non-directory children outright rather than silently
+    # skipping them.
+    #
+    # `.DS_Store` is the one exception, tolerated here for the same reason
+    # it is tolerated in the mirror checks below: macOS creates it in any
+    # browsed directory, it is gitignored, and pi never promotes it to a
+    # skill (only top-level `*.md` files are promoted). Failing on it would
+    # break local validation on a maintainer's machine for a file that is
+    # neither committed nor loadable.
+    for entry in sorted(skills_root.iterdir()):
+        if entry.name in MIRROR_EXCLUDED_FILES:
+            continue
+        if not entry.is_dir():
+            errors.append(
+                f"{package.name}: skills/ must contain only skill directories: "
+                f"{entry.name}"
+            )
     skill_dirs = sorted(path for path in skills_root.iterdir() if path.is_dir())
     if not skill_dirs:
         errors.append(f"{package.name}: skills/ contains no skill entrypoints")
@@ -372,6 +405,141 @@ def _validate_mirror(root: Path, selected: set[str], errors: list[str]) -> None:
         errors.append(
             f"generated skills mirror has drifted: {relative}{attribution(relative)}"
         )
+
+
+def validate_pi_manifest(root: Path, discovered: set[str], errors: list[str]) -> None:
+    """Validate the repository-root pi package manifest.
+
+    Public (not `_`-prefixed) because both `main` (the `--pi-manifest-only`
+    CLI path) and the tests call it directly, mirroring how
+    `validate_orchestra.validate_codex_manifest` is exposed. `discovered`
+    must be every plugin under `plugins/`, not whatever `--plugin` narrowed
+    a run to -- this manifest is a repository-level registry, and its
+    correctness never depends on which plugin the caller happened to ask
+    about.
+    """
+    payload = _read_json(root / PI_MANIFEST_FILE, errors)
+    if payload is None:
+        # _read_json already appended a specific, actionable message
+        # (missing file / unreadable / bad JSON); piling a second, vaguer
+        # message on top of it would only obscure the real cause.
+        return
+    if not isinstance(payload, dict):
+        errors.append("root package.json must be a JSON object")
+        return
+
+    # pi's git-install path always runs `npm install --omit=dev` against
+    # the cloned repo -- `--ignore-scripts` appears nowhere in pi's dist/ --
+    # so an unguarded `prepare` script still executes without
+    # devDependencies on `PATH`. If that script assumes a devDependency
+    # binary exists (husky does), it exits non-zero, pi's install throws
+    # before persisting the source to settings, and the user is left with
+    # an unremovable half-cloned package on disk. `|| true` is the whole
+    # fix; this just keeps it from regressing silently.
+    scripts = payload.get("scripts")
+    if isinstance(scripts, dict):
+        prepare = scripts.get("prepare")
+        if isinstance(prepare, str) and "||" not in prepare:
+            errors.append(
+                "root package.json prepare script must tolerate failure: pi "
+                "runs `npm install --omit=dev` on git installs, which still "
+                "executes prepare without devDependencies"
+            )
+
+    keywords = payload.get("keywords")
+    if not isinstance(keywords, list) or "pi-package" not in keywords:
+        errors.append('root package.json keywords must include "pi-package"')
+
+    pi_manifest = payload.get("pi")
+    if not isinstance(pi_manifest, dict):
+        errors.append("root package.json must declare a pi manifest object")
+        return
+
+    skills = pi_manifest.get("skills")
+    if (
+        not isinstance(skills, list)
+        or not skills
+        or not all(isinstance(entry, str) and entry for entry in skills)
+    ):
+        errors.append("pi manifest skills must be a non-empty list of strings")
+        return
+
+    # Each entry is checked against these rules in order, first failure
+    # wins and the entry contributes nothing further -- this mirrors how
+    # pi itself would treat the same string (an override pattern is
+    # stripped from the source list before resolution ever runs; a glob or
+    # an escaping path is not something this repo's flat `plugins/*/skills`
+    # layout should ever need).
+    resolved: set[str] = set()
+    for entry in skills:
+        if entry.startswith(PI_OVERRIDE_PREFIXES):
+            errors.append(
+                "pi manifest skills entry is an override pattern and "
+                f"contributes no skills: {entry}"
+            )
+            continue
+        if any(character in PI_GLOB_CHARACTERS for character in entry):
+            errors.append(f"pi manifest skills entry must not be a glob: {entry}")
+            continue
+        if Path(entry).is_absolute() or ".." in Path(entry).parts:
+            errors.append(
+                f"pi manifest skills entry must stay inside the repository: {entry}"
+            )
+            continue
+        if not (root / entry).is_dir():
+            errors.append(
+                f"pi manifest skills entry does not resolve to a directory: {entry}"
+            )
+            continue
+        resolved.add(entry.rstrip("/"))
+
+    # Set equality, not a one-directional subset check: a plugin missing
+    # from `pi.skills` fails *silently* for every pi user (no error, no
+    # warning -- the skills simply don't exist for them, same as
+    # product-foundry doesn't exist for mirror-based installs today), so
+    # "added a plugin, forgot pi" has to be a hard failure here.
+    expected = {f"plugins/{name}/skills" for name in discovered}
+    for missing in sorted(expected - resolved):
+        errors.append(f"pi manifest must expose {missing}")
+    for extra in sorted(resolved - expected):
+        if extra == "skills":
+            errors.append(
+                "pi manifest must not expose the generated skills/ mirror: it "
+                "duplicates every mirrored skill name and its cross-package "
+                "references do not resolve"
+            )
+        else:
+            errors.append(f"pi manifest exposes an unexpected skills root: {extra}")
+
+    # A *partial* pi key is worse than a missing one: pi's manifest reader
+    # only falls back to convention discovery when the whole `pi` key is
+    # absent, so declaring `skills` here silently disables convention
+    # discovery for every *other* resource type the moment a root
+    # `extensions/`, `prompts/`, or `themes/` directory shows up -- with no
+    # error from pi itself, since an omitted key just means "load nothing"
+    # to pi's `addManifestEntries`.
+    for resource in PI_RESOURCE_TYPES:
+        if resource == "skills":
+            continue
+        if (root / resource).is_dir() and resource not in pi_manifest:
+            errors.append(
+                f"pi manifest declares skills but not {resource}: a partial "
+                "pi manifest disables convention discovery for every omitted "
+                "resource type"
+            )
+
+    # Per-plugin package.json is banned outright, not just discouraged:
+    # convention discovery already serves the local-path install case it
+    # would exist for, so the only effect of adding one is a fourth version
+    # file per plugin that release-please must keep in lockstep with the
+    # other three -- see the spec's decision (b).
+    for name in sorted(discovered):
+        if (root / "plugins" / name / PI_MANIFEST_FILE).exists():
+            errors.append(
+                f"{name}: plugins must not carry their own package.json; pi "
+                "discovers a plugin package by convention and a per-plugin "
+                "package.json adds a fourth version to keep in lockstep"
+            )
 
 
 def _run_focused_validator(root: Path, plugin_name: str, errors: list[str]) -> None:
@@ -584,6 +752,7 @@ def validate_repository(
         if count > 1:
             errors.append(f"duplicate plugin manifest name: {name}")
     _validate_mirror(root, selected, errors)
+    validate_pi_manifest(root, set(discovered), errors)
     return errors
 
 
@@ -604,7 +773,28 @@ def main(argv: list[str] | None = None) -> int:
         default=REPO_ROOT,
         help=argparse.SUPPRESS,
     )
+    parser.add_argument(
+        "--pi-manifest-only",
+        action="store_true",
+        help="validate only the repository-root pi package manifest",
+    )
     args = parser.parse_args(argv)
+    if args.pi_manifest_only:
+        if args.plugins:
+            parser.error("--pi-manifest-only cannot be combined with --plugin")
+        root = args.repo_root.resolve()
+        errors: list[str] = []
+        discovered = {path.name for path in discover_plugins(root)}
+        if not discovered:
+            errors.append(f"no plugins discovered under {root / 'plugins'}")
+        else:
+            validate_pi_manifest(root, discovered, errors)
+        if errors:
+            print("pi manifest validation failed:", file=sys.stderr)
+            print("\n".join(f"- {error}" for error in errors), file=sys.stderr)
+            return 1
+        print(f"pi manifest validation passed: {root}")
+        return 0
     errors = validate_repository(args.repo_root, plugin_names=args.plugins)
     if errors:
         print("Plugin validation failed:", file=sys.stderr)

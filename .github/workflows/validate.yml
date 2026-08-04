@@ -35,6 +35,14 @@ jobs:
       - name: Install repository tooling without running hooks
         run: npm ci --ignore-scripts
 
+      - name: Smoke-test the pi git-install path
+        run: |
+          set -euo pipefail
+          export_dir="$(mktemp -d)"
+          git -C "$GITHUB_WORKSPACE" archive --format=tar HEAD | tar -x -C "$export_dir"
+          cd "$export_dir"
+          npm install --omit=dev --no-audit --no-fund
+
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code
 
@@ -50,6 +58,9 @@ jobs:
 
       - name: Validate discovered plugin contracts
         run: python3 scripts/validate_plugins.py
+
+      - name: Validate the repository-root pi package manifest
+        run: python3 scripts/validate_plugins.py --pi-manifest-only
 
       - name: Validate marketplace and every discovered Claude plugin
         run: |

@@ -8,7 +8,7 @@ Preserve behavior while repairing drift or compatibility. Establish a baseline, 
 
 ## create
 
-Atomically add the complete plugin surface: manifests, skills, marketplace registration, version and release configuration, tests, packaging, and documentation. Partial registration is a failure, not an intermediate deliverable.
+Atomically add the complete plugin surface: manifests, skills, marketplace registration, the root pi manifest entry, version and release configuration, tests, packaging, and documentation. Partial registration is a failure, not an intermediate deliverable.
 
 ## refine
 
@@ -20,4 +20,4 @@ Perform read-only validation and report evidence. Fixes require a separately aut
 
 ## red-team
 
-Adversarially test prompt and policy overrides, host fallbacks, malformed or missing resources, manifest/version drift, unsafe packaged paths, secrets, stale mirrors, governance bypasses, and fail-open checks. Follow the finding format and approval gate in [red-team.md](red-team.md).
+Adversarially test prompt and policy overrides, host fallbacks, malformed or missing resources, manifest/version drift, unsafe packaged paths, secrets, stale mirrors, pi package-manifest drift and skill-name collisions, governance bypasses, and fail-open checks. Follow the finding format and approval gate in [red-team.md](red-team.md).
