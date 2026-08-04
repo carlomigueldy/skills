@@ -21,9 +21,10 @@ ideation → PRD → prototype → build-handoff → scaffold flow.
 
 | Agent | Install | Notes |
 | --- | --- | --- |
-| Claude Code (marketplace) | `claude plugin marketplace add carlomigueldy/skills`<br>`claude plugin install saas-launch@carlomigueldy` | Not yet published — see the root [README](../../README.md#install). |
+| Claude Code (marketplace) | `claude plugin marketplace add carlomigueldy/skills`<br>`claude plugin install saas-launch@carlomigueldy` | Installs this plugin on its own — see the root [README](../../README.md#install) for the other plugins. |
 | Codex CLI | `npx skills add carlomigueldy/skills` | Manual: copy `skills/*` into your project's `.agents/skills/` or into `~/.codex/skills/`. |
 | OpenCode | `npx skills add carlomigueldy/skills` | Manual: copy `skills/*` into `~/.config/opencode/skills/` or your project's `.agents/skills/`. |
+| pi | `pi install git:github.com/carlomigueldy/skills` | Installs all three plugins. For these six skills only, add `{"source": "git:github.com/carlomigueldy/skills", "skills": ["plugins/saas-launch/skills/*"]}` to the `packages` array in `~/.pi/agent/settings.json`. |
 | Claude Cowork / Claude Desktop | Build a zip with `scripts/package-plugin.py` (see the [root README](../../README.md#manual-upload-claude-cowork--claude-desktop)) | No marketplace support in the desktop apps. |
 
 ## Template

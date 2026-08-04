@@ -83,6 +83,17 @@ def make_repository(root: Path) -> None:
         root / ".release-please-manifest.json",
         {"plugins/alpha": "1.2.3", "plugins/beta": "1.2.3"},
     )
+    write_json(
+        root / "package.json",
+        {
+            "name": "test-repo",
+            "version": "0.0.0",
+            "private": True,
+            "keywords": ["pi-package"],
+            "scripts": {"prepare": "husky || true"},
+            "pi": {"skills": ["plugins/alpha/skills", "plugins/beta/skills"]},
+        },
+    )
 
 
 class PluginValidationTests(unittest.TestCase):
@@ -127,6 +138,28 @@ class PluginValidationTests(unittest.TestCase):
                 root / "plugins/alpha/.codex-plugin/plugin.json", "version", "9.9.9"
             ),
             "missing host extra-file": lambda root: _remove_extra_file(root),
+            "pi manifest omits a plugin": lambda root: _set_pi_skills(
+                root, ["plugins/alpha/skills"]
+            ),
+            "pi manifest uses a glob": lambda root: _set_pi_skills(
+                root, ["plugins/*/skills"]
+            ),
+            "pi manifest uses an override pattern": lambda root: _set_pi_skills(
+                root, ["+plugins/alpha/skills", "plugins/beta/skills"]
+            ),
+            "pi manifest escapes the repository": lambda root: _set_pi_skills(
+                root, ["../outside"]
+            ),
+            "pi manifest missing": lambda root: _delete_pi_key(root),
+            "pi keyword missing": lambda root: _set_json_value(
+                root / "package.json", "keywords", []
+            ),
+            "unguarded prepare script": lambda root: _set_json_value(
+                root / "package.json", "scripts", {"prepare": "husky"}
+            ),
+            "per-plugin package.json": lambda root: write_json(
+                root / "plugins/alpha/package.json", {"name": "alpha"}
+            ),
         }
         for label, mutate in mutations.items():
             with self.subTest(label=label):
@@ -175,6 +208,30 @@ class PluginValidationTests(unittest.TestCase):
         for label, mutate in mutations.items():
             with self.subTest(label=label):
                 self.assertTrue(self.validate_mutation(mutate), label)
+
+    def test_stray_file_directly_under_skills_root_is_rejected(self) -> None:
+        """pi's mode-aware skill discovery promotes any top-level `*.md`
+        file directly under a scanned skills root to a skill in its own
+        right, not just `*/SKILL.md` directories. A stray root-level
+        Markdown file would become an unreviewed extra skill for pi
+        installs while every other host and this validator's own skill
+        enumeration ignored it -- see the regression this pins."""
+
+        def mutate(root: Path) -> None:
+            _write_text(
+                root / "plugins/alpha/skills/NOTES.md",
+                "---\nname: internal-notes\n---\n\nnot a real skill\n",
+            )
+
+        errors = self.validate_mutation(mutate)
+        self.assertTrue(
+            any(
+                "skills/ must contain only skill directories" in error
+                and "NOTES.md" in error
+                for error in errors
+            ),
+            errors,
+        )
 
     def test_unsafe_parts_is_excluded_dirs_minus_pycache_only(self) -> None:
         """Pins the shared-constant fix directly: `UNSAFE_PARTS` must be
@@ -481,10 +538,38 @@ class PluginValidationTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("missing", result.stderr)
 
+    def test_pi_manifest_must_not_expose_the_generated_mirror(self) -> None:
+        def mutate(root: Path) -> None:
+            shutil.copytree(root / "plugins/alpha/skills", root / "skills")
+            _set_pi_skills(
+                root, ["skills", "plugins/alpha/skills", "plugins/beta/skills"]
+            )
+
+        errors = self.validate_mutation(mutate)
+        self.assertTrue(
+            any("generated skills/ mirror" in error for error in errors), errors
+        )
+
+    def test_pi_manifest_must_declare_every_present_convention_directory(self) -> None:
+        def mutate(root: Path) -> None:
+            (root / "prompts").mkdir()
+
+        errors = self.validate_mutation(mutate)
+        self.assertTrue(
+            any("disables convention discovery" in error for error in errors), errors
+        )
+
 
 def _set_json_value(path: Path, key: str, value: object) -> None:
     payload = json.loads(path.read_text(encoding="utf-8"))
     payload[key] = value
+    write_json(path, payload)
+
+
+def _set_pi_skills(root: Path, entries: object) -> None:
+    path = root / "package.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["pi"]["skills"] = entries
     write_json(path, payload)
 
 
@@ -499,6 +584,13 @@ def _remove_extra_file(root: Path) -> None:
     path = root / "release-please-config.json"
     payload = json.loads(path.read_text(encoding="utf-8"))
     payload["packages"]["plugins/alpha"]["extra-files"].pop()
+    write_json(path, payload)
+
+
+def _delete_pi_key(root: Path) -> None:
+    path = root / "package.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    del payload["pi"]
     write_json(path, payload)
 
 

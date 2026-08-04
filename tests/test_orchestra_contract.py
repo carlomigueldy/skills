@@ -161,6 +161,8 @@ MODEL_NAME_NEGATIVES = (
     "Claude Code",
     "Codex CLI",
     "OpenCode",
+    "pi",
+    "PI_CODING_AGENT",
     "Grok Build",
     "claude-code",
     ".claude-plugin",
@@ -1059,8 +1061,8 @@ class OrchestraPackageContractTest(unittest.TestCase):
         """The plugin must be able to talk about its own supported hosts.
 
         An over-broad denylist that also blocks "Claude Code", "Codex CLI",
-        "OpenCode", "Grok Build", or the allowlisted compound tokens is a real
-        failure mode -- it would silently make the plugin's own
+        "OpenCode", "pi", "Grok Build", or the allowlisted compound tokens is a
+        real failure mode -- it would silently make the plugin's own
         host-compatibility documentation impossible to write.
         """
         for token in MODEL_NAME_NEGATIVES:
@@ -1152,6 +1154,37 @@ class OrchestraPackageContractTest(unittest.TestCase):
             manifest.write_text(json.dumps(data), encoding="utf-8")
             errors = self.validator.validate_codex_manifest(manifest)
         self.assertTrue(any("skills" in error for error in errors), errors)
+
+    def test_host_enums_agree_and_cover_every_documented_host(self) -> None:
+        """The two schemas duplicate the host enum with no $ref, and hosts.md
+        is the only place the detection order is written down. Drift between
+        any two of the three is how a host becomes undetectable or unwritable."""
+        expected = {
+            "claude-cowork", "codex-cli", "opencode", "pi",
+            "grok-build", "claude-code",
+        }
+        enums = {}
+        for schema_name in ("run.schema.json", "lane.schema.json"):
+            schema = json.loads(
+                (REPO_ROOT / "plugins/orchestra/schemas" / schema_name)
+                .read_text(encoding="utf-8")
+            )
+            enums[schema_name] = schema["properties"]["host"]["enum"]
+        self.assertEqual(enums["run.schema.json"], enums["lane.schema.json"])
+        self.assertEqual(set(enums["run.schema.json"]), expected)
+        hosts = (REPO_ROOT / "plugins/orchestra/references/hosts.md").read_text(
+            encoding="utf-8"
+        )
+        prose = {
+            "claude-cowork": "Claude Cowork",
+            "codex-cli": "Codex CLI",
+            "opencode": "OpenCode",
+            "pi": "`pi` when",
+            "grok-build": "Grok Build",
+            "claude-code": "Claude Code",
+        }
+        for token in expected:
+            self.assertIn(prose[token], hosts, token)
 
 
 class OrchestraLaneSchemaInvariantTest(unittest.TestCase):

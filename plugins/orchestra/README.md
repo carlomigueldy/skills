@@ -156,11 +156,15 @@ happens when a host can't guarantee that.
 
 ## Hosts and degradation
 
-Orchestra installs on Claude Code, Codex CLI, OpenCode, and Grok Build. Host
+Orchestra installs on Claude Code, Codex CLI, OpenCode, Grok Build, and pi. Host
 detection happens once, before any dispatch, by scanning environment variable
 names only — never their values — and the result, along with the host's
 capabilities and the tier mapping, is recorded in `run.json`. See
-`references/hosts.md` for the exact detection order.
+`references/hosts.md` for the exact detection order. pi is the
+zero-delegation baseline — its core ships no subagent tool, so orchestra
+self-executes each lane under its role brief, records `isolation: degraded`,
+and caps the verdict at `unverified` unless a subagent tool is present in the
+session's tool list.
 
 Delegation degrades by scheduler, never by outcome. A host that can dispatch
 parallel subagents runs a wave of lanes concurrently; a host that can't runs

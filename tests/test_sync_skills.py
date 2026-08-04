@@ -95,6 +95,22 @@ def make_registered_repo(root: Path, plugin_name: str, skill_names: list[str]) -
         root / ".release-please-manifest.json",
         {f"plugins/{plugin_name}": "1.0.0"},
     )
+    # The repository-root pi package manifest is part of a valid repository,
+    # not an optional extra: `validate_repository` requires it so that
+    # `pi install git:<repo>` routes at the per-plugin skill trees instead of
+    # convention-discovering the generated mirror. A fixture without it fails
+    # validation for a reason that has nothing to do with mirror syncing.
+    write_json(
+        root / "package.json",
+        {
+            "name": "test-repo",
+            "version": "0.0.0",
+            "private": True,
+            "keywords": ["pi-package"],
+            "scripts": {"prepare": "husky || true"},
+            "pi": {"skills": [f"plugins/{plugin_name}/skills"]},
+        },
+    )
 
 
 def snapshot(directory: Path) -> dict[str, bytes]:

@@ -136,7 +136,7 @@ RUN_FIXTURE_DIR = "examples/runs"
 # see _validate_packaged_schemas) is the primary gate because an enum cannot
 # be evaded. This denylist is the secondary, textual gate over prose. Vendor
 # families require a following digit so the plugin's own host names
-# ("Claude Code", "Codex CLI", "OpenCode", "Grok Build") never trip it, while
+# ("Claude Code", "Codex CLI", "OpenCode", "pi", "Grok Build") never trip it, while
 # a versioned model id ("grok-4", "claude-opus-4-5", "gpt-5.4",
 # "gemini-3-pro") always does. Bare "Sonnet"/"Opus"/"Haiku" have no
 # legitimate non-model usage in this plugin, so they are denylisted without

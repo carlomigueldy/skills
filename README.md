@@ -9,20 +9,17 @@ packaged as installable plugins.
 This repo is a Claude Code plugin marketplace, but its skills are also
 installable straight from the top-level `skills/` mirror on any agent that
 speaks the emerging `skills/` convention — Codex CLI, OpenCode, and others.
-Pick the row for your agent:
+pi installs the whole repository as one package and reads the per-plugin
+skill trees directly, so pi users get all three plugins — including
+`product-foundry`, which is not in the mirror. Pick the row for your agent:
 
 | Agent | Install | Notes |
 | --- | --- | --- |
-| Claude Code (marketplace) | `claude plugin marketplace add carlomigueldy/skills`<br>`claude plugin install saas-launch@carlomigueldy` | See caveat below — not yet published. |
-| Codex CLI | `codex plugin marketplace add carlomigueldy/skills` (reads `.claude-plugin/marketplace.json` and installs `saas-launch` from `plugins/saas-launch/.claude-plugin/plugin.json`), or `npx skills add carlomigueldy/skills` for skills only | See caveat below — not yet published. Manual fallback: copy `skills/*` into your project's `.agents/skills/` or into `~/.codex/skills/`. |
-| OpenCode | `npx skills add carlomigueldy/skills` | See caveat below — not yet published. Manual fallback: copy `skills/*` into `~/.config/opencode/skills/` or your project's `.agents/skills/`. |
+| Claude Code (marketplace) | `claude plugin marketplace add carlomigueldy/skills`<br>`claude plugin install saas-launch@carlomigueldy` | Swap `saas-launch` for `product-foundry` or `orchestra` to install those instead. |
+| Codex CLI | `codex plugin marketplace add carlomigueldy/skills` (reads `.claude-plugin/marketplace.json` and installs `saas-launch` from `plugins/saas-launch/.claude-plugin/plugin.json`), or `npx skills add carlomigueldy/skills` for skills only | Manual fallback: copy `skills/*` into your project's `.agents/skills/` or into `~/.codex/skills/`. |
+| OpenCode | `npx skills add carlomigueldy/skills` | Manual fallback: copy `skills/*` into `~/.config/opencode/skills/` or your project's `.agents/skills/`. |
+| pi | `pi install git:github.com/carlomigueldy/skills` (all 40 skills from all three plugins) | One plugin only: `pi install "$PWD/plugins/orchestra"` from a local clone, or add `{"source": "git:github.com/carlomigueldy/skills", "skills": ["plugins/orchestra/skills/*"]}` to the `packages` array in `~/.pi/agent/settings.json`. |
 | Claude Cowork / Claude Desktop | Build a zip with `scripts/package-plugin.py` (see below) | No marketplace support in the desktop apps. |
-
-> **Not yet published to GitHub.** This repo isn't pushed to GitHub yet, so
-> every remote-install row above — the `claude plugin` commands AND the
-> `npx skills add carlomigueldy/skills` commands — won't resolve until
-> `carlomigueldy/skills` exists there. Use the manual fallbacks in the notes
-> column, or the manual-upload path below, until then.
 
 > **`npx skills add carlomigueldy/skills` is all-or-nothing.** The top-level
 > `skills/` mirror fans in from both `saas-launch` and `orchestra`, so this
@@ -30,7 +27,10 @@ Pick the row for your agent:
 > installs all ~25 skills from both plugins together — there's no way to pull
 > just the saas-launch set or just orchestra through it. If you only want one
 > plugin's skills, install that plugin directly (Claude Code marketplace) or
-> copy the relevant subset out of `skills/` manually.
+> copy the relevant subset out of `skills/` manually. pi is the exception —
+> it reads `plugins/*/skills` through the root `package.json` `pi` manifest,
+> not the mirror, so a `packages[].skills` filter such as
+> `["plugins/orchestra/skills/*"]` selects one plugin cleanly.
 
 **Install all six `saas-launch` skills together.** `saas-launch-blueprint`,
 `ignition`, `flight-plan`, `wind-tunnel`, `countdown`, and `saas-scaffold`
@@ -88,7 +88,9 @@ correct names.
 Product Foundry keeps one package-local `skills/` tree shared by its native
 Claude and Codex manifests, so it does not need a second top-level mirror. The
 `saas-launch` and `orchestra` plugins both use the repository's generated
-top-level `skills/` mirror for Codex CLI, OpenCode, and `npx skills add`.
+top-level `skills/` mirror for Codex CLI, OpenCode, and `npx skills add`. pi
+reaches all three plugins through the root `pi` manifest and never reads the
+mirror.
 
 ## Repo layout
 
@@ -96,6 +98,7 @@ top-level `skills/` mirror for Codex CLI, OpenCode, and `npx skills add`.
 skills/
 ├── .claude-plugin/
 │   └── marketplace.json          # marketplace definition (lists all plugins; Codex CLI reads this too)
+├── package.json                   # root pi package manifest: pi.skills routes to plugins/*/skills
 ├── plugins/
 │   ├── saas-launch/
 │   │   ├── .claude-plugin/plugin.json
@@ -141,6 +144,7 @@ See [`docs/VERSIONING.md`](./docs/VERSIONING.md) for full details on the release
 3. Add one or more skills under `plugins/<name>/skills/<skill-name>/SKILL.md`
 4. Register the plugin in `.claude-plugin/marketplace.json`
 5. Add the plugin to the release-please config and manifest so it gets versioned and released independently
+6. Add `plugins/<name>/skills` to the root `package.json` `pi.skills` array, keeping it sorted; `tests/test_pi_package.py` pins the exact sorted array, and `scripts/validate_plugins.py` fails if a plugin is missing or extra.
 
 ## License
 

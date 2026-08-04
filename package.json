@@ -2,8 +2,17 @@
   "name": "skills-repository-governance",
   "version": "0.0.0",
   "private": true,
+  "description": "Carlo Miguel Dy's agent skills and plugins, installable into pi as one package.",
+  "keywords": ["pi-package"],
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky || exit 0"
+  },
+  "pi": {
+    "skills": [
+      "plugins/orchestra/skills",
+      "plugins/product-foundry/skills",
+      "plugins/saas-launch/skills"
+    ]
   },
   "devDependencies": {
     "@commitlint/cli": "21.2.1",
