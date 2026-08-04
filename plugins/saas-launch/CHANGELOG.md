@@ -9,6 +9,13 @@ point forward — entries below the `0.1.0` heading are generated
 automatically from Conventional Commits on future releases; do not hand-edit
 past this initial entry.
 
+## [0.6.0](https://github.com/carlomigueldy/skills/compare/saas-launch--v0.5.0...saas-launch--v0.6.0) (2026-08-04)
+
+
+### Features
+
+* **orchestra:** add pi coding agent support ([#26](https://github.com/carlomigueldy/skills/issues/26)) ([7e6e501](https://github.com/carlomigueldy/skills/commit/7e6e50131b524811a9ea4bd9e5cd7ae0c90450fe))
+
 ## [0.5.0](https://github.com/carlomigueldy/skills/compare/saas-launch--v0.4.1...saas-launch--v0.5.0) (2026-07-21)
 
 
