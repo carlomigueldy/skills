@@ -39,6 +39,7 @@ MIRROR_MARKER = re.compile(
     r"(?:, plugins/[a-z0-9][a-z0-9-]*/skills)*) "
 )
 MIRROR_SOURCE = re.compile(r"plugins/([a-z0-9][a-z0-9-]*)/skills")
+MARKETPLACE_NAME = re.compile(r"^[a-z0-9][a-z0-9._-]*$")
 # Mirrors sync-skills.py's EXCLUDED_FILES. Kept as a separate constant (not
 # imported) because the hyphenated script filename isn't import-able by name.
 MIRROR_EXCLUDED_FILES = {".DS_Store"}
@@ -67,6 +68,7 @@ GENERATED_RESTORE_FILES = {"restore-paths.md", "restore-paths.sh"}
 # the validator script and validation silently passes) whereas a plugin listed
 # here with a missing script must error loudly instead.
 FOCUSED_VALIDATORS = {
+    "herdcraft": "scripts/validate_herdcraft.py",
     "orchestra": "scripts/validate_orchestra.py",
     "product-foundry": "scripts/validate_product_foundry.py",
 }
@@ -498,7 +500,15 @@ def validate_pi_manifest(root: Path, discovered: set[str], errors: list[str]) ->
     # warning -- the skills simply don't exist for them, same as
     # product-foundry doesn't exist for mirror-based installs today), so
     # "added a plugin, forgot pi" has to be a hard failure here.
-    expected = {f"plugins/{name}/skills" for name in discovered}
+    # Codex-only plugins are intentionally absent from pi: a native Codex
+    # manifest is not permission to expose the package to another host.
+    # Existing cross-host plugins all carry a Claude manifest, which remains
+    # the repository's signal that their skill tree belongs in the pi bundle.
+    expected = {
+        f"plugins/{name}/skills"
+        for name in discovered
+        if (root / "plugins" / name / ".claude-plugin/plugin.json").is_file()
+    }
     for missing in sorted(expected - resolved):
         errors.append(f"pi manifest must expose {missing}")
     for extra in sorted(resolved - expected):
@@ -578,9 +588,18 @@ def _validate_registries(
     errors: list[str],
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     marketplace = _read_json(root / ".claude-plugin/marketplace.json", errors)
+    codex_marketplace_path = root / ".agents/plugins/marketplace.json"
+    codex_marketplace = (
+        _read_json(codex_marketplace_path, errors)
+        if codex_marketplace_path.exists()
+        else {}
+    )
     release_config = _read_json(root / "release-please-config.json", errors)
     release_manifest = _read_json(root / ".release-please-manifest.json", errors)
     marketplace = marketplace if isinstance(marketplace, dict) else {}
+    codex_marketplace = (
+        codex_marketplace if isinstance(codex_marketplace, dict) else {}
+    )
     release_config = release_config if isinstance(release_config, dict) else {}
     release_manifest = release_manifest if isinstance(release_manifest, dict) else {}
 
@@ -619,6 +638,64 @@ def _validate_registries(
                 f"marketplace entry {name!r} must use safe source {expected!r}"
             )
 
+    if codex_marketplace_path.exists():
+        codex_name = codex_marketplace.get("name")
+        if not isinstance(codex_name, str) or not MARKETPLACE_NAME.fullmatch(
+            codex_name
+        ):
+            errors.append(
+                "Codex marketplace name must use lowercase letters, digits, dots, "
+                "underscores, or hyphens"
+            )
+        codex_interface = codex_marketplace.get("interface")
+        if not isinstance(codex_interface, dict):
+            errors.append("Codex marketplace interface must be an object")
+        elif not isinstance(
+            codex_interface.get("displayName"), str
+        ) or not codex_interface["displayName"].strip():
+            errors.append("Codex marketplace interface.displayName must be non-empty")
+
+    codex_entries = codex_marketplace.get("plugins", [])
+    if not isinstance(codex_entries, list):
+        errors.append("Codex marketplace plugins must be a list")
+        codex_entries = []
+    valid_codex_entries = [entry for entry in codex_entries if isinstance(entry, dict)]
+    if len(valid_codex_entries) != len(codex_entries):
+        errors.append("Codex marketplace plugin entries must be objects")
+    codex_entry_names: list[str] = []
+    codex_entry_paths: list[str] = []
+    for entry in valid_codex_entries:
+        name = entry.get("name")
+        source = entry.get("source")
+        source_path = source.get("path") if isinstance(source, dict) else None
+        if not isinstance(name, str) or not isinstance(source_path, str):
+            errors.append(
+                "Codex marketplace plugin entries require string name and local source.path"
+            )
+            continue
+        codex_entry_names.append(name)
+        codex_entry_paths.append(source_path)
+        expected = f"./plugins/{name}"
+        if source.get("source") != "local" or source_path != expected:
+            errors.append(
+                f"Codex marketplace entry {name!r} must use local source {expected!r}"
+            )
+        policy = entry.get("policy")
+        if not isinstance(policy, dict) or policy.get("installation") not in {
+            "NOT_AVAILABLE",
+            "AVAILABLE",
+            "INSTALLED_BY_DEFAULT",
+        } or policy.get("authentication") not in {"ON_INSTALL", "ON_USE"}:
+            errors.append(f"Codex marketplace entry {name!r} has invalid policy")
+        if not isinstance(entry.get("category"), str):
+            errors.append(f"Codex marketplace entry {name!r} requires category")
+    for name, count in Counter(codex_entry_names).items():
+        if count > 1:
+            errors.append(f"Codex marketplace has duplicate plugin name: {name}")
+    for source, count in Counter(codex_entry_paths).items():
+        if count > 1:
+            errors.append(f"Codex marketplace has duplicate plugin source: {source}")
+
     packages = release_config.get("packages", {})
     if not isinstance(packages, dict):
         errors.append("release-please packages must be an object")
@@ -626,6 +703,8 @@ def _validate_registries(
     if check_orphans:
         for name in sorted(set(entry_names) - discovered):
             errors.append(f"{name}: orphan marketplace registration")
+        for name in sorted(set(codex_entry_names) - discovered):
+            errors.append(f"{name}: orphan Codex marketplace registration")
         registered_packages = {
             key.removeprefix("plugins/")
             for key in packages
@@ -648,10 +727,38 @@ def _validate_registries(
             if entry.get("name") == plugin_name
             and entry.get("source") == expected_source
         ]
-        if len(matching) != 1:
+        has_claude_manifest = (
+            root / "plugins" / plugin_name / ".claude-plugin/plugin.json"
+        ).is_file()
+        has_codex_manifest = (
+            root / "plugins" / plugin_name / ".codex-plugin/plugin.json"
+        ).is_file()
+        codex_matching = [
+            entry
+            for entry in valid_codex_entries
+            if entry.get("name") == plugin_name
+            and isinstance(entry.get("source"), dict)
+            and entry["source"].get("source") == "local"
+            and entry["source"].get("path") == expected_source
+        ]
+        if has_claude_manifest and len(matching) != 1:
             errors.append(
                 f"{plugin_name}: marketplace must register exactly one matching entry"
             )
+        elif not has_claude_manifest and matching:
+            errors.append(
+                f"{plugin_name}: Claude marketplace must not register a plugin without a Claude manifest"
+            )
+        if has_codex_manifest and len(codex_matching) != 1:
+            errors.append(
+                f"{plugin_name}: Codex marketplace must register exactly one matching entry"
+            )
+        elif not has_codex_manifest and codex_matching:
+            errors.append(
+                f"{plugin_name}: Codex marketplace must not register a plugin without a Codex manifest"
+            )
+        if not has_claude_manifest and not has_codex_manifest:
+            errors.append(f"{plugin_name}: missing supported plugin manifest")
         package_key = f"plugins/{plugin_name}"
         if not isinstance(packages.get(package_key), dict):
             errors.append(f"{plugin_name}: missing release-please package registration")
@@ -693,28 +800,31 @@ def validate_repository(
         package = discovered[plugin_name]
         _validate_package_paths(package, errors)
         claude_path = package / ".claude-plugin/plugin.json"
-        claude = _read_json(claude_path, errors)
-        if not isinstance(claude, dict):
-            claude = {}
-        name = claude.get("name")
-        if isinstance(name, str):
-            manifest_names.append(name)
-        if name != plugin_name:
-            errors.append(
-                f"{plugin_name}: Claude manifest name must be {plugin_name!r}"
-            )
-        version = claude.get("version")
-        if not isinstance(version, str) or not SEMVER.fullmatch(version):
-            errors.append(f"{plugin_name}: Claude manifest version must be semantic")
-
         codex_path = package / ".codex-plugin/plugin.json"
+        claude: dict[str, Any] | None = None
         codex: dict[str, Any] | None = None
+        if claude_path.exists():
+            loaded = _read_json(claude_path, errors)
+            claude = loaded if isinstance(loaded, dict) else {}
         if codex_path.exists():
             loaded = _read_json(codex_path, errors)
             codex = loaded if isinstance(loaded, dict) else {}
-            if codex.get("name") != name:
+        primary = claude if claude is not None else codex
+        if primary is None:
+            primary = {}
+        name = primary.get("name")
+        if isinstance(name, str):
+            manifest_names.append(name)
+        if name != plugin_name:
+            errors.append(f"{plugin_name}: manifest name must be {plugin_name!r}")
+        version = primary.get("version")
+        if not isinstance(version, str) or not SEMVER.fullmatch(version):
+            errors.append(f"{plugin_name}: manifest version must be semantic")
+
+        if claude is not None and codex is not None:
+            if codex.get("name") != claude.get("name"):
                 errors.append(f"{plugin_name}: Claude and Codex names must match")
-            if codex.get("version") != version:
+            if codex.get("version") != claude.get("version"):
                 errors.append(f"{plugin_name}: Claude and Codex versions must match")
 
         version_path = package / "version.txt"
@@ -724,7 +834,7 @@ def validate_repository(
             errors.append(f"{plugin_name}: missing or unreadable version.txt")
             text_version = None
         if isinstance(version, str) and text_version != version:
-            errors.append(f"{plugin_name}: version.txt must match Claude manifest")
+            errors.append(f"{plugin_name}: version.txt must match plugin manifest")
 
         release_key = f"plugins/{plugin_name}"
         release = release_packages.get(release_key)
@@ -732,7 +842,9 @@ def validate_repository(
             if release.get("release-type") != "simple":
                 errors.append(f"{plugin_name}: release type must be simple")
             extra_paths = _extra_file_paths(release)
-            required_manifests = {".claude-plugin/plugin.json"}
+            required_manifests = set()
+            if claude_path.exists():
+                required_manifests.add(".claude-plugin/plugin.json")
             if codex_path.exists():
                 required_manifests.add(".codex-plugin/plugin.json")
             for relative in sorted(required_manifests - extra_paths):

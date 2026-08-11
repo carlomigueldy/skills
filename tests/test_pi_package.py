@@ -25,13 +25,13 @@ class PiPackageContractTests(unittest.TestCase):
             (REPO_ROOT / "package.json").read_text(encoding="utf-8")
         )
 
-    def test_root_manifest_exposes_exactly_the_discovered_plugin_skill_trees(
+    def test_root_manifest_exposes_exactly_the_cross_host_plugin_skill_trees(
         self,
     ) -> None:
         expected = sorted(
             f"plugins/{path.name}/skills"
             for path in (REPO_ROOT / "plugins").iterdir()
-            if path.is_dir()
+            if path.is_dir() and (path / ".claude-plugin/plugin.json").is_file()
         )
         self.assertEqual(self.payload["pi"]["skills"], expected)
 

@@ -1,0 +1,50 @@
+schema_version: 1
+repo_root: replace-me
+team_id: replace-me
+delivery_profile: delivery-profile.yaml
+
+existing_skills: []
+skill_candidates: []
+installed_skills: []
+lead_skill_loads: []
+load_assignments: []
+
+lead_skill_load_schema:
+  required:
+    - lead_agent
+    - skill_name
+    - skill_md_path
+    - purpose
+    - loaded_at
+    - result
+
+skill_record_schema:
+  required:
+    - name
+    - source
+    - pinned_ref
+    - repo_local_path
+    - task_need
+    - trust_evidence
+    - license
+    - overlapping_skills
+    - disposition
+    - install_command
+    - install_commit
+    - loaded_by
+
+tools:
+  configured: []
+  assignments: []
+
+tool_assignment_schema:
+  required:
+    - tool
+    - agent
+    - task_id
+    - purpose
+    - target
+    - authority
+    - evidence_path
+    - result
+    - fallback

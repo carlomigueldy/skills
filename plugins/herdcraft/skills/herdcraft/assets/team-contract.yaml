@@ -1,0 +1,56 @@
+schema_version: 1
+team_id: replace-me
+lead_agent: replace-me
+mission: replace-me
+parent: root-coordinator
+base_revision: replace-me
+delivery_profile: replace-me
+capability_ledger: replace-me
+
+ownership:
+  allowed_paths: []
+  forbidden_paths: []
+  stable_interfaces: []
+
+delegation:
+  maximum_depth: 1
+  maximum_active_children: 3
+  maximum_total_children: 6
+  allowed_specialists: []
+  allowed_models: []
+  may_create_writer_worktrees: true
+  child_delegation_allowed: false
+
+capabilities:
+  maximum_repo_local_skill_installs: 2
+  lead_required_skills:
+    - name: find-skills
+      skill_md_path: replace-me
+      purpose: discover and vet concrete repo-local capability gaps
+      load_evidence: null
+  approved_skills: []
+  approved_tools: []
+  capability_commit: null
+
+integration:
+  owner: replace-me
+  target_branch: replace-me
+  acceptance_commands: []
+
+reporting:
+  checkpoint_path: replace-me
+  incident_directory: replace-me
+  final_handoff_path: replace-me
+
+escalate_when:
+  - cross-team interface change
+  - ownership conflict
+  - destructive or irreversible action
+  - security or data-loss risk
+  - same approach failed twice
+  - new authority required
+
+retirement:
+  owner: replace-me
+  preserve_branches_until_run_complete: true
+  remove_worktrees_after_durable_disposition: true

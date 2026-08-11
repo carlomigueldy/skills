@@ -64,6 +64,22 @@ def make_plugin_with_pycache(plugin_dir: Path) -> None:
     )
 
 
+def make_codex_only_plugin(plugin_dir: Path) -> None:
+    write_json(
+        plugin_dir / ".codex-plugin/plugin.json",
+        {
+            "name": "herdcraft",
+            "description": "Codex-only plugin",
+            "version": "0.1.0",
+            "skills": "./skills/",
+        },
+    )
+    write_text(
+        plugin_dir / "skills/herdcraft/SKILL.md",
+        "---\nname: herdcraft\ndescription: x\n---\n\n# x\n",
+    )
+
+
 class PackagePluginTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -119,6 +135,28 @@ class PackagePluginTests(unittest.TestCase):
             any("__pycache__" in name or name.endswith(".pyc") for name in names),
             names,
         )
+
+    def test_codex_only_plugin_builds_a_codex_archive(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            plugins_dir = Path(tmp) / "plugins"
+            plugin_dir = plugins_dir / "herdcraft"
+            make_codex_only_plugin(plugin_dir)
+            output_dir = Path(tmp) / "dist"
+
+            with mock.patch.object(self.module, "PLUGINS_DIR", plugins_dir), mock.patch.object(
+                sys,
+                "argv",
+                ["package-plugin.py", "herdcraft", "--output-dir", str(output_dir)],
+            ):
+                self.module.main()
+
+            zips = list(output_dir.glob("herdcraft-0.1.0-codex.zip"))
+            self.assertEqual(len(zips), 1, zips)
+            with zipfile.ZipFile(zips[0]) as zf:
+                names = zf.namelist()
+
+        self.assertIn(".codex-plugin/plugin.json", names)
+        self.assertNotIn(".claude-plugin/plugin.json", names)
 
 
 if __name__ == "__main__":

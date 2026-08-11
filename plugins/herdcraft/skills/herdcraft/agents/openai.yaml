@@ -1,0 +1,4 @@
+interface:
+  display_name: "Herdcraft"
+  short_description: "Run durable multi-agent engineering delivery"
+  default_prompt: "Use $herdcraft to deliver this feature end to end with appropriately scoped autonomous coding agents."

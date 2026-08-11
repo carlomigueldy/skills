@@ -1,0 +1,147 @@
+{
+  "schema_version": 4,
+  "run_id": "replace-me",
+  "objective": "replace-me",
+  "repo_root": "replace-me",
+  "startup_context": {
+    "requested_cwd": "replace-me",
+    "repository_status": "existing|new|non-git|research-only",
+    "resolution": "replace-me",
+    "git_initialization_authorized": false,
+    "reduced_isolation": false
+  },
+  "base_revision": "replace-me",
+  "product_contract": "replace-me",
+  "delivery_profile": "delivery-profile.yaml",
+  "status": "planning",
+  "specialist_roster": "specialists.yaml@v1",
+  "delegation": {
+    "maximum_depth": 2,
+    "global_ledger_owner": "root-coordinator"
+  },
+  "human_gates": [],
+  "tasks": [],
+  "teams": [],
+  "team_record_schema": {
+    "required": [
+      "team_id",
+      "lead_agent",
+      "mission",
+      "team_contract",
+      "ownership",
+      "delegation_budget",
+      "state",
+      "integration_revision",
+      "report_paths",
+      "resource_ids"
+    ]
+  },
+  "agents": [],
+  "agent_record_schema": {
+    "required": [
+      "name",
+      "specialist",
+      "model",
+      "reasoning_effort",
+      "parent",
+      "access_mode",
+      "fallback",
+      "delegation_budget",
+      "verifier_independence",
+      "model_inference_verified",
+      "herdr_pane_id",
+      "worktree",
+      "task_id",
+      "lifecycle_state",
+      "task_state"
+    ]
+  },
+  "integration_revision": null,
+  "events": [],
+  "event_record_schema": {
+    "required": [
+      "type",
+      "team_id",
+      "reported_by",
+      "reported_at",
+      "report_path",
+      "root_acknowledged_at"
+    ],
+    "types": [
+      "CHECKPOINT",
+      "INCIDENT",
+      "FINAL_HANDOFF"
+    ]
+  },
+  "resources": [],
+  "resource_record_schema": {
+    "required": [
+      "resource_id",
+      "resource_type",
+      "owner_team",
+      "owner_task",
+      "created_by_run",
+      "herdr_id",
+      "path",
+      "branch",
+      "state",
+      "preserved_commit",
+      "retirement_action",
+      "retirement_evidence",
+      "verified_absent",
+      "retired_at"
+    ],
+    "states": [
+      "active",
+      "retirement-pending",
+      "retired",
+      "retained-for-recovery",
+      "retirement-failed"
+    ]
+  },
+  "workflow_metrics": {
+    "teams_activated": 0,
+    "agents_spawned": 0,
+    "lead_count": 0,
+    "worker_count": 0,
+    "dispatch_waves": 0,
+    "peak_concurrency": null,
+    "retry_count": 0
+  },
+  "capabilities": {
+    "team_ledgers": [],
+    "repo_local_skills_installed": 0,
+    "skill_load_failures": [],
+    "tool_assignments": []
+  },
+  "usage": {
+    "tokens": {
+      "availability": "unavailable",
+      "source": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "agents_missing_data": [],
+      "reason_unavailable": null
+    },
+    "context": {
+      "availability": "unavailable",
+      "source": null,
+      "per_agent": [],
+      "reason_unavailable": null
+    }
+  },
+  "verification": [],
+  "verification_record_schema": {
+    "required": [
+      "gate",
+      "result",
+      "evidence"
+    ],
+    "completion_result": "passed"
+  },
+  "deployments": [],
+  "risks": [],
+  "final_report_path": "final-report.md",
+  "updated_at": "replace-me"
+}

@@ -10,7 +10,8 @@ to automate versioning for each plugin independently, driven by
    Actions workflow (`.github/workflows/release.yml`).
 2. release-please opens (and keeps up to date) one release pull request per
    package configured in `release-please-config.json`: currently
-   `plugins/saas-launch`, `plugins/product-foundry`, and `plugins/orchestra`.
+   `plugins/saas-launch`, `plugins/product-foundry`, `plugins/orchestra`, and
+   `plugins/herdcraft`.
 3. Merging a release PR:
    - Bumps the package's configured manifest version or versions via that
      package's `extra-files` config. Marketplace entries deliberately carry no
@@ -53,9 +54,10 @@ When you add a new plugin under `plugins/<name>/` (see the root `README.md`'s
    map, with its own `component` name.
 2. Add a `plugins/<name>` entry to `.release-please-manifest.json` set to the
    current package version.
-3. Add `.claude-plugin/plugin.json` and any additional host manifest, such as
-   `.codex-plugin/plugin.json`, as package-local `extra-files` targets so
-   release-please keeps them in sync.
+3. Add every host manifest the plugin actually ships as a package-local
+   `extra-files` target so release-please keeps them in sync. A Codex-only
+   plugin lists `.codex-plugin/plugin.json` and does not invent a Claude
+   manifest solely for versioning.
 4. Do **not** give the plugin its own `package.json`. pi discovers a plugin
    package by convention, and a per-plugin `package.json` would add a fourth
    version to keep in lockstep through release-please's special-cased
