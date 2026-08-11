@@ -1,6 +1,6 @@
 {
   "name": "herdcraft",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Codex-native, Herdr-backed autonomous engineering delivery with bounded delegation, durable run state, independent verification, and teardown.",
   "author": {
     "name": "Carlo Miguel Dy",
