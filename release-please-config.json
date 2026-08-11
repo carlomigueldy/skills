@@ -54,6 +54,19 @@
           "jsonpath": "$.version"
         }
       ]
+    },
+    "plugins/herdcraft": {
+      "release-type": "simple",
+      "component": "herdcraft",
+      "package-name": "herdcraft",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": ".codex-plugin/plugin.json",
+          "jsonpath": "$.version"
+        }
+      ]
     }
   }
 }

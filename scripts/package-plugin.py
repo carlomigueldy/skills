@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""Package a plugin as a zip for manual upload to Claude Cowork / Claude Desktop.
+"""Package a discovered plugin as a host-appropriate validation archive.
 
-The marketplace install path (`/plugin marketplace add carlomigueldy/skills`)
-is the normal way to get these plugins. This script exists for the manual
-upload flow, where the desktop app wants a single zip and applies stricter
-rules to what is inside it than git does.
+The marketplace is the normal installation path. Claude-capable packages use
+the existing Cowork/Desktop archive contract; Codex-only packages produce a
+`-codex.zip` archive used for package-layout validation and distribution.
 
 Two things it handles that a plain `zip -r` does not:
 
-1. **Flat layout.** The uploader expects `.claude-plugin/plugin.json` at the
-   root of the archive, not nested under a `<plugin-name>/` directory.
+1. **Flat layout.** The selected native manifest stays at the archive root,
+   not nested under a `<plugin-name>/` directory.
 
 2. **Path sanitization.** The uploader rejects archives containing paths with
    characters that are illegal or reserved on Windows -- most notably `[` and
@@ -121,12 +120,17 @@ def collect_files(plugin_dir: Path) -> list[tuple[Path, str]]:
     return collected
 
 
-def read_version(plugin_dir: Path) -> str:
-    manifest = plugin_dir / ".claude-plugin" / "plugin.json"
-    if not manifest.is_file():
+def read_manifest(plugin_dir: Path) -> tuple[str, str, Path]:
+    candidates = (
+        ("claude", plugin_dir / ".claude-plugin" / "plugin.json"),
+        ("codex", plugin_dir / ".codex-plugin" / "plugin.json"),
+    )
+    selected = next(((host, path) for host, path in candidates if path.is_file()), None)
+    if selected is None:
         sys.exit(
-            f"error: {manifest} not found -- is {plugin_dir.name} really a plugin?"
+            f"error: {plugin_dir} has no supported plugin manifest"
         )
+    host, manifest = selected
     try:
         data = json.loads(manifest.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
@@ -134,7 +138,7 @@ def read_version(plugin_dir: Path) -> str:
     version = data.get("version")
     if not version:
         sys.exit(f"error: {manifest} has no 'version' field.")
-    return str(version)
+    return str(version), host, manifest
 
 
 def build_restore_docs(renames: list[tuple[str, str]]) -> tuple[str, str]:
@@ -179,7 +183,7 @@ marketplace has the correct names already and needs none of this.
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Package a plugin as a zip for manual Claude Cowork upload.",
+        description="Package a plugin as a host-appropriate validation archive.",
     )
     parser.add_argument(
         "plugin",
@@ -204,7 +208,7 @@ def main() -> None:
         available = ", ".join(sorted(p.name for p in PLUGINS_DIR.iterdir() if p.is_dir()))
         sys.exit(f"error: no plugin '{args.plugin}' in plugins/. Available: {available}")
 
-    version = read_version(plugin_dir)
+    version, host, required_manifest = read_manifest(plugin_dir)
     files = collect_files(plugin_dir)
     if not files:
         sys.exit(f"error: {plugin_dir} contains no packageable files.")
@@ -245,7 +249,8 @@ def main() -> None:
 
     output_dir = Path(args.output_dir).expanduser()
     output_dir.mkdir(parents=True, exist_ok=True)
-    out_path = output_dir / f"{args.plugin}-{version}-cowork.zip"
+    archive_kind = "cowork" if host == "claude" else "codex"
+    out_path = output_dir / f"{args.plugin}-{version}-{archive_kind}.zip"
 
     with zipfile.ZipFile(out_path, "w", zipfile.ZIP_DEFLATED) as zf:
         for path, arc in entries:
@@ -265,8 +270,9 @@ def main() -> None:
         offenders = [n for n in names if ILLEGAL_RE.search(n)]
         if offenders:
             sys.exit(f"error: zip still contains rejected paths: {offenders}")
-        if ".claude-plugin/plugin.json" not in names:
-            sys.exit("error: zip is missing .claude-plugin/plugin.json at its root.")
+        expected_manifest = required_manifest.relative_to(plugin_dir).as_posix()
+        if expected_manifest not in names:
+            sys.exit(f"error: zip is missing {expected_manifest} at its root.")
 
     size_kb = out_path.stat().st_size / 1024
     print(f"Wrote {out_path} ({len(names)} files, {size_kb:.0f} KB)")

@@ -1,0 +1,44 @@
+{
+  "name": "carlomigueldy",
+  "interface": {
+    "displayName": "Carlo Miguel Dy"
+  },
+  "plugins": [
+    {
+      "name": "herdcraft",
+      "source": {
+        "source": "local",
+        "path": "./plugins/herdcraft"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "orchestra",
+      "source": {
+        "source": "local",
+        "path": "./plugins/orchestra"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "product-foundry",
+      "source": {
+        "source": "local",
+        "path": "./plugins/product-foundry"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

@@ -19,6 +19,18 @@ def write_json(path: Path, payload: object) -> None:
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
+def codex_marketplace_entry(name: str) -> dict[str, object]:
+    return {
+        "name": name,
+        "source": {"source": "local", "path": f"./plugins/{name}"},
+        "policy": {
+            "installation": "AVAILABLE",
+            "authentication": "ON_INSTALL",
+        },
+        "category": "Productivity",
+    }
+
+
 def add_plugin(root: Path, name: str, *, codex: bool = False) -> None:
     package = root / "plugins" / name
     claude_manifest = {
@@ -41,6 +53,30 @@ def add_plugin(root: Path, name: str, *, codex: bool = False) -> None:
     (package / "version.txt").write_text("1.2.3\n", encoding="utf-8")
 
 
+def add_codex_only_plugin(root: Path, name: str) -> None:
+    package = root / "plugins" / name
+    write_json(
+        package / ".codex-plugin/plugin.json",
+        {
+            "name": name,
+            "description": f"{name} Codex plugin",
+            "version": "1.2.3",
+            "skills": "./skills/",
+        },
+    )
+    skill = package / "skills" / name / "SKILL.md"
+    skill.parent.mkdir(parents=True, exist_ok=True)
+    skill.write_text(
+        f"---\nname: {name}\ndescription: Test Codex-only skill\n---\n\n# Test\n",
+        encoding="utf-8",
+    )
+    (package / "version.txt").write_text("1.2.3\n", encoding="utf-8")
+    if name == "herdcraft":
+        validator = root / "scripts/validate_herdcraft.py"
+        validator.parent.mkdir(parents=True, exist_ok=True)
+        validator.write_text("raise SystemExit(0)\n", encoding="utf-8")
+
+
 def make_repository(root: Path) -> None:
     add_plugin(root, "alpha", codex=True)
     add_plugin(root, "beta")
@@ -52,6 +88,14 @@ def make_repository(root: Path) -> None:
                 {"name": "alpha", "source": "./plugins/alpha"},
                 {"name": "beta", "source": "./plugins/beta"},
             ],
+        },
+    )
+    write_json(
+        root / ".agents/plugins/marketplace.json",
+        {
+            "name": "test-codex",
+            "interface": {"displayName": "Test Codex"},
+            "plugins": [codex_marketplace_entry("alpha")],
         },
     )
     write_json(
@@ -117,6 +161,87 @@ class PluginValidationTests(unittest.TestCase):
             self.assertEqual(
                 self.validator.validate_repository(root, plugin_names=["alpha"]), []
             )
+
+    def test_codex_only_plugin_uses_codex_registry_and_is_not_exposed_to_pi(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            make_repository(root)
+            add_codex_only_plugin(root, "herdcraft")
+            write_json(
+                root / ".agents/plugins/marketplace.json",
+                {
+                    "name": "test-codex",
+                    "interface": {"displayName": "Test Codex"},
+                    "plugins": [
+                        codex_marketplace_entry("alpha"),
+                        codex_marketplace_entry("herdcraft"),
+                    ],
+                },
+            )
+            release_path = root / "release-please-config.json"
+            release = json.loads(release_path.read_text(encoding="utf-8"))
+            release["packages"]["plugins/herdcraft"] = {
+                "release-type": "simple",
+                "component": "herdcraft",
+                "package-name": "herdcraft",
+                "extra-files": [
+                    {"type": "json", "path": ".codex-plugin/plugin.json"}
+                ],
+            }
+            write_json(release_path, release)
+            manifest_path = root / ".release-please-manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["plugins/herdcraft"] = "1.2.3"
+            write_json(manifest_path, manifest)
+
+            self.assertEqual(self.validator.validate_repository(root), [])
+
+    def test_dual_host_plugin_requires_both_marketplace_registrations(self) -> None:
+        def remove_codex_registration(root: Path) -> None:
+            write_json(
+                root / ".agents/plugins/marketplace.json",
+                {
+                    "name": "test-codex",
+                    "interface": {"displayName": "Test Codex"},
+                    "plugins": [],
+                },
+            )
+
+        errors = self.validate_mutation(remove_codex_registration)
+        self.assertTrue(
+            any(
+                "alpha: Codex marketplace must register exactly one matching entry"
+                in error
+                for error in errors
+            ),
+            errors,
+        )
+
+    def test_codex_marketplace_requires_top_level_identity_and_interface(self) -> None:
+        mutations = {
+            "missing name": lambda payload: payload.pop("name"),
+            "empty name": lambda payload: payload.update({"name": ""}),
+            "unsafe name": lambda payload: payload.update({"name": "bad/name"}),
+            "string interface": lambda payload: payload.update(
+                {"interface": "invalid"}
+            ),
+            "missing display name": lambda payload: payload.update(
+                {"interface": {}}
+            ),
+        }
+        for label, mutate in mutations.items():
+            with self.subTest(label=label):
+                def corrupt(root: Path, mutate=mutate) -> None:
+                    path = root / ".agents/plugins/marketplace.json"
+                    payload = json.loads(path.read_text(encoding="utf-8"))
+                    mutate(payload)
+                    write_json(path, payload)
+
+                errors = self.validate_mutation(corrupt)
+                self.assertTrue(
+                    any("Codex marketplace" in error for error in errors),
+                    errors,
+                )
 
     def test_registration_and_version_drift_are_rejected(self) -> None:
         mutations = {
@@ -309,8 +434,16 @@ class PluginValidationTests(unittest.TestCase):
             _write_text(root / "plugins/alpha/templates/A.txt", "upper\n")
             _write_text(root / "plugins/alpha/templates/a.txt", "lower\n")
 
-        errors = self.validate_mutation(case_collision)
-        self.assertTrue(any("archive path collision" in error for error in errors), errors)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            probe = Path(temp_dir)
+            (probe / "A.txt").write_text("upper\n", encoding="utf-8")
+            (probe / "a.txt").write_text("lower\n", encoding="utf-8")
+            supports_case_collision_fixture = len(list(probe.iterdir())) == 2
+        if supports_case_collision_fixture:
+            errors = self.validate_mutation(case_collision)
+            self.assertTrue(
+                any("archive path collision" in error for error in errors), errors
+            )
 
     def test_packager_generated_restore_files_cannot_be_shadowed(self) -> None:
         def mutate(root: Path) -> None:

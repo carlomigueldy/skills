@@ -2,13 +2,14 @@
 
 Carlo Miguel Dy's personal [Claude Code](https://claude.com/claude-code) and
 Codex plugin collection — agent skills, project templates, and workflows
-packaged as installable plugins.
+packaged as independently versioned plugins.
 
 ## Install
 
-This repo is a Claude Code plugin marketplace, but its skills are also
-installable straight from the top-level `skills/` mirror on any agent that
-speaks the emerging `skills/` convention — Codex CLI, OpenCode, and others.
+This repo exposes native Claude Code and Codex plugin marketplaces. Its
+cross-agent skills are also installable straight from the top-level `skills/`
+mirror on any agent that speaks the emerging `skills/` convention — Codex
+CLI, OpenCode, and others.
 pi installs the whole repository as one package and reads the per-plugin
 skill trees directly, so pi users get all three plugins — including
 `product-foundry`, which is not in the mirror. Pick the row for your agent:
@@ -16,7 +17,7 @@ skill trees directly, so pi users get all three plugins — including
 | Agent | Install | Notes |
 | --- | --- | --- |
 | Claude Code (marketplace) | `claude plugin marketplace add carlomigueldy/skills`<br>`claude plugin install saas-launch@carlomigueldy` | Swap `saas-launch` for `product-foundry` or `orchestra` to install those instead. |
-| Codex CLI | `codex plugin marketplace add carlomigueldy/skills` (reads `.claude-plugin/marketplace.json` and installs `saas-launch` from `plugins/saas-launch/.claude-plugin/plugin.json`), or `npx skills add carlomigueldy/skills` for skills only | Manual fallback: copy `skills/*` into your project's `.agents/skills/` or into `~/.codex/skills/`. |
+| Codex CLI | `codex plugin marketplace add carlomigueldy/skills`<br>`codex plugin add herdcraft@carlomigueldy` | The native Codex marketplace also exposes `orchestra` and `product-foundry`. Use `npx skills add carlomigueldy/skills` only for the generated cross-agent skill mirror; Herdcraft is intentionally not in that mirror. |
 | OpenCode | `npx skills add carlomigueldy/skills` | Manual fallback: copy `skills/*` into `~/.config/opencode/skills/` or your project's `.agents/skills/`. |
 | pi | `pi install git:github.com/carlomigueldy/skills` (all 40 skills from all three plugins) | One plugin only: `pi install "$PWD/plugins/orchestra"` from a local clone, or add `{"source": "git:github.com/carlomigueldy/skills", "skills": ["plugins/orchestra/skills/*"]}` to the `packages` array in `~/.pi/agent/settings.json`. |
 | Claude Cowork / Claude Desktop | Build a zip with `scripts/package-plugin.py` (see below) | No marketplace support in the desktop apps. |
@@ -54,22 +55,24 @@ that read a flat top-level `skills/` directory (Codex CLI, OpenCode, the
 directories, then run `scripts/sync-skills.py` to regenerate the mirror —
 don't edit `skills/` directly.
 
-### Manual upload (Claude Cowork / Claude Desktop)
+### Package archives
 
-The desktop apps install a plugin from an uploaded zip rather than from the
-marketplace. Build one with:
+Claude desktop apps install Claude-capable plugins from an uploaded zip rather
+than from the marketplace. The same command also builds a Codex-layout archive
+for validating or distributing a Codex-only plugin:
 
 ```bash
 scripts/package-plugin.py                 # -> dist/saas-launch-<version>-cowork.zip
 scripts/package-plugin.py product-foundry # -> dist/product-foundry-<version>-cowork.zip
+scripts/package-plugin.py herdcraft       # -> dist/herdcraft-<version>-codex.zip
 scripts/package-plugin.py --list          # preview contents and path rewrites
 ```
 
-The zip is flat (`.claude-plugin/plugin.json` at the root, no wrapper
-directory) because that is what the uploader expects. The uploader also
-rejects paths containing ``<>:"|?*\[]`` or non-ASCII characters, so the
-script rewrites those segments — `app/[locale]/` ships as `app/__locale__/`
-— and bundles a `RESTORE-PATHS.md` and `restore-paths.sh` to reverse it.
+The zip is flat (the selected native manifest is at the root, with no wrapper
+directory). Claude archives also honor the desktop uploader's path rules: it
+rejects paths containing ``<>:"|?*\[]`` or non-ASCII characters, so the script
+rewrites those segments — `app/[locale]/` ships as `app/__locale__/` — and
+bundles a `RESTORE-PATHS.md` and `restore-paths.sh` to reverse it.
 
 **If a zip contains rewritten paths, run `bash restore-paths.sh` after
 copying the template out.** Next.js matches dynamic routes on the literal
@@ -84,6 +87,7 @@ correct names.
 | [`saas-launch`](./plugins/saas-launch) | End-to-end SaaS ideation → PRD → prototype → build-handoff workflow, plus a deterministic pnpm + Turborepo SaaS monorepo project template | `saas-launch-blueprint`, `saas-scaffold` |
 | [`product-foundry`](./plugins/product-foundry) | Cross-platform, approval-gated product discovery → prototype → PRD → go-to-market → implementation-handoff workflow | `product-foundry`, `implement-prd` |
 | [`orchestra`](./plugins/orchestra) | Host-agnostic multi-agent orchestration — turns the executing agent into a root orchestrator that decomposes a goal into lanes, dispatches subagents, and gates on evidence | `orchestra` router + 18 workflow skills |
+| [`herdcraft`](./plugins/herdcraft) | Codex-only, Herdr-backed product and feature delivery with bounded team leads, durable run state, capability budgets, independent verification, and teardown | `herdcraft` |
 
 Product Foundry keeps one package-local `skills/` tree shared by its native
 Claude and Codex manifests, so it does not need a second top-level mirror. The
@@ -96,8 +100,10 @@ mirror.
 
 ```
 skills/
+├── .agents/
+│   └── plugins/marketplace.json   # native Codex marketplace
 ├── .claude-plugin/
-│   └── marketplace.json          # marketplace definition (lists all plugins; Codex CLI reads this too)
+│   └── marketplace.json          # Claude marketplace definition
 ├── package.json                   # root pi package manifest: pi.skills routes to plugins/*/skills
 ├── plugins/
 │   ├── saas-launch/
@@ -111,16 +117,21 @@ skills/
 │   │   │   ├── implement-prd/SKILL.md
 │   │   │   └── foundry-*/SKILL.md
 │   │   └── README.md
-│   └── orchestra/
-│       ├── .claude-plugin/plugin.json # Claude manifest
-│       ├── .codex-plugin/plugin.json  # Codex manifest
-│       ├── skills/             # canonical source for generated mirror (router + 18 workflow skills)
-│       ├── roles/ references/ schemas/ examples/
+│   ├── orchestra/
+│   │   ├── .claude-plugin/plugin.json # Claude manifest
+│   │   ├── .codex-plugin/plugin.json  # Codex manifest
+│   │   ├── skills/             # canonical source for generated mirror (router + 18 workflow skills)
+│   │   ├── roles/ references/ schemas/ examples/
+│   │   └── README.md
+│   └── herdcraft/
+│       ├── .codex-plugin/plugin.json  # Codex-only manifest
+│       ├── skills/herdcraft/          # orchestration skill and run contracts
+│       ├── scripts/                   # deterministic ledger helpers
 │       └── README.md
 ├── skills/                        # generated mirror of plugins/saas-launch/skills/ + plugins/orchestra/skills/
 │   └── ...                       # for Codex CLI / OpenCode / `npx skills add` — synced by scripts/sync-skills.py, don't hand-edit
 ├── scripts/
-│   ├── package-plugin.py         # zip a plugin for manual Cowork upload
+│   ├── package-plugin.py         # build a host-appropriate plugin archive
 │   └── sync-skills.py            # regenerate the top-level skills/ mirror
 ├── docs/
 │   └── VERSIONING.md
@@ -139,12 +150,17 @@ See [`docs/VERSIONING.md`](./docs/VERSIONING.md) for full details on the release
 
 ## Adding a new plugin
 
-1. `mkdir -p plugins/<name>/.claude-plugin plugins/<name>/skills`
-2. Add the Claude manifest and, when the plugin has native Codex metadata, a `.codex-plugin/plugin.json` with the same semantic version.
+1. Create `plugins/<name>/skills` plus only the host manifest directories the
+   plugin actually supports.
+2. Add `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, or both. When
+   both exist, keep their semantic versions identical.
 3. Add one or more skills under `plugins/<name>/skills/<skill-name>/SKILL.md`
-4. Register the plugin in `.claude-plugin/marketplace.json`
+4. Register the plugin in the matching host marketplace: `.claude-plugin/marketplace.json`
+   for Claude and `.agents/plugins/marketplace.json` for native Codex.
 5. Add the plugin to the release-please config and manifest so it gets versioned and released independently
-6. Add `plugins/<name>/skills` to the root `package.json` `pi.skills` array, keeping it sorted; `tests/test_pi_package.py` pins the exact sorted array, and `scripts/validate_plugins.py` fails if a plugin is missing or extra.
+6. Add `plugins/<name>/skills` to the root `package.json` `pi.skills` array only
+   when pi is supported. Codex-only plugins stay out of pi and the generated
+   cross-agent `skills/` mirror.
 
 ## License
 

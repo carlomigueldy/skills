@@ -1,0 +1,38 @@
+{
+  "name": "herdcraft",
+  "version": "0.1.0",
+  "description": "Codex-native, Herdr-backed autonomous engineering delivery with bounded delegation, durable run state, independent verification, and teardown.",
+  "author": {
+    "name": "Carlo Miguel Dy",
+    "email": "carlomigueldy@yahoo.com",
+    "url": "https://github.com/carlomigueldy"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Herdcraft",
+    "shortDescription": "Deliver software through bounded Codex agent teams",
+    "longDescription": "Coordinates Codex agent teams through Herdr with explicit delivery budgets, isolated ownership, durable ledgers, evidence gates, model-aware specialist routing, and verified resource teardown.",
+    "developerName": "Carlo Miguel Dy",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use Herdcraft to deliver this feature end to end.",
+      "Resume this Herdcraft run from its durable ledger.",
+      "Plan a bounded Codex agent team for this product."
+    ]
+  },
+  "homepage": "https://github.com/carlomigueldy/skills/tree/main/plugins/herdcraft",
+  "repository": "https://github.com/carlomigueldy/skills",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "herdr",
+    "multi-agent",
+    "orchestration",
+    "delivery"
+  ]
+}

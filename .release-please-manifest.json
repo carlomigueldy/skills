@@ -1,5 +1,6 @@
 {
   "plugins/saas-launch": "0.6.0",
   "plugins/product-foundry": "0.3.0",
-  "plugins/orchestra": "0.3.0"
+  "plugins/orchestra": "0.3.0",
+  "plugins/herdcraft": "0.1.0"
 }

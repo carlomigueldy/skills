@@ -68,8 +68,16 @@ jobs:
           claude plugin validate .
           find plugins -mindepth 1 -maxdepth 1 -type d -print0 |
             while IFS= read -r -d '' plugin_dir; do
-              claude plugin validate "$plugin_dir"
+              if [[ -f "$plugin_dir/.claude-plugin/plugin.json" ]]; then
+                claude plugin validate "$plugin_dir"
+              fi
             done
+
+      - name: Validate Herdcraft Codex native manifest
+        run: python3 scripts/validate_herdcraft.py
+
+      - name: Validate Herdcraft package contract
+        run: python3 scripts/validate_plugins.py --plugin herdcraft
 
       - name: Validate product-foundry Codex native manifest
         run: python3 scripts/validate_product_foundry.py --codex-manifest-only ./plugins/product-foundry/.codex-plugin/plugin.json

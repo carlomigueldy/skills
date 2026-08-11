@@ -1,0 +1,181 @@
+version: 1
+
+topology:
+  maximum_delegation_depth: 2
+  root_may_delegate_to: [lead]
+  lead_may_delegate_to: [worker]
+  worker_may_delegate_to: []
+  global_ledger_owner: root-coordinator
+
+defaults:
+  agent_kind: codex
+  production_authority: false
+  ordinary_retry_limit: 2
+  record_assignment_in_run_state: true
+  require_real_inference_before_first_use: true
+
+lead_delegation_defaults:
+  maximum_active_children: 3
+  maximum_total_children: 6
+  require_team_contract: true
+  child_delegation_allowed: false
+  cleanup_owner: team-lead
+  maximum_repo_local_skill_installs: 2
+  require_capability_ledger: true
+
+specialists:
+  root-coordinator:
+    tier: lead
+    model: gpt-5.6-sol
+    reasoning_effort: high
+    fallback: gpt-5.5
+    access: coordinator
+    may_delegate: true
+    mission: Own the product contract, global dependency graph, integration order, human gates, and release decision.
+
+  architecture-lead:
+    tier: lead
+    model: gpt-5.6-sol
+    reasoning_effort: high
+    fallback: gpt-5.5
+    access: bounded-writer
+    may_delegate: true
+    mission: Freeze domain boundaries, invariants, APIs, and architecture decisions before downstream builds.
+
+  team-lead:
+    tier: lead
+    model: gpt-5.6-terra
+    reasoning_effort: high
+    fallback: gpt-5.6-sol
+    access: bounded-writer
+    may_delegate: true
+    mission: Coordinate one subsystem, verify child handoffs, and integrate only its owned surface.
+
+  quality-lead:
+    tier: lead
+    model: gpt-5.5
+    reasoning_effort: high
+    fallback: gpt-5.6-sol
+    access: read-only
+    may_delegate: true
+    mission: Independently own verification strategy, reviewer assignments, finding disposition, and release-gate evidence.
+
+  complex-implementer:
+    tier: worker
+    model: gpt-5.6-terra
+    reasoning_effort: high
+    fallback: gpt-5.4
+    access: bounded-writer
+    may_delegate: false
+    mission: Implement ambiguous or cross-file work inside a frozen subsystem contract.
+
+  bounded-implementer:
+    tier: worker
+    model: gpt-5.4
+    reasoning_effort: high
+    fallback: gpt-5.6-terra
+    access: bounded-writer
+    may_delegate: false
+    mission: Implement crisp, isolated work with exact paths and deterministic acceptance checks.
+
+  mechanical-writer:
+    tier: worker
+    model: gpt-5.4
+    reasoning_effort: medium
+    fallback: gpt-5.6-terra
+    access: bounded-writer
+    may_delegate: false
+    mission: Perform narrow fixtures, adapters, test, formatting, or documentation changes with exact ownership.
+
+  repository-scout:
+    tier: worker
+    model: gpt-5.6-luna
+    reasoning_effort: medium
+    fallback: gpt-5.6-terra
+    access: read-only
+    may_delegate: false
+    mission: Map code, history, dependencies, tests, logs, and risks without editing.
+
+  test-runner:
+    tier: worker
+    model: gpt-5.6-luna
+    reasoning_effort: medium
+    fallback: gpt-5.6-terra
+    access: read-only
+    may_delegate: false
+    mission: Execute deterministic checks and return exact commands, output, and environment evidence.
+
+  independent-reviewer:
+    tier: worker
+    model: gpt-5.5
+    reasoning_effort: high
+    fallback: gpt-5.6-sol
+    access: read-only
+    may_delegate: false
+    mission: Adversarially verify an integrated result without relying on builder conclusions.
+
+  security-reviewer:
+    tier: worker
+    model: gpt-5.5
+    reasoning_effort: xhigh
+    fallback: gpt-5.6-sol
+    access: read-only
+    may_delegate: false
+    mission: Review authentication, authorization, tenancy, privacy, billing, migrations, and irreversible risks.
+
+  incident-commander:
+    tier: lead
+    model: gpt-5.6-sol
+    reasoning_effort: xhigh
+    fallback: gpt-5.5
+    access: coordinator
+    may_delegate: true
+    mission: Own severe incident hypotheses, containment, repair routing, rollback, and human escalation.
+
+  release-verifier:
+    tier: worker
+    model: gpt-5.5
+    reasoning_effort: high
+    fallback: gpt-5.6-sol
+    access: read-only
+    may_delegate: false
+    mission: Independently verify release artifact, migrations, health, telemetry, smoke paths, and rollback.
+
+  conditional-mini-scout:
+    tier: worker
+    model: gpt-5.4-mini
+    reasoning_effort: low
+    fallback: gpt-5.6-luna
+    access: read-only
+    may_delegate: false
+    conditional: Use only after a real inference proves the model is available in the active Codex provider.
+    mission: Perform inventories and deterministic lookups; never own code, architecture, review, security, migrations, incidents, or release decisions.
+
+routing:
+  high_risk:
+    signals: [cross-team-semantics, security, data-loss, destructive-migration, production, severe-incident]
+    route_to: [root-coordinator, architecture-lead, quality-lead, security-reviewer, incident-commander]
+  normal_engineering:
+    signals: [feature, api, ui, schema-addition, ci, focused-bugfix]
+    route_to: [team-lead, complex-implementer, bounded-implementer]
+  mechanical_read_only:
+    signals: [repository-map, call-sites, test-run, log-classification, artifact-inventory]
+    route_to: [repository-scout, test-runner, conditional-mini-scout]
+
+escalation:
+  - from: [conditional-mini-scout, repository-scout, test-runner]
+    when: [ambiguity, write-required, failed-attempt]
+    to: team-lead
+  - from: [bounded-implementer, complex-implementer, team-lead]
+    when: [cross-team-semantics, security-risk, data-loss-risk, same-approach-failed-twice]
+    to: root-coordinator
+  - from: [root-coordinator, incident-commander]
+    when: [new-authority, destructive-action, secrets-or-permissions, material-spending, external-communication, accepted-security-or-data-loss-risk]
+    to: human
+
+independence:
+  builder_may_self_certify: false
+  verifier_should_use_different_model_from_builder: true
+  quality_lead_reports_to: root-coordinator
+  reviewers_report_to: quality-lead
+  preferred_verifier: independent-reviewer

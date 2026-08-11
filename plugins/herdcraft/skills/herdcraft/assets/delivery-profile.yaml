@@ -1,0 +1,38 @@
+schema_version: 1
+delivery_level: bounded-production
+user_outcome: replace-me
+deadline: replace-me
+
+constraints:
+  existing_stack: []
+  repository_conventions: []
+  current_scale: replace-me
+  credible_near_term_scale: replace-me
+  security_privacy_compliance: []
+  data_and_rollback: []
+  weekly_usage_limit: replace-me
+
+budgets:
+  maximum_agents: replace-me
+  maximum_active_agents: replace-me
+  maximum_repo_local_skill_installs: 2
+  ordinary_retry_limit: 2
+  timeboxes: []
+
+engineering:
+  reuse_before_add: true
+  minimum_sufficient_architecture: replace-me
+  required_quality: []
+  explicitly_deferred: []
+  prohibited_speculation: []
+  promotion_triggers: []
+
+tradeoffs:
+  accepted: []
+  rejected: []
+  unresolved: []
+
+delivery:
+  acceptance: []
+  release_target: replace-me
+  human_gates: []
