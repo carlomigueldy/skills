@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/carlomigueldy/skills/compare/herdcraft--v0.2.0...herdcraft--v0.3.0) (2026-08-12)
+
+
+### Features
+
+* **herdcraft:** allow eight-worker lead fanout ([#31](https://github.com/carlomigueldy/skills/issues/31)) ([d3b0d19](https://github.com/carlomigueldy/skills/commit/d3b0d193c752936195c5c78e859db314b40991ff))
+
 ## [0.2.0](https://github.com/carlomigueldy/skills/compare/herdcraft--v0.1.0...herdcraft--v0.2.0) (2026-08-11)
 
 
