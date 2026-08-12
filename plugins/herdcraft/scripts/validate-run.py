@@ -41,6 +41,7 @@ TEAM_STATES = {
 }
 DISPATCH_STATUSES = {"ready", "running", "blocked", "integrating", "verifying", "completed"}
 RETIRED_RESOURCE_STATES = {"retired", "retained-for-recovery"}
+MAX_CHILDREN_PER_LEAD = 8
 REPORT_PLACEHOLDER = re.compile(r"<[^>]+>")
 FINAL_REPORT_SECTIONS = {
     "# Workflow report",
@@ -158,6 +159,7 @@ def validate_run(run_dir: Path) -> list[str]:
                     errors.append(f"team {team_dir.name} is missing {filename}")
     state_team_ids: list[str] = []
     teams = state.get("teams")
+    agents = state.get("agents")
     if isinstance(teams, list):
         for index, team in enumerate(teams):
             if not isinstance(team, dict):
@@ -174,6 +176,60 @@ def validate_run(run_dir: Path) -> list[str]:
                     f"teams[{index}].state must be one of: "
                     f"{', '.join(sorted(TEAM_STATES))}"
                 )
+            budget = team.get("delegation_budget")
+            if not isinstance(budget, dict):
+                errors.append(f"teams[{index}].delegation_budget must be an object")
+            else:
+                active_limit = budget.get("maximum_active_children")
+                total_limit = budget.get("maximum_total_children")
+                for field, value in (
+                    ("maximum_active_children", active_limit),
+                    ("maximum_total_children", total_limit),
+                ):
+                    if (
+                        not isinstance(value, int)
+                        or isinstance(value, bool)
+                        or not 1 <= value <= MAX_CHILDREN_PER_LEAD
+                    ):
+                        errors.append(
+                            f"teams[{index}].delegation_budget.{field} must be "
+                            f"between 1 and {MAX_CHILDREN_PER_LEAD}"
+                        )
+                if (
+                    isinstance(active_limit, int)
+                    and not isinstance(active_limit, bool)
+                    and isinstance(total_limit, int)
+                    and not isinstance(total_limit, bool)
+                    and active_limit > total_limit
+                ):
+                    errors.append(
+                        f"teams[{index}].delegation_budget.maximum_active_children "
+                        "cannot exceed maximum_total_children"
+                    )
+            lead_agent = team.get("lead_agent")
+            if isinstance(lead_agent, str) and isinstance(agents, list):
+                spawned_children = sum(
+                    1
+                    for agent in agents
+                    if isinstance(agent, dict) and agent.get("parent") == lead_agent
+                )
+                if spawned_children > MAX_CHILDREN_PER_LEAD:
+                    errors.append(
+                        f"team {team_id} lead {lead_agent} has {spawned_children} "
+                        f"spawned children; maximum is {MAX_CHILDREN_PER_LEAD}"
+                    )
+                if (
+                    isinstance(budget, dict)
+                    and isinstance(budget.get("maximum_total_children"), int)
+                    and not isinstance(budget["maximum_total_children"], bool)
+                    and spawned_children > budget["maximum_total_children"]
+                    and budget["maximum_total_children"] <= MAX_CHILDREN_PER_LEAD
+                ):
+                    errors.append(
+                        f"team {team_id} lead {lead_agent} has {spawned_children} "
+                        "spawned children, exceeding its recorded delegation budget "
+                        f"of {budget['maximum_total_children']}"
+                    )
         if len(state_team_ids) != len(set(state_team_ids)):
             errors.append("run-state teams must have unique team_id values")
         if set(state_team_ids) != directory_team_ids:

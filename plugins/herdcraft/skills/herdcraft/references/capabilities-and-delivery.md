@@ -23,7 +23,7 @@ Resolve the operating root before creating run state or worktrees:
 6. If existing unversioned code should become a repository, obtain approval before `git init` and inspect ignore/secrets risk first.
 7. If Git is declined, use one writer, disable worktrees, record reduced isolation, and keep backups/diffs appropriate to the task.
 
-Do not create `.orchestration/` in an unrelated non-repository CWD merely to continue autonomously.
+Do not create `.herdcraft/` in an unrelated non-repository CWD merely to continue autonomously. In a repository, keep the root `.herdcraft/` entry in `.gitignore`.
 
 ## Choose the delivery level
 

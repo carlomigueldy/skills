@@ -144,7 +144,10 @@ class HerdcraftContractTests(unittest.TestCase):
         released = json.loads(
             (REPO_ROOT / ".release-please-manifest.json").read_text(encoding="utf-8")
         )
-        self.assertEqual(released["plugins/herdcraft"], "0.1.0")
+        self.assertEqual(
+            released["plugins/herdcraft"],
+            (PLUGIN_ROOT / "version.txt").read_text(encoding="utf-8").strip(),
+        )
 
     def test_codex_only_scope_is_not_exposed_through_other_host_registries(self) -> None:
         claude_marketplace = json.loads(

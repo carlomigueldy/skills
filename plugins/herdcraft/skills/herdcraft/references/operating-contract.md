@@ -10,7 +10,7 @@ Read this reference for multi-wave builds, restart recovery, and release work.
 - Herdr controls processes; Git and artifacts preserve work; tests establish correctness.
 - No coding agent receives broader production authority than its task requires.
 - The specialist roster, model, reasoning effort, parent, access mode, fallback, and delegation budget are recorded before dispatch.
-- Root delegates to leads, leads may delegate only bounded workers, and workers never delegate.
+- Root delegates to leads, each lead may delegate to at most eight direct workers across the run, and workers never delegate.
 
 ## Task states
 

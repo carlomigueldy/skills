@@ -31,13 +31,13 @@ python3 <plugin-root>/scripts/init-run.py --repo <repo> --run-id <id> \
   --objective <objective> --team <team-id>
 ```
 
-Repeat `--team` for each active team. The helper refuses unsafe identifiers, unresolved Git history, and overwriting an existing run. It creates `.orchestration/runs/<run-id>/` from the bundled contracts; instantiate task contracts from its `templates/` directory as tasks become ready. For research-only non-repository work, use a task-local output directory instead of pretending worktrees exist. Keep secrets out of these files.
+Repeat `--team` for each active team. The helper refuses unsafe identifiers, unresolved Git history, and overwriting an existing run. It creates `.herdcraft/runs/<run-id>/` from the bundled contracts and idempotently adds `.herdcraft/` to the repository-root `.gitignore`; instantiate task contracts from its `templates/` directory as tasks become ready. For research-only non-repository work, use a task-local output directory instead of pretending worktrees exist. Keep secrets out of these files.
 
 After resolving the product, delivery, team, and capability contracts, set run status to `ready` and run `python3 <plugin-root>/scripts/validate-run.py <run-dir>` before dispatch. The validator deliberately rejects unresolved dispatch placeholders once a run leaves `planning`.
 
 At closeout, use `python3 <plugin-root>/scripts/summarize-run.py <run-dir>` as the factual draft, complete every `final-report.md` field from observed evidence, record verification and retirement, set run status to `completed`, then run `validate-run.py` again. Completed runs fail validation when evidence, retirement, or report fields remain unresolved. If the helpers are unavailable, reproduce the same asset layout manually rather than weakening the contract.
 
-Update run state after every dispatch, lifecycle transition, artifact report, verification result, integration decision, retry, and escalation. Commit it when appropriate. Chat is never the only ledger: a restarted coordinator must reconstruct the run from Herdr, Git, task files, and test evidence.
+Update run state after every dispatch, lifecycle transition, artifact report, verification result, integration decision, retry, and escalation. Keep `.herdcraft/` ignored and local; preserve shareable decisions and evidence in normal project artifacts when needed. Chat is never the only ledger: a restarted coordinator must reconstruct the run from Herdr, Git, task files, and test evidence.
 
 Read `references/operating-contract.md` before running a multi-wave build, recovering a run, or releasing.
 
@@ -60,7 +60,7 @@ Apply the delivery profile at root and team levels. Reuse the existing stack and
 
 Read `references/specialists.yaml` before assigning agents. Treat it as the canonical default roster and escalation policy. Override it only for a user-requested model, unavailable model, observed task-specific reason, or project instruction; record the reason and fallback in run state.
 
-Keep the hierarchy shallow: root coordinator -> team lead -> worker. Root owns the global ledger and release decision. A team lead may launch bounded children only within its recorded delegation budget. Workers never delegate.
+Keep the hierarchy shallow: root coordinator -> team lead -> worker. Root owns the global ledger and release decision. A team lead may fan out to at most eight direct workers within its recorded delegation budget; use fewer when the dependency graph does not justify eight. Workers never delegate.
 
 Keep quality independent: assign the `quality-lead` directly under root, then place reviewers and release verifiers under that lead. Never route their certification through a builder lead.
 
@@ -72,7 +72,7 @@ Record agent name, specialist ID, model, reasoning effort, model-inference evide
 
 Read `references/team-operations.md` and instantiate `assets/team-contract.yaml` before a lead launches children. Activate only teams required by the dependency graph.
 
-Root delegates a subsystem outcome to a lead. The lead may implement it directly or decompose it, create child contracts/worktrees, select allowed specialists, launch and monitor workers, verify their evidence, integrate its owned surface, report to root, and retire its children. Workers never delegate. Root retains the global ledger, cross-team integration, human gates, and release decision.
+Root delegates a subsystem outcome to a lead. The lead may implement it directly or decompose it, create child contracts/worktrees, select allowed specialists, fan out and monitor up to eight direct workers, verify their evidence, integrate its owned surface, report to root, and retire its children. The eight-worker ceiling is per lead and includes all workers spawned by that lead during the run, not only concurrently active workers. Workers never delegate. Root retains the global ledger, cross-team integration, human gates, and release decision.
 
 Require leads to send `CHECKPOINT`, actual `INCIDENT`, and `FINAL_HANDOFF` reports with `assets/team-report.md`. Never manufacture an incident when none occurred.
 

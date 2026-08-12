@@ -15,6 +15,7 @@ from pathlib import Path
 IDENTIFIER = re.compile(r"^[a-z0-9][a-z0-9._-]{0,63}$")
 PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 SKILL_ROOT = PLUGIN_ROOT / "skills" / "herdcraft"
+HERDCRAFT_IGNORE_ENTRY = ".herdcraft/"
 
 
 def _validate_identifier(value: str, label: str) -> None:
@@ -27,6 +28,20 @@ def _validate_identifier(value: str, label: str) -> None:
 
 def _write_text(path: Path, content: str) -> None:
     path.write_text(content, encoding="utf-8")
+
+
+def _ensure_gitignore(repo_root: Path) -> None:
+    gitignore = repo_root / ".gitignore"
+    resolved = gitignore.resolve()
+    try:
+        resolved.relative_to(repo_root)
+    except ValueError as exc:
+        raise ValueError(".gitignore must stay within the repository") from exc
+    content = gitignore.read_text(encoding="utf-8") if gitignore.exists() else ""
+    if HERDCRAFT_IGNORE_ENTRY in content.splitlines():
+        return
+    separator = "" if not content or content.endswith("\n") else "\n"
+    _write_text(gitignore, f"{content}{separator}{HERDCRAFT_IGNORE_ENTRY}\n")
 
 
 def initialize_run(
@@ -49,7 +64,7 @@ def initialize_run(
         raise ValueError("base revision must identify an existing commit")
 
     repo_root = repo_root.resolve()
-    run_dir = (repo_root / ".orchestration" / "runs" / run_id).resolve()
+    run_dir = (repo_root / ".herdcraft" / "runs" / run_id).resolve()
     try:
         run_dir.relative_to(repo_root)
     except ValueError as exc:
@@ -97,8 +112,8 @@ def initialize_run(
                 },
                 "delegation_budget": {
                     "maximum_depth": 1,
-                    "maximum_active_children": 3,
-                    "maximum_total_children": 6,
+                    "maximum_active_children": 8,
+                    "maximum_total_children": 8,
                 },
                 "state": "planned",
                 "integration_revision": None,
@@ -150,6 +165,7 @@ def initialize_run(
             )
             ledger = ledger.replace("team_id: replace-me", f"team_id: {team}", 1)
             _write_text(team_dir / "capability-ledger.yaml", ledger)
+        _ensure_gitignore(repo_root)
         return run_dir
     except Exception:
         shutil.rmtree(run_dir)

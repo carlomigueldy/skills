@@ -42,6 +42,11 @@ class HerdcraftScriptTests(unittest.TestCase):
                 teams=["product", "quality"],
             )
 
+            self.assertEqual(run_dir, repo.resolve() / ".herdcraft/runs/feature-001")
+            self.assertEqual(
+                (repo / ".gitignore").read_text(encoding="utf-8"),
+                ".herdcraft/\n",
+            )
             state = json.loads((run_dir / "run-state.json").read_text(encoding="utf-8"))
             self.assertEqual(state["run_id"], "feature-001")
             self.assertEqual(state["objective"], "Ship the dashboard filter")
@@ -60,6 +65,14 @@ class HerdcraftScriptTests(unittest.TestCase):
                 "teams/product/team-contract.yaml",
             )
             self.assertEqual(
+                state["teams"][0]["delegation_budget"],
+                {
+                    "maximum_depth": 1,
+                    "maximum_active_children": 8,
+                    "maximum_total_children": 8,
+                },
+            )
+            self.assertEqual(
                 {path.name for path in (run_dir / "teams").iterdir()},
                 {"product", "quality"},
             )
@@ -72,6 +85,32 @@ class HerdcraftScriptTests(unittest.TestCase):
                     base_revision="def5678",
                     teams=[],
                 )
+
+    def test_initialize_run_preserves_gitignore_and_adds_herdcraft_once(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo = Path(temp_dir)
+            gitignore = repo / ".gitignore"
+            gitignore.write_text("node_modules/", encoding="utf-8")
+
+            self.init_run.initialize_run(
+                repo_root=repo,
+                run_id="first-run",
+                objective="Create the first ignored ledger",
+                base_revision="abc1234",
+                teams=[],
+            )
+            self.init_run.initialize_run(
+                repo_root=repo,
+                run_id="second-run",
+                objective="Create another ignored ledger",
+                base_revision="abc1234",
+                teams=[],
+            )
+
+            self.assertEqual(
+                gitignore.read_text(encoding="utf-8"),
+                "node_modules/\n.herdcraft/\n",
+            )
 
     def test_initialize_run_rejects_unsafe_identifiers(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -109,7 +148,7 @@ class HerdcraftScriptTests(unittest.TestCase):
             outside = root / "outside"
             repo.mkdir()
             outside.mkdir()
-            (repo / ".orchestration").symlink_to(outside, target_is_directory=True)
+            (repo / ".herdcraft").symlink_to(outside, target_is_directory=True)
 
             with self.assertRaisesRegex(ValueError, "must stay within the repository"):
                 self.init_run.initialize_run(
@@ -192,6 +231,57 @@ class HerdcraftScriptTests(unittest.TestCase):
             errors = self.validate_run.validate_run(run_dir)
 
         self.assertIn("team directories and run-state teams must match", errors)
+
+    def test_validate_run_rejects_more_than_eight_workers_for_one_lead(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo = Path(temp_dir)
+            run_dir = self.init_run.initialize_run(
+                repo_root=repo,
+                run_id="bounded-fanout",
+                objective="Keep each lead within its fan-out ceiling",
+                base_revision="abc1234",
+                teams=["api"],
+            )
+            state_path = run_dir / "run-state.json"
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+            state["teams"][0]["lead_agent"] = "api-lead"
+            state["agents"] = [
+                {"name": "api-lead", "parent": "root-coordinator"},
+                *[
+                    {"name": f"api-worker-{index}", "parent": "api-lead"}
+                    for index in range(1, 10)
+                ],
+            ]
+            state_path.write_text(json.dumps(state), encoding="utf-8")
+
+            errors = self.validate_run.validate_run(run_dir)
+
+        self.assertIn(
+            "team api lead api-lead has 9 spawned children; maximum is 8",
+            errors,
+        )
+
+    def test_validate_run_rejects_a_delegation_budget_above_eight(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo = Path(temp_dir)
+            run_dir = self.init_run.initialize_run(
+                repo_root=repo,
+                run_id="oversized-budget",
+                objective="Reject a declared fan-out above the ceiling",
+                base_revision="abc1234",
+                teams=["api"],
+            )
+            state_path = run_dir / "run-state.json"
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+            state["teams"][0]["delegation_budget"]["maximum_total_children"] = 9
+            state_path.write_text(json.dumps(state), encoding="utf-8")
+
+            errors = self.validate_run.validate_run(run_dir)
+
+        self.assertIn(
+            "teams[0].delegation_budget.maximum_total_children must be between 1 and 8",
+            errors,
+        )
 
     def test_validate_run_rejects_unresolved_dispatch_contracts(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

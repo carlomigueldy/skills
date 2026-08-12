@@ -14,8 +14,8 @@ ownership:
 
 delegation:
   maximum_depth: 1
-  maximum_active_children: 3
-  maximum_total_children: 6
+  maximum_active_children: 8
+  maximum_total_children: 8
   allowed_specialists: []
   allowed_models: []
   may_create_writer_worktrees: true
