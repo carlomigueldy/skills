@@ -31,13 +31,13 @@ python3 <plugin-root>/scripts/init-run.py --repo <repo> --run-id <id> \
   --objective <objective> --team <team-id>
 ```
 
-Repeat `--team` for each active team. The helper refuses unsafe identifiers, unresolved Git history, and overwriting an existing run. It creates `.orchestration/runs/<run-id>/` from the bundled contracts; instantiate task contracts from its `templates/` directory as tasks become ready. For research-only non-repository work, use a task-local output directory instead of pretending worktrees exist. Keep secrets out of these files.
+Repeat `--team` for each active team. The helper refuses unsafe identifiers, unresolved Git history, and overwriting an existing run. It creates `.herdcraft/runs/<run-id>/` from the bundled contracts and idempotently adds `.herdcraft/` to the repository-root `.gitignore`; instantiate task contracts from its `templates/` directory as tasks become ready. For research-only non-repository work, use a task-local output directory instead of pretending worktrees exist. Keep secrets out of these files.
 
 After resolving the product, delivery, team, and capability contracts, set run status to `ready` and run `python3 <plugin-root>/scripts/validate-run.py <run-dir>` before dispatch. The validator deliberately rejects unresolved dispatch placeholders once a run leaves `planning`.
 
 At closeout, use `python3 <plugin-root>/scripts/summarize-run.py <run-dir>` as the factual draft, complete every `final-report.md` field from observed evidence, record verification and retirement, set run status to `completed`, then run `validate-run.py` again. Completed runs fail validation when evidence, retirement, or report fields remain unresolved. If the helpers are unavailable, reproduce the same asset layout manually rather than weakening the contract.
 
-Update run state after every dispatch, lifecycle transition, artifact report, verification result, integration decision, retry, and escalation. Commit it when appropriate. Chat is never the only ledger: a restarted coordinator must reconstruct the run from Herdr, Git, task files, and test evidence.
+Update run state after every dispatch, lifecycle transition, artifact report, verification result, integration decision, retry, and escalation. Keep `.herdcraft/` ignored and local; preserve shareable decisions and evidence in normal project artifacts when needed. Chat is never the only ledger: a restarted coordinator must reconstruct the run from Herdr, Git, task files, and test evidence.
 
 Read `references/operating-contract.md` before running a multi-wave build, recovering a run, or releasing.
 

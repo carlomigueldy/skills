@@ -47,6 +47,10 @@ The scripts use only the Python standard library. Run `--help` for their
 arguments. The skill remains authoritative for decisions and safety gates;
 the scripts only automate deterministic ledger operations.
 
+Run ledgers live under `.herdcraft/runs/`. Initialization preserves the
+repository's existing `.gitignore` and adds `.herdcraft/` exactly once so
+local orchestration state is not committed with product changes.
+
 Herdcraft complements the repository's `orchestra` plugin. Orchestra is a
 host-agnostic workflow router; Herdcraft is the Codex-and-Herdr-specific
 delivery control plane for team leads, worktrees, capability budgets,

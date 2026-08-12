@@ -42,6 +42,11 @@ class HerdcraftScriptTests(unittest.TestCase):
                 teams=["product", "quality"],
             )
 
+            self.assertEqual(run_dir, repo.resolve() / ".herdcraft/runs/feature-001")
+            self.assertEqual(
+                (repo / ".gitignore").read_text(encoding="utf-8"),
+                ".herdcraft/\n",
+            )
             state = json.loads((run_dir / "run-state.json").read_text(encoding="utf-8"))
             self.assertEqual(state["run_id"], "feature-001")
             self.assertEqual(state["objective"], "Ship the dashboard filter")
@@ -81,6 +86,32 @@ class HerdcraftScriptTests(unittest.TestCase):
                     teams=[],
                 )
 
+    def test_initialize_run_preserves_gitignore_and_adds_herdcraft_once(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo = Path(temp_dir)
+            gitignore = repo / ".gitignore"
+            gitignore.write_text("node_modules/", encoding="utf-8")
+
+            self.init_run.initialize_run(
+                repo_root=repo,
+                run_id="first-run",
+                objective="Create the first ignored ledger",
+                base_revision="abc1234",
+                teams=[],
+            )
+            self.init_run.initialize_run(
+                repo_root=repo,
+                run_id="second-run",
+                objective="Create another ignored ledger",
+                base_revision="abc1234",
+                teams=[],
+            )
+
+            self.assertEqual(
+                gitignore.read_text(encoding="utf-8"),
+                "node_modules/\n.herdcraft/\n",
+            )
+
     def test_initialize_run_rejects_unsafe_identifiers(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             repo = Path(temp_dir)
@@ -117,7 +148,7 @@ class HerdcraftScriptTests(unittest.TestCase):
             outside = root / "outside"
             repo.mkdir()
             outside.mkdir()
-            (repo / ".orchestration").symlink_to(outside, target_is_directory=True)
+            (repo / ".herdcraft").symlink_to(outside, target_is_directory=True)
 
             with self.assertRaisesRegex(ValueError, "must stay within the repository"):
                 self.init_run.initialize_run(
