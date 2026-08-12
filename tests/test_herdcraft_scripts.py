@@ -60,6 +60,14 @@ class HerdcraftScriptTests(unittest.TestCase):
                 "teams/product/team-contract.yaml",
             )
             self.assertEqual(
+                state["teams"][0]["delegation_budget"],
+                {
+                    "maximum_depth": 1,
+                    "maximum_active_children": 8,
+                    "maximum_total_children": 8,
+                },
+            )
+            self.assertEqual(
                 {path.name for path in (run_dir / "teams").iterdir()},
                 {"product", "quality"},
             )
@@ -192,6 +200,57 @@ class HerdcraftScriptTests(unittest.TestCase):
             errors = self.validate_run.validate_run(run_dir)
 
         self.assertIn("team directories and run-state teams must match", errors)
+
+    def test_validate_run_rejects_more_than_eight_workers_for_one_lead(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo = Path(temp_dir)
+            run_dir = self.init_run.initialize_run(
+                repo_root=repo,
+                run_id="bounded-fanout",
+                objective="Keep each lead within its fan-out ceiling",
+                base_revision="abc1234",
+                teams=["api"],
+            )
+            state_path = run_dir / "run-state.json"
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+            state["teams"][0]["lead_agent"] = "api-lead"
+            state["agents"] = [
+                {"name": "api-lead", "parent": "root-coordinator"},
+                *[
+                    {"name": f"api-worker-{index}", "parent": "api-lead"}
+                    for index in range(1, 10)
+                ],
+            ]
+            state_path.write_text(json.dumps(state), encoding="utf-8")
+
+            errors = self.validate_run.validate_run(run_dir)
+
+        self.assertIn(
+            "team api lead api-lead has 9 spawned children; maximum is 8",
+            errors,
+        )
+
+    def test_validate_run_rejects_a_delegation_budget_above_eight(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo = Path(temp_dir)
+            run_dir = self.init_run.initialize_run(
+                repo_root=repo,
+                run_id="oversized-budget",
+                objective="Reject a declared fan-out above the ceiling",
+                base_revision="abc1234",
+                teams=["api"],
+            )
+            state_path = run_dir / "run-state.json"
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+            state["teams"][0]["delegation_budget"]["maximum_total_children"] = 9
+            state_path.write_text(json.dumps(state), encoding="utf-8")
+
+            errors = self.validate_run.validate_run(run_dir)
+
+        self.assertIn(
+            "teams[0].delegation_budget.maximum_total_children must be between 1 and 8",
+            errors,
+        )
 
     def test_validate_run_rejects_unresolved_dispatch_contracts(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

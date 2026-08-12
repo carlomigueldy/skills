@@ -97,8 +97,8 @@ def initialize_run(
                 },
                 "delegation_budget": {
                     "maximum_depth": 1,
-                    "maximum_active_children": 3,
-                    "maximum_total_children": 6,
+                    "maximum_active_children": 8,
+                    "maximum_total_children": 8,
                 },
                 "state": "planned",
                 "integration_revision": None,

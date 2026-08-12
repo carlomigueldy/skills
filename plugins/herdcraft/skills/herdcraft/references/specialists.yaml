@@ -15,8 +15,8 @@ defaults:
   require_real_inference_before_first_use: true
 
 lead_delegation_defaults:
-  maximum_active_children: 3
-  maximum_total_children: 6
+  maximum_active_children: 8
+  maximum_total_children: 8
   require_team_contract: true
   child_delegation_allowed: false
   cleanup_owner: team-lead

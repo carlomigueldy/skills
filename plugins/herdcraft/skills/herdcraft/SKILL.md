@@ -60,7 +60,7 @@ Apply the delivery profile at root and team levels. Reuse the existing stack and
 
 Read `references/specialists.yaml` before assigning agents. Treat it as the canonical default roster and escalation policy. Override it only for a user-requested model, unavailable model, observed task-specific reason, or project instruction; record the reason and fallback in run state.
 
-Keep the hierarchy shallow: root coordinator -> team lead -> worker. Root owns the global ledger and release decision. A team lead may launch bounded children only within its recorded delegation budget. Workers never delegate.
+Keep the hierarchy shallow: root coordinator -> team lead -> worker. Root owns the global ledger and release decision. A team lead may fan out to at most eight direct workers within its recorded delegation budget; use fewer when the dependency graph does not justify eight. Workers never delegate.
 
 Keep quality independent: assign the `quality-lead` directly under root, then place reviewers and release verifiers under that lead. Never route their certification through a builder lead.
 
@@ -72,7 +72,7 @@ Record agent name, specialist ID, model, reasoning effort, model-inference evide
 
 Read `references/team-operations.md` and instantiate `assets/team-contract.yaml` before a lead launches children. Activate only teams required by the dependency graph.
 
-Root delegates a subsystem outcome to a lead. The lead may implement it directly or decompose it, create child contracts/worktrees, select allowed specialists, launch and monitor workers, verify their evidence, integrate its owned surface, report to root, and retire its children. Workers never delegate. Root retains the global ledger, cross-team integration, human gates, and release decision.
+Root delegates a subsystem outcome to a lead. The lead may implement it directly or decompose it, create child contracts/worktrees, select allowed specialists, fan out and monitor up to eight direct workers, verify their evidence, integrate its owned surface, report to root, and retire its children. The eight-worker ceiling is per lead and includes all workers spawned by that lead during the run, not only concurrently active workers. Workers never delegate. Root retains the global ledger, cross-team integration, human gates, and release decision.
 
 Require leads to send `CHECKPOINT`, actual `INCIDENT`, and `FINAL_HANDOFF` reports with `assets/team-report.md`. Never manufacture an incident when none occurred.
 

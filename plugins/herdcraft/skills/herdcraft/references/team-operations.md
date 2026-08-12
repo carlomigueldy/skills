@@ -28,6 +28,8 @@ Record Herdr workspace, tab, pane, worktree, branch, team, task, and parent IDs.
 
 Root activates only teams required by the dependency graph. Give every lead a copied `assets/team-contract.yaml`, delivery profile, and capability ledger before it launches children.
 
+Each lead may fan out to at most eight direct workers across the run. Treat eight as a hard ceiling, not a target; record a smaller delegation budget whenever fewer independent, owned, and verifiable tasks exist. The global delivery profile or available runtime capacity may impose a lower concurrency limit.
+
 A lead must:
 
 1. Accept one subsystem outcome and frozen interfaces from root.
